@@ -1,0 +1,497 @@
+<?php
+// Servicio de Administración para Panel Admin de ResQ
+// Lógica de negocio para CRUD de coordinadores, instalaciones y socorristas
+
+class AdminService {
+    
+    /**
+     * Obtiene todos los coordinadores del sistema
+     */
+    public function getCoordinadores() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("
+                SELECT c.id, c.nombre, c.email, c.telefono,
+                       c.fecha_creacion, c.fecha_actualizacion,
+                       COUNT(i.id) as total_instalaciones
+                FROM coordinadores c
+                LEFT JOIN instalaciones i ON c.id = i.coordinador_id AND i.activo = 1
+                GROUP BY c.id
+                ORDER BY c.nombre ASC
+            ");
+            
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo coordinadores: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+    
+    /**
+     * Crea un nuevo coordinador
+     */
+    public function crearCoordinador($datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Validar datos requeridos
+            $required = ['nombre', 'email'];
+            foreach ($required as $field) {
+                if (empty($datos[$field])) {
+                    throw new Exception("Campo requerido: $field");
+                }
+            }
+            
+            // Validar email único
+            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE email = ?");
+            $stmt->execute([$datos['email']]);
+            if ($stmt->fetch()) {
+                throw new Exception("El email ya está en uso");
+            }
+            
+            $stmt = $db->prepare("
+                INSERT INTO coordinadores (nombre, email, telefono)
+                VALUES (?, ?, ?)
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['email'],
+                $datos['telefono'] ?? null
+            ]);
+            
+            $coordinadorId = $db->lastInsertId();
+            logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}", 'INFO');
+            
+            return $coordinadorId;
+            
+        } catch (Exception $e) {
+            logMessage("Error creando coordinador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Actualiza un coordinador existente
+     */
+    public function actualizarCoordinador($id, $datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que el coordinador existe
+            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+            $stmt->execute([$id]);
+            if (!$stmt->fetch()) {
+                throw new Exception("Coordinador no encontrado");
+            }
+            
+            // Validar email único (excluyendo el coordinador actual)
+            if (!empty($datos['email'])) {
+                $stmt = $db->prepare("SELECT id FROM coordinadores WHERE email = ? AND id != ?");
+                $stmt->execute([$datos['email'], $id]);
+                if ($stmt->fetch()) {
+                    throw new Exception("El email ya está en uso");
+                }
+            }
+            
+            $stmt = $db->prepare("
+                UPDATE coordinadores 
+                SET nombre = ?, email = ?, telefono = ?
+                WHERE id = ?
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['email'],
+                $datos['telefono'] ?? null,
+                $id
+            ]);
+            
+            logMessage("Coordinador actualizado: ID {$id}, {$datos['nombre']}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error actualizando coordinador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Elimina un coordinador (borrado físico si no tiene instalaciones)
+     */
+    public function eliminarCoordinador($id) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que el coordinador existe
+            $stmt = $db->prepare("SELECT nombre FROM coordinadores WHERE id = ?");
+            $stmt->execute([$id]);
+            $coordinador = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$coordinador) {
+                throw new Exception("Coordinador no encontrado");
+            }
+            
+            // Verificar que no tiene instalaciones (doble verificación de seguridad)
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM instalaciones WHERE coordinador_id = ?");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result['count'] > 0) {
+                throw new Exception("No se puede eliminar un coordinador que tiene instalaciones asignadas");
+            }
+            
+            // Borrado físico
+            $stmt = $db->prepare("DELETE FROM coordinadores WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            logMessage("Coordinador eliminado: ID {$id}, {$coordinador['nombre']}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error eliminando coordinador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Obtiene las instalaciones de un coordinador específico
+     */
+    public function getInstalacionesPorCoordinador($coordinadorId) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("
+                SELECT i.id, i.nombre, i.direccion, i.activo,
+                       i.fecha_creacion,
+                       COUNT(s.id) as total_socorristas
+                FROM instalaciones i
+                LEFT JOIN socorristas s ON i.id = s.instalacion_id AND s.activo = 1
+                WHERE i.coordinador_id = ?
+                GROUP BY i.id
+                ORDER BY i.nombre ASC
+            ");
+            
+            $stmt->execute([$coordinadorId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo instalaciones del coordinador: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+    
+    /**
+     * Obtiene todas las instalaciones del sistema
+     */
+    public function getInstalaciones() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("
+                SELECT i.id, i.nombre, i.direccion, i.activo,
+                       i.fecha_creacion, i.fecha_actualizacion,
+                       c.nombre as coordinador_nombre, c.email as coordinador_email,
+                       COUNT(s.id) as total_socorristas
+                FROM instalaciones i
+                LEFT JOIN coordinadores c ON i.coordinador_id = c.id
+                LEFT JOIN socorristas s ON i.id = s.instalacion_id AND s.activo = 1
+                GROUP BY i.id
+                ORDER BY i.nombre ASC
+            ");
+            
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo instalaciones: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+    
+    /**
+     * Crea una nueva instalación
+     */
+    public function crearInstalacion($datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Validar datos requeridos
+            $required = ['nombre', 'coordinador_id'];
+            foreach ($required as $field) {
+                if (empty($datos[$field])) {
+                    throw new Exception("Campo requerido: $field");
+                }
+            }
+            
+            // Verificar que el coordinador existe
+            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+            $stmt->execute([$datos['coordinador_id']]);
+            if (!$stmt->fetch()) {
+                throw new Exception("Coordinador no encontrado");
+            }
+            
+            $stmt = $db->prepare("
+                INSERT INTO instalaciones (nombre, direccion, coordinador_id, activo)
+                VALUES (?, ?, ?, 1)
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['direccion'] ?? null,
+                $datos['coordinador_id']
+            ]);
+            
+            $instalacionId = $db->lastInsertId();
+            logMessage("Instalación creada: ID {$instalacionId}, {$datos['nombre']}", 'INFO');
+            
+            return $instalacionId;
+            
+        } catch (Exception $e) {
+            logMessage("Error creando instalación: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Actualiza una instalación existente
+     */
+    public function actualizarInstalacion($id, $datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que la instalación existe
+            $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ?");
+            $stmt->execute([$id]);
+            if (!$stmt->fetch()) {
+                throw new Exception("Instalación no encontrada");
+            }
+            
+            // Verificar coordinador si se especifica
+            if (!empty($datos['coordinador_id'])) {
+                $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+                $stmt->execute([$datos['coordinador_id']]);
+                if (!$stmt->fetch()) {
+                    throw new Exception("Coordinador no encontrado");
+                }
+            }
+            
+            $stmt = $db->prepare("
+                UPDATE instalaciones 
+                SET nombre = ?, direccion = ?, coordinador_id = ?
+                WHERE id = ?
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['direccion'] ?? null,
+                $datos['coordinador_id'],
+                $id
+            ]);
+            
+            logMessage("Instalación actualizada: ID {$id}, {$datos['nombre']}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error actualizando instalación: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Obtiene todos los socorristas del sistema
+     */
+    public function getSocorristas() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("
+                SELECT s.id, s.dni, s.nombre, s.email, s.telefono, s.activo,
+                       s.fecha_creacion, s.fecha_actualizacion,
+                       i.nombre as instalacion_nombre,
+                       c.nombre as coordinador_nombre
+                FROM socorristas s
+                LEFT JOIN instalaciones i ON s.instalacion_id = i.id
+                LEFT JOIN coordinadores c ON i.coordinador_id = c.id
+                ORDER BY s.nombre ASC
+            ");
+            
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo socorristas: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+    
+    /**
+     * Crea un nuevo socorrista
+     */
+    public function crearSocorrista($datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Validar datos requeridos
+            $required = ['dni', 'nombre', 'instalacion_id'];
+            foreach ($required as $field) {
+                if (empty($datos[$field])) {
+                    throw new Exception("Campo requerido: $field");
+                }
+            }
+            
+            // Validar DNI único
+            $stmt = $db->prepare("SELECT id FROM socorristas WHERE dni = ?");
+            $stmt->execute([$datos['dni']]);
+            if ($stmt->fetch()) {
+                throw new Exception("El DNI ya está en uso");
+            }
+            
+            // Verificar que la instalación existe
+            $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND activo = 1");
+            $stmt->execute([$datos['instalacion_id']]);
+            if (!$stmt->fetch()) {
+                throw new Exception("Instalación no encontrada o inactiva");
+            }
+            
+            $stmt = $db->prepare("
+                INSERT INTO socorristas (dni, nombre, email, telefono, instalacion_id, activo)
+                VALUES (?, ?, ?, ?, ?, 1)
+            ");
+            
+            $stmt->execute([
+                $datos['dni'],
+                $datos['nombre'],
+                $datos['email'] ?? null,
+                $datos['telefono'] ?? null,
+                $datos['instalacion_id']
+            ]);
+            
+            $socorristaId = $db->lastInsertId();
+            logMessage("Socorrista creado: ID {$socorristaId}, {$datos['nombre']} ({$datos['dni']})", 'INFO');
+            
+            return $socorristaId;
+            
+        } catch (Exception $e) {
+            logMessage("Error creando socorrista: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Actualiza un socorrista existente
+     */
+    public function actualizarSocorrista($id, $datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que el socorrista existe
+            $stmt = $db->prepare("SELECT id FROM socorristas WHERE id = ?");
+            $stmt->execute([$id]);
+            if (!$stmt->fetch()) {
+                throw new Exception("Socorrista no encontrado");
+            }
+            
+            // Validar DNI único (excluyendo el socorrista actual)
+            if (!empty($datos['dni'])) {
+                $stmt = $db->prepare("SELECT id FROM socorristas WHERE dni = ? AND id != ?");
+                $stmt->execute([$datos['dni'], $id]);
+                if ($stmt->fetch()) {
+                    throw new Exception("El DNI ya está en uso");
+                }
+            }
+            
+            // Verificar instalación si se especifica
+            if (!empty($datos['instalacion_id'])) {
+                $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND activo = 1");
+                $stmt->execute([$datos['instalacion_id']]);
+                if (!$stmt->fetch()) {
+                    throw new Exception("Instalación no encontrada o inactiva");
+                }
+            }
+            
+            $stmt = $db->prepare("
+                UPDATE socorristas 
+                SET dni = ?, nombre = ?, email = ?, telefono = ?, instalacion_id = ?
+                WHERE id = ?
+            ");
+            
+            $stmt->execute([
+                $datos['dni'],
+                $datos['nombre'],
+                $datos['email'] ?? null,
+                $datos['telefono'] ?? null,
+                $datos['instalacion_id'],
+                $id
+            ]);
+            
+            logMessage("Socorrista actualizado: ID {$id}, {$datos['nombre']}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error actualizando socorrista: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Desactiva un socorrista (soft delete)
+     */
+    public function desactivarSocorrista($id) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            $stmt = $db->prepare("UPDATE socorristas SET activo = 0 WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            logMessage("Socorrista desactivado: ID {$id}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error desactivando socorrista: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Obtiene estadísticas generales del sistema
+     */
+    public function getEstadisticas() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            $stats = [];
+            
+            // Total coordinadores
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM coordinadores");
+            $stmt->execute();
+            $stats['coordinadores'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            // Total instalaciones activas
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM instalaciones WHERE activo = 1");
+            $stmt->execute();
+            $stats['instalaciones'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            // Total socorristas activos
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM socorristas WHERE activo = 1");
+            $stmt->execute();
+            $stats['socorristas'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            // Formularios enviados este mes
+            $stmt = $db->prepare("
+                SELECT COUNT(*) as count 
+                FROM formularios 
+                WHERE MONTH(fecha_creacion) = MONTH(CURRENT_DATE()) 
+                AND YEAR(fecha_creacion) = YEAR(CURRENT_DATE())
+            ");
+            $stmt->execute();
+            $stats['formularios_mes'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            
+            return $stats;
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo estadísticas: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+}
+?> 

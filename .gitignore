@@ -1,0 +1,48 @@
+# Archivos de configuración sensibles
+config/database.php
+
+# Archivos de prueba y debug
+test_*.php
+debug_*.php
+database/test_*.php
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Vendor (si usamos Composer)
+vendor/
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Cache
+cache/
+tmp/
+
+# Uploads (si los hay)
+uploads/
+files/
+
+# Node modules (si usamos npm)
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.production 
