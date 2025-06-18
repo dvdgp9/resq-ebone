@@ -28,7 +28,7 @@ $stats = $adminService->getEstadisticas();
     <header class="header admin-header">
         <div class="header-content">
             <div class="logo">
-                🛡️ Admin ResQ
+                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
             </div>
             <div class="user-info">
                 <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>

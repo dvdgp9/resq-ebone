@@ -111,17 +111,41 @@ switch ($path) {
         require_once 'controllers/admin/auth.php';
         break;
         
-            case '/admin/coordinadores':
-            require_once 'views/admin/coordinadores.php';
-            break;
-            
-        case '/admin/api/coordinadores':
-            require_once 'controllers/admin/coordinadores.php';
-            break;
-            
-        case '/admin/api/coordinador-instalaciones':
-            require_once 'controllers/admin/coordinador_instalaciones.php';
-            break;
+    case '/admin/coordinadores':
+        require_once 'views/admin/coordinadores.php';
+        break;
+        
+    case '/admin/api/coordinadores':
+        require_once 'controllers/admin/coordinadores.php';
+        break;
+        
+    case '/admin/api/coordinador-instalaciones':
+        require_once 'controllers/admin/coordinador_instalaciones.php';
+        break;
+        
+    case '/admin/instalaciones':
+        require_once 'views/admin/instalaciones.php';
+        break;
+        
+    case '/admin/api/instalaciones':
+        require_once 'controllers/admin/instalaciones.php';
+        break;
+        
+    case '/admin/api/instalacion-socorristas':
+        require_once 'controllers/admin/instalacion_socorristas.php';
+        break;
+        
+    case '/admin/socorristas':
+        require_once 'views/admin/socorristas.php';
+        break;
+        
+    case '/admin/api/socorristas':
+        require_once 'controllers/admin/socorristas.php';
+        break;
+        
+    case '/debug':
+        require_once 'debug_pwa.php';
+        break;
         
     default:
         http_response_code(404);

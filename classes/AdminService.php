@@ -191,6 +191,7 @@ class AdminService {
             $stmt = $db->prepare("
                 SELECT i.id, i.nombre, i.direccion, i.activo,
                        i.fecha_creacion, i.fecha_actualizacion,
+                       i.coordinador_id,
                        c.nombre as coordinador_nombre, c.email as coordinador_email,
                        COUNT(s.id) as total_socorristas
                 FROM instalaciones i
@@ -299,6 +300,41 @@ class AdminService {
     }
     
     /**
+     * Elimina una instalación (borrado físico si no tiene socorristas activos)
+     */
+    public function eliminarInstalacion($id) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que la instalación existe
+            $stmt = $db->prepare("SELECT nombre FROM instalaciones WHERE id = ?");
+            $stmt->execute([$id]);
+            $instalacion = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$instalacion) {
+                throw new Exception("Instalación no encontrada");
+            }
+
+            // Verificar que no tiene socorristas activos
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM socorristas WHERE instalacion_id = ? AND activo = 1");
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result['count'] > 0) {
+                throw new Exception("No se puede eliminar una instalación con socorristas activos asignados");
+            }
+
+            // Borrado físico
+            $stmt = $db->prepare("DELETE FROM instalaciones WHERE id = ?");
+            $stmt->execute([$id]);
+
+            logMessage("Instalación eliminada: ID {$id}, {$instalacion['nombre']}", 'INFO');
+            return true;
+        } catch (Exception $e) {
+            logMessage("Error eliminando instalación: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
      * Obtiene todos los socorristas del sistema
      */
     public function getSocorristas() {
@@ -307,6 +343,7 @@ class AdminService {
             $stmt = $db->prepare("
                 SELECT s.id, s.dni, s.nombre, s.email, s.telefono, s.activo,
                        s.fecha_creacion, s.fecha_actualizacion,
+                       s.instalacion_id,
                        i.nombre as instalacion_nombre,
                        c.nombre as coordinador_nombre
                 FROM socorristas s
@@ -453,6 +490,21 @@ class AdminService {
     }
     
     /**
+     * Obtiene los socorristas de una instalación específica
+     */
+    public function getSocorristasPorInstalacion($instalacionId) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT id, dni, nombre, email, telefono, activo, fecha_creacion FROM socorristas WHERE instalacion_id = ? ORDER BY nombre ASC");
+            $stmt->execute([$instalacionId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            logMessage('Error obteniendo socorristas de instalación: '.$e->getMessage(),'ERROR');
+            return [];
+        }
+    }
+    
+    /**
      * Obtiene estadísticas generales del sistema
      */
     public function getEstadisticas() {
@@ -464,17 +516,20 @@ class AdminService {
             // Total coordinadores
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM coordinadores");
             $stmt->execute();
-            $stats['coordinadores'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['coordinadores'] = $result ? $result['count'] : 0;
             
             // Total instalaciones activas
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM instalaciones WHERE activo = 1");
             $stmt->execute();
-            $stats['instalaciones'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['instalaciones'] = $result ? $result['count'] : 0;
             
             // Total socorristas activos
             $stmt = $db->prepare("SELECT COUNT(*) as count FROM socorristas WHERE activo = 1");
             $stmt->execute();
-            $stats['socorristas'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['socorristas'] = $result ? $result['count'] : 0;
             
             // Formularios enviados este mes
             $stmt = $db->prepare("
@@ -484,13 +539,21 @@ class AdminService {
                 AND YEAR(fecha_creacion) = YEAR(CURRENT_DATE())
             ");
             $stmt->execute();
-            $stats['formularios_mes'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stats['formularios_mes'] = $result ? $result['count'] : 0;
             
+            logMessage("Estadísticas obtenidas correctamente: " . json_encode($stats), 'INFO');
             return $stats;
             
         } catch (Exception $e) {
             logMessage("Error obteniendo estadísticas: " . $e->getMessage(), 'ERROR');
-            return [];
+            // Devolver estadísticas por defecto en caso de error
+            return [
+                'coordinadores' => 0,
+                'instalaciones' => 0,
+                'socorristas' => 0,
+                'formularios_mes' => 0
+            ];
         }
     }
 }

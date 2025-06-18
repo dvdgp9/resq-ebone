@@ -1,0 +1,65 @@
+{
+  "name": "ResQ - Sistema de Socorristas",
+  "short_name": "ResQ",
+  "description": "Sistema de gestión para socorristas y salvavidas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#D33E22",
+  "theme_color": "#D33E22",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "es",
+  "categories": ["productivity", "business"],
+  "icons": [
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/assets/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Control de Flujo",
+      "short_name": "Flujo",
+      "description": "Registrar control de flujo de personas",
+      "url": "/formulario/control-flujo",
+      "icons": [
+        {
+          "src": "/assets/images/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Incidencias",
+      "short_name": "Incidencias",
+      "description": "Reportar incidencias",
+      "url": "/formulario/incidencias",
+      "icons": [
+        {
+          "src": "/assets/images/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Parte de Accidente",
+      "short_name": "Accidente",
+      "description": "Documentar accidentes",
+      "url": "/formulario/parte-accidente",
+      "icons": [
+        {
+          "src": "/assets/images/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+} 

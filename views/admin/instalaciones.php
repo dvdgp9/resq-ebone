@@ -1,5 +1,5 @@
 <?php
-// Vista de Gestión de Coordinadores
+// Vista de Gestión de Instalaciones
 require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
 $adminAuth = new AdminAuthService();
@@ -17,7 +17,7 @@ $admin = $adminAuth->getAdminActual();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionar Coordinadores - Admin ResQ</title>
+    <title>Gestionar Instalaciones - Admin ResQ</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
@@ -39,49 +39,49 @@ $admin = $adminAuth->getAdminActual();
         <div class="admin-breadcrumb">
             <a href="/admin/dashboard">🏠 Dashboard</a>
             <span>></span>
-            <span>👥 Coordinadores</span>
+            <span>🏢 Instalaciones</span>
         </div>
         
         <div class="admin-page-header">
-            <h1>👥 Gestionar Coordinadores</h1>
-            <p>Administra los coordinadores del sistema y sus instalaciones asignadas</p>
+            <h1>🏢 Gestionar Instalaciones</h1>
+            <p>Administra las instalaciones del sistema y sus socorristas asignados</p>
             <button class="btn btn-primary" onclick="openCreateModal()">
-                ➕ Nuevo Coordinador
+                ➕ Nueva Instalación
             </button>
         </div>
         
         <!-- Mensajes -->
         <div id="message-container"></div>
         
-        <!-- Tabla de Coordinadores -->
+        <!-- Tabla de Instalaciones -->
         <div class="admin-table-container">
             <div class="admin-table-header">
-                <h2>📋 Lista de Coordinadores</h2>
+                <h2>📋 Lista de Instalaciones</h2>
                 <div class="table-actions">
-                    <button class="btn btn-secondary btn-small" onclick="loadCoordinadores()">
+                    <button class="btn btn-secondary btn-small" onclick="loadInstalaciones()">
                         🔄 Actualizar
                     </button>
                 </div>
             </div>
             
             <div id="loading" class="loading-spinner">
-                🔄 Cargando coordinadores...
+                🔄 Cargando instalaciones...
             </div>
             
-            <div id="coordinadores-table" class="admin-table" style="display: none;">
+            <div id="instalaciones-table" class="admin-table" style="display: none;">
                 <table>
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th>Email</th>
-                            <th>Teléfono</th>
-                            <th>Instalaciones</th>
+                            <th>Dirección</th>
+                            <th>Coordinador</th>
+                            <th>Socorristas</th>
                             <th>Fecha Creación</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="coordinadores-tbody">
+                    <tbody id="instalaciones-tbody">
                         <!-- Datos se cargan via JavaScript -->
                     </tbody>
                 </table>
@@ -89,45 +89,46 @@ $admin = $adminAuth->getAdminActual();
             
             <div id="no-data" class="no-data" style="display: none;">
                 <div class="no-data-icon">📭</div>
-                <h3>No hay coordinadores registrados</h3>
-                <p>Comienza creando el primer coordinador del sistema</p>
+                <h3>No hay instalaciones registradas</h3>
+                <p>Comienza creando la primera instalación del sistema</p>
                 <button class="btn btn-primary" onclick="openCreateModal()">
-                    ➕ Crear Primer Coordinador
+                    ➕ Crear Primera Instalación
                 </button>
             </div>
         </div>
     </div>
     
-    <!-- Modal Crear/Editar Coordinador -->
-    <div id="coordinador-modal" class="modal">
+    <!-- Modal Crear/Editar Instalación -->
+    <div id="instalacion-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">➕ Nuevo Coordinador</h2>
+                <h2 id="modal-title">➕ Nueva Instalación</h2>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             
-            <form id="coordinador-form" class="modal-form">
-                <input type="hidden" id="coordinador-id" name="id">
+            <form id="instalacion-form" class="modal-form">
+                <input type="hidden" id="instalacion-id" name="id">
                 
                 <!-- Mensajes dentro del modal -->
                 <div id="modal-message-container"></div>
                 
                 <div class="form-group">
-                    <label for="nombre">Nombre completo *</label>
+                    <label for="nombre">Nombre *</label>
                     <input type="text" id="nombre" name="nombre" class="form-input" required
-                           placeholder="Ej: Juan Pérez García">
+                           placeholder="Ej: Piscina Municipal Centro">
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email *</label>
-                    <input type="email" id="email" name="email" class="form-input" required
-                           placeholder="juan.perez@ebone.es">
+                    <label for="direccion">Dirección</label>
+                    <textarea id="direccion" name="direccion" class="form-input" rows="2"
+                              placeholder="Calle Principal 123, Ciudad"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <input type="tel" id="telefono" name="telefono" class="form-input"
-                           placeholder="666 123 456">
+                    <label for="coordinador_id">Coordinador *</label>
+                    <select id="coordinador_id" name="coordinador_id" class="form-input" required>
+                        <option value="">Selecciona un coordinador</option>
+                    </select>
                 </div>
                 
                 <div class="modal-actions">
@@ -142,50 +143,50 @@ $admin = $adminAuth->getAdminActual();
         </div>
     </div>
     
-    <!-- Modal de Instalaciones -->
-    <div id="instalaciones-modal" class="modal">
+    <!-- Modal de Socorristas -->
+    <div id="socorristas-modal" class="modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2 id="instalaciones-modal-title">🏢 Instalaciones del Coordinador</h2>
-                <button class="modal-close" onclick="closeInstallationsModal()">&times;</button>
+                <h2 id="socorristas-modal-title">👥 Socorristas de la Instalación</h2>
+                <button class="modal-close" onclick="closeSocorristasModal()">&times;</button>
             </div>
             
             <div class="modal-body">
-                <div id="instalaciones-loading" class="loading-spinner" style="display: none;">
-                    🔄 Cargando instalaciones...
+                <div id="socorristas-loading" class="loading-spinner" style="display: none;">
+                    🔄 Cargando socorristas...
                 </div>
                 
-                <div id="instalaciones-content" style="display: none;">
-                    <div class="instalaciones-summary">
-                        <div class="summary-item">
-                            <span class="summary-label">Total instalaciones:</span>
-                            <span id="total-instalaciones" class="summary-value">0</span>
-                        </div>
+                <div id="socorristas-content" style="display: none;">
+                    <div class="socorristas-summary">
                         <div class="summary-item">
                             <span class="summary-label">Total socorristas:</span>
                             <span id="total-socorristas" class="summary-value">0</span>
                         </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Activos:</span>
+                            <span id="total-activos" class="summary-value">0</span>
+                        </div>
                     </div>
                     
-                    <div class="instalaciones-list">
-                        <h3>📋 Lista de Instalaciones</h3>
-                        <div id="instalaciones-table-container">
+                    <div class="socorristas-list">
+                        <h3>📋 Lista de Socorristas</h3>
+                        <div id="socorristas-table-container">
                             <!-- Tabla se genera dinámicamente -->
                         </div>
                     </div>
                 </div>
                 
-                <div id="instalaciones-empty" style="display: none;">
+                <div id="socorristas-empty" style="display: none;">
                     <div class="no-data">
-                        <div class="no-data-icon">🏢</div>
-                        <h3>Sin instalaciones asignadas</h3>
-                        <p>Este coordinador no tiene instalaciones asignadas actualmente</p>
+                        <div class="no-data-icon">👥</div>
+                        <h3>Sin socorristas asignados</h3>
+                        <p>Esta instalación no tiene socorristas asignados actualmente</p>
                     </div>
                 </div>
             </div>
             
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeInstallationsModal()">
+                <button type="button" class="btn btn-secondary" onclick="closeSocorristasModal()">
                     ❌ Cerrar
                 </button>
             </div>
@@ -217,29 +218,61 @@ $admin = $adminAuth->getAdminActual();
     
     <script>
         // Variables globales
+        let instalaciones = [];
         let coordinadores = [];
         let editingId = null;
         
-        // Cargar coordinadores al iniciar
+        // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             loadCoordinadores();
+            loadInstalaciones();
         });
         
-        // Cargar lista de coordinadores
+        // Cargar coordinadores para el select
         async function loadCoordinadores() {
             try {
-                document.getElementById('loading').style.display = 'block';
-                document.getElementById('coordinadores-table').style.display = 'none';
-                document.getElementById('no-data').style.display = 'none';
-                
                 const response = await fetch('/admin/api/coordinadores');
                 const data = await response.json();
                 
                 if (data.success) {
                     coordinadores = data.coordinadores;
-                    renderCoordinadores();
+                    
+                    const select = document.getElementById('coordinador_id');
+                    // Limpiar opciones existentes excepto la primera
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    coordinadores.forEach(coord => {
+                        const option = document.createElement('option');
+                        option.value = coord.id;
+                        option.textContent = coord.nombre;
+                        select.appendChild(option);
+                    });
+                    
+                    return true;
+                }
+            } catch (error) {
+                showMessage('Error cargando coordinadores: ' + error.message, 'error');
+                return false;
+            }
+        }
+        
+        // Cargar lista de instalaciones
+        async function loadInstalaciones() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('instalaciones-table').style.display = 'none';
+                document.getElementById('no-data').style.display = 'none';
+                
+                const response = await fetch('/admin/api/instalaciones');
+                const data = await response.json();
+                
+                if (data.success) {
+                    instalaciones = data.instalaciones;
+                    renderInstalaciones();
                 } else {
-                    showMessage('Error cargando coordinadores: ' + data.error, 'error');
+                    showMessage('Error cargando instalaciones: ' + data.error, 'error');
                 }
             } catch (error) {
                 showMessage('Error de conexión: ' + error.message, 'error');
@@ -248,54 +281,50 @@ $admin = $adminAuth->getAdminActual();
             }
         }
         
-        // Renderizar tabla de coordinadores
-        function renderCoordinadores() {
-            const tbody = document.getElementById('coordinadores-tbody');
+        // Renderizar tabla de instalaciones
+        function renderInstalaciones() {
+            const tbody = document.getElementById('instalaciones-tbody');
             
-            if (coordinadores.length === 0) {
+            if (instalaciones.length === 0) {
                 document.getElementById('no-data').style.display = 'block';
                 return;
             }
             
-            tbody.innerHTML = coordinadores.map(coord => `
+            tbody.innerHTML = instalaciones.map(inst => `
                 <tr>
-                    <td>${coord.id}</td>
+                    <td>${inst.id}</td>
                     <td>
                         <div class="user-cell">
-                            <strong>${escapeHtml(coord.nombre)}</strong>
+                            <strong>${escapeHtml(inst.nombre)}</strong>
                         </div>
                     </td>
+                    <td>${inst.direccion || '-'}</td>
+                    <td>${escapeHtml(inst.coordinador_nombre || '-')}</td>
                     <td>
-                        <a href="mailto:${coord.email}" class="email-link">
-                            ${escapeHtml(coord.email)}
-                        </a>
-                    </td>
-                    <td>${coord.telefono || '-'}</td>
-                    <td>
-                        <span class="badge badge-interactive ${coord.total_instalaciones > 0 ? 'badge-success' : 'badge-gray'}"
-                              ${coord.total_instalaciones > 0 ? `
-                                  onmouseenter="showInstallationsTooltip(event, ${coord.id})"
+                        <span class="badge badge-interactive ${inst.total_socorristas > 0 ? 'badge-success' : 'badge-gray'}"
+                              ${inst.total_socorristas > 0 ? `
+                                  onmouseenter="showSocorristasTooltip(event, ${inst.id})"
                                   onmouseleave="hideTooltip()"
-                                  onclick="showInstallationsModal(${coord.id}, '${escapeHtml(coord.nombre)}')"
+                                  onclick="showSocorristasModal(${inst.id}, '${escapeHtml(inst.nombre)}')"
                                   title="Click para ver detalles"
                               ` : ''}>
-                            ${coord.total_instalaciones} instalación${coord.total_instalaciones !== 1 ? 'es' : ''}
+                            ${inst.total_socorristas} socorrista${inst.total_socorristas !== 1 ? 's' : ''}
                         </span>
                     </td>
-                    <td>${formatDate(coord.fecha_creacion)}</td>
+                    <td>${formatDate(inst.fecha_creacion)}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-small btn-secondary" onclick="editCoordinador(${coord.id})" title="Editar">
+                            <button class="btn btn-small btn-secondary" onclick="editInstalacion(${inst.id})" title="Editar">
                                 ✏️
                             </button>
-                            ${coord.total_instalaciones > 0 ? `
+                            ${inst.total_socorristas > 0 ? `
                                 <button class="btn btn-small btn-danger btn-disabled" disabled 
-                                        onmouseenter="showTooltip(event, 'No se puede eliminar un coordinador con instalaciones asignadas')"
+                                        onmouseenter="showTooltip(event, 'No se puede eliminar una instalación con socorristas asignados')"
                                         onmouseleave="hideTooltip()">
                                     🗑️
                                 </button>
                             ` : `
-                                <button class="btn btn-small btn-danger" onclick="confirmDelete(${coord.id}, '${escapeHtml(coord.nombre)}')" title="Eliminar">
+                                <button class="btn btn-small btn-danger" onclick="confirmDelete(${inst.id}, '${escapeHtml(inst.nombre)}')" title="Eliminar">
                                     🗑️
                                 </button>
                             `}
@@ -304,62 +333,76 @@ $admin = $adminAuth->getAdminActual();
                 </tr>
             `).join('');
             
-            document.getElementById('coordinadores-table').style.display = 'block';
+            document.getElementById('instalaciones-table').style.display = 'block';
         }
         
         // Abrir modal para crear
         function openCreateModal() {
-            document.getElementById('modal-title').textContent = '➕ Nuevo Coordinador';
-            document.getElementById('save-text').textContent = '💾 Crear Coordinador';
-            document.getElementById('coordinador-form').reset();
-            document.getElementById('coordinador-id').value = '';
+            document.getElementById('modal-title').textContent = '➕ Nueva Instalación';
+            document.getElementById('save-text').textContent = '💾 Crear Instalación';
+            document.getElementById('instalacion-form').reset();
+            document.getElementById('instalacion-id').value = '';
             document.getElementById('modal-message-container').innerHTML = '';
             editingId = null;
-            document.getElementById('coordinador-modal').style.display = 'flex';
+            document.getElementById('instalacion-modal').style.display = 'flex';
             document.getElementById('nombre').focus();
         }
         
-        // Editar coordinador
-        function editCoordinador(id) {
-            const coord = coordinadores.find(c => c.id == id);
-            if (!coord) return;
+        // Editar instalación
+        function editInstalacion(id) {
+            const inst = instalaciones.find(i => i.id == id);
+            if (!inst) return;
             
-            document.getElementById('modal-title').textContent = '✏️ Editar Coordinador';
+            document.getElementById('modal-title').textContent = '✏️ Editar Instalación';
             document.getElementById('save-text').textContent = '💾 Guardar Cambios';
-            document.getElementById('coordinador-id').value = coord.id;
-            document.getElementById('nombre').value = coord.nombre;
-            document.getElementById('email').value = coord.email;
-            document.getElementById('telefono').value = coord.telefono || '';
+            document.getElementById('instalacion-id').value = inst.id;
+            document.getElementById('nombre').value = inst.nombre;
+            document.getElementById('direccion').value = inst.direccion || '';
             document.getElementById('modal-message-container').innerHTML = '';
             
+            // Seleccionar coordinador actual en el dropdown
+            const coordinadorSelect = document.getElementById('coordinador_id');
+            
+            // Si los coordinadores no están cargados, cargarlos primero
+            if (coordinadores.length === 0) {
+                loadCoordinadores().then(() => {
+                    setTimeout(() => {
+                        coordinadorSelect.value = inst.coordinador_id;
+                    }, 50);
+                });
+            } else {
+                // Si ya están cargados, seleccionar inmediatamente
+                coordinadorSelect.value = inst.coordinador_id;
+            }
+            
             editingId = id;
-            document.getElementById('coordinador-modal').style.display = 'flex';
+            document.getElementById('instalacion-modal').style.display = 'flex';
             document.getElementById('nombre').focus();
         }
         
-        // Guardar coordinador
-        document.getElementById('coordinador-form').addEventListener('submit', async function(e) {
+        // Guardar instalación
+        document.getElementById('instalacion-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = {
                 nombre: formData.get('nombre'),
-                email: formData.get('email'),
-                telefono: formData.get('telefono') || null
+                direccion: formData.get('direccion') || null,
+                coordinador_id: formData.get('coordinador_id')
             };
             
             if (editingId) {
                 data.id = editingId;
             }
             
-            const saveBtn = document.querySelector('#coordinador-form button[type="submit"]');
+            const saveBtn = document.querySelector('#instalacion-form button[type="submit"]');
             const originalText = saveBtn.innerHTML;
             
             try {
                 saveBtn.innerHTML = '🔄 Guardando...';
                 saveBtn.disabled = true;
                 
-                const url = '/admin/api/coordinadores';
+                const url = '/admin/api/instalaciones';
                 const method = editingId ? 'PUT' : 'POST';
                 
                 const response = await fetch(url, {
@@ -375,31 +418,31 @@ $admin = $adminAuth->getAdminActual();
                 if (result.success) {
                     showMessage(result.message, 'success');
                     closeModal();
-                    loadCoordinadores();
+                    loadInstalaciones();
                 } else {
                     showModalMessage('Error: ' + result.error, 'error');
                 }
-                            } catch (error) {
-                    showModalMessage('Error de conexión: ' + error.message, 'error');
-                } finally {
-                    saveBtn.innerHTML = originalText;
-                    saveBtn.disabled = false;
-                }
+            } catch (error) {
+                showModalMessage('Error de conexión: ' + error.message, 'error');
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
         });
         
         // Confirmar eliminación
         function confirmDelete(id, nombre) {
             document.getElementById('confirm-message').textContent = 
-                `¿Estás seguro de eliminar al coordinador "${nombre}"? Esta acción no se puede deshacer.`;
+                `¿Estás seguro de eliminar la instalación "${nombre}"? Esta acción no se puede deshacer.`;
             
-            document.getElementById('confirm-action').onclick = () => deleteCoordinador(id);
+            document.getElementById('confirm-action').onclick = () => deleteInstalacion(id);
             document.getElementById('confirm-modal').style.display = 'flex';
         }
         
-        // Eliminar coordinador
-        async function deleteCoordinador(id) {
+        // Eliminar instalación
+        async function deleteInstalacion(id) {
             try {
-                const response = await fetch('/admin/api/coordinadores', {
+                const response = await fetch('/admin/api/instalaciones', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
@@ -412,7 +455,7 @@ $admin = $adminAuth->getAdminActual();
                 if (result.success) {
                     showMessage(result.message, 'success');
                     closeConfirmModal();
-                    loadCoordinadores();
+                    loadInstalaciones();
                 } else {
                     showMessage('Error: ' + result.error, 'error');
                 }
@@ -423,7 +466,7 @@ $admin = $adminAuth->getAdminActual();
         
         // Cerrar modales
         function closeModal() {
-            document.getElementById('coordinador-modal').style.display = 'none';
+            document.getElementById('instalacion-modal').style.display = 'none';
         }
         
         function closeConfirmModal() {
@@ -519,90 +562,90 @@ $admin = $adminAuth->getAdminActual();
             }
         }
         
-        // Cache para instalaciones
-        let installationsCache = {};
+        // Cache para socorristas
+        let socorristasCache = {};
         
-        // Tooltip para instalaciones
-        async function showInstallationsTooltip(event, coordinadorId) {
+        // Tooltip para socorristas
+        async function showSocorristasTooltip(event, instalacionId) {
             try {
                 // Usar cache si está disponible
-                let instalaciones = installationsCache[coordinadorId];
+                let socorristas = socorristasCache[instalacionId];
                 
-                if (!instalaciones) {
-                    const response = await fetch(`/admin/api/coordinador-instalaciones?coordinador_id=${coordinadorId}`);
+                if (!socorristas) {
+                    const response = await fetch(`/admin/api/instalacion-socorristas?instalacion_id=${instalacionId}`);
                     const data = await response.json();
                     
                     if (data.success) {
-                        instalaciones = data.instalaciones;
-                        installationsCache[coordinadorId] = instalaciones;
+                        socorristas = data.socorristas;
+                        socorristasCache[instalacionId] = socorristas;
                     } else {
                         return;
                     }
                 }
                 
-                if (instalaciones.length === 0) return;
+                if (socorristas.length === 0) return;
                 
                 // Crear mensaje del tooltip
-                const message = instalaciones.slice(0, 3).map(inst => 
-                    `🏢 ${inst.nombre}${inst.total_socorristas > 0 ? ` (${inst.total_socorristas} socorristas)` : ''}`
-                ).join('\n') + (instalaciones.length > 3 ? `\n... y ${instalaciones.length - 3} más` : '');
+                const message = socorristas.slice(0, 3).map(soc => 
+                    `👤 ${soc.nombre}${soc.activo ? '' : ' (inactivo)'}`
+                ).join('\n') + (socorristas.length > 3 ? `\n... y ${socorristas.length - 3} más` : '');
                 
                 showTooltip(event, message);
                 
             } catch (error) {
-                console.error('Error cargando instalaciones:', error);
+                console.error('Error cargando socorristas:', error);
             }
         }
         
-        // Modal de instalaciones
-        async function showInstallationsModal(coordinadorId, coordinadorNombre) {
-            document.getElementById('instalaciones-modal-title').textContent = 
-                `🏢 Instalaciones de ${coordinadorNombre}`;
+        // Modal de socorristas
+        async function showSocorristasModal(instalacionId, instalacionNombre) {
+            document.getElementById('socorristas-modal-title').textContent = 
+                `👥 Socorristas de ${instalacionNombre}`;
             
-            document.getElementById('instalaciones-modal').style.display = 'flex';
-            document.getElementById('instalaciones-loading').style.display = 'block';
-            document.getElementById('instalaciones-content').style.display = 'none';
-            document.getElementById('instalaciones-empty').style.display = 'none';
+            document.getElementById('socorristas-modal').style.display = 'flex';
+            document.getElementById('socorristas-loading').style.display = 'block';
+            document.getElementById('socorristas-content').style.display = 'none';
+            document.getElementById('socorristas-empty').style.display = 'none';
             
             try {
                 // Usar cache si está disponible
-                let instalaciones = installationsCache[coordinadorId];
+                let socorristas = socorristasCache[instalacionId];
                 
-                if (!instalaciones) {
-                    const response = await fetch(`/admin/api/coordinador-instalaciones?coordinador_id=${coordinadorId}`);
+                if (!socorristas) {
+                    const response = await fetch(`/admin/api/instalacion-socorristas?instalacion_id=${instalacionId}`);
                     const data = await response.json();
                     
                     if (data.success) {
-                        instalaciones = data.instalaciones;
-                        installationsCache[coordinadorId] = instalaciones;
+                        socorristas = data.socorristas;
+                        socorristasCache[instalacionId] = socorristas;
                     } else {
                         throw new Error(data.error);
                     }
                 }
                 
-                renderInstallationsModal(instalaciones);
+                renderSocorristasModal(socorristas);
                 
             } catch (error) {
-                console.error('Error cargando instalaciones:', error);
-                showMessage('Error cargando instalaciones: ' + error.message, 'error');
-                closeInstallationsModal();
+                console.error('Error cargando socorristas:', error);
+                showMessage('Error cargando socorristas: ' + error.message, 'error');
+                closeSocorristasModal();
             } finally {
-                document.getElementById('instalaciones-loading').style.display = 'none';
+                document.getElementById('socorristas-loading').style.display = 'none';
             }
         }
         
         // Renderizar contenido del modal
-        function renderInstallationsModal(instalaciones) {
-            if (instalaciones.length === 0) {
-                document.getElementById('instalaciones-empty').style.display = 'block';
+        function renderSocorristasModal(socorristas) {
+            if (socorristas.length === 0) {
+                document.getElementById('socorristas-empty').style.display = 'block';
                 return;
             }
             
             // Calcular totales
-            const totalSocorristas = instalaciones.reduce((sum, inst) => sum + parseInt(inst.total_socorristas), 0);
+            const totalActivos = socorristas.filter(soc => soc.activo == 1).length;
             
-            document.getElementById('total-instalaciones').textContent = instalaciones.length;
-            document.getElementById('total-socorristas').textContent = totalSocorristas;
+            document.getElementById('total-socorristas').textContent = socorristas.length;
+            document.getElementById('total-activos').textContent = totalActivos;
             
             // Generar tabla
             const tableHTML = `
@@ -610,43 +653,41 @@ $admin = $adminAuth->getAdminActual();
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Dirección</th>
-                            <th>Socorristas</th>
+                            <th>DNI</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
                             <th>Estado</th>
                             <th>Fecha Creación</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${instalaciones.map(inst => `
+                        ${socorristas.map(soc => `
                             <tr>
                                 <td>
-                                    <strong>${escapeHtml(inst.nombre)}</strong>
+                                    <strong>${escapeHtml(soc.nombre)}</strong>
                                 </td>
-                                <td>${inst.direccion || '-'}</td>
+                                <td>${soc.dni}</td>
+                                <td>${soc.email || '-'}</td>
+                                <td>${soc.telefono || '-'}</td>
                                 <td>
-                                    <span class="badge ${inst.total_socorristas > 0 ? 'badge-success' : 'badge-gray'}">
-                                        ${inst.total_socorristas} socorrista${inst.total_socorristas !== 1 ? 's' : ''}
+                                    <span class="badge ${soc.activo == 1 ? 'badge-success' : 'badge-danger'}">
+                                        ${soc.activo == 1 ? 'Activo' : 'Inactivo'}
                                     </span>
                                 </td>
-                                <td>
-                                    <span class="badge ${inst.activo == 1 ? 'badge-success' : 'badge-danger'}">
-                                        ${inst.activo == 1 ? 'Activa' : 'Inactiva'}
-                                    </span>
-                                </td>
-                                <td>${formatDate(inst.fecha_creacion)}</td>
+                                <td>${formatDate(soc.fecha_creacion)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
             `;
             
-            document.getElementById('instalaciones-table-container').innerHTML = tableHTML;
-            document.getElementById('instalaciones-content').style.display = 'block';
+            document.getElementById('socorristas-table-container').innerHTML = tableHTML;
+            document.getElementById('socorristas-content').style.display = 'block';
         }
         
-        // Cerrar modal de instalaciones
-        function closeInstallationsModal() {
-            document.getElementById('instalaciones-modal').style.display = 'none';
+        // Cerrar modal de socorristas
+        function closeSocorristasModal() {
+            document.getElementById('socorristas-modal').style.display = 'none';
         }
         
         // Cerrar modales al hacer clic fuera
@@ -660,4 +701,4 @@ $admin = $adminAuth->getAdminActual();
         }
     </script>
 </body>
-</html> 
+</html>

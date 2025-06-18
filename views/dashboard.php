@@ -21,13 +21,35 @@ $socorrista = $authService->getSocorristaActual();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ResQ - Dashboard</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Sistema de gestión para socorristas y salvavidas">
+    <meta name="theme-color" content="#D33E22">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ResQ">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/assets/images/logo.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/assets/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/logo.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/assets/images/logo.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/logo.png">
+    
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                🚨 ResQ
+                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
             </div>
             <div class="user-info">
                 <span>👤 <?= htmlspecialchars($socorrista['nombre']) ?></span>
