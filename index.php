@@ -66,8 +66,8 @@ switch ($path) {
         require_once 'controllers/incidencias.php';
         break;
         
-    case '/api/parte-accidente':
-        require_once 'controllers/parte_accidente.php';
+    case '/api/botiquin':
+        require_once 'controllers/botiquin.php';
         break;
         
     case '/api/coordinador-instalacion':
@@ -90,12 +90,12 @@ switch ($path) {
         require_once 'views/formularios/incidencias.php';
         break;
         
-    case '/formulario/parte-accidente':
+    case '/formulario/botiquin':
         if (!$authService->estaAutenticado()) {
             header('Location: /login');
             exit;
         }
-        require_once 'views/formularios/parte_accidente.php';
+        require_once 'views/formularios/botiquin.php';
         break;
         
     case '/admin':
@@ -141,6 +141,14 @@ switch ($path) {
         
     case '/admin/api/socorristas':
         require_once 'controllers/admin/socorristas.php';
+        break;
+        
+    case '/admin/informes':
+        require_once 'views/admin/informes.php';
+        break;
+        
+    case '/admin/api/informes':
+        require_once 'controllers/admin/informes.php';
         break;
         
     case '/debug':

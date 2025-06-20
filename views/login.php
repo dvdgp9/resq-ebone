@@ -1,5 +1,6 @@
 <?php
 // Vista de Login para ResQ
+require_once 'config/app.php';
 require_once 'controllers/login.php';
 
 // Mensaje de logout
@@ -36,7 +37,7 @@ if (isset($_GET['logout'])) {
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/logo.png">
     
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= assetVersion('/assets/css/styles.css') ?>">
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -104,15 +105,28 @@ if (isset($_GET['logout'])) {
                     .then((registration) => {
                         console.log('SW registrado con éxito: ', registration);
                         
-                        // Forzar actualización si hay una nueva versión
+                        // Manejar actualizaciones del Service Worker
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
+                            console.log('Nueva versión del SW encontrada');
+                            
                             newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('Nueva versión disponible, recargando...');
-                                    window.location.reload();
+                                if (newWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
+                                        console.log('Nueva versión del SW instalada, actualizando...');
+                                        // Notificar al nuevo SW que tome control
+                                        newWorker.postMessage({action: 'skipWaiting'});
+                                    } else {
+                                        console.log('SW instalado por primera vez');
+                                    }
                                 }
                             });
+                        });
+                        
+                        // Escuchar cuando el SW toma control
+                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                            console.log('SW ha tomado control, recargando página...');
+                            window.location.reload();
                         });
                     })
                     .catch((registrationError) => {

@@ -1325,6 +1325,10 @@ img[src*="logo"] {
     justify-content: center;
 }
 
+.modal.show {
+    display: flex;
+}
+
 .modal-content {
     background: white;
     border-radius: 16px;
@@ -1368,6 +1372,11 @@ img[src*="logo"] {
     color: #1976d2;
 }
 
+/* Títulos específicos para botiquín */
+#modal-elemento-title {
+    color: var(--success-color) !important;
+}
+
 .modal-close {
     background: none;
     border: none;
@@ -1390,6 +1399,19 @@ img[src*="logo"] {
 
 .modal-form {
     padding: 1.5rem;
+}
+
+/* Formularios dentro de modales */
+.modal-content form {
+    padding: 1.5rem;
+}
+
+.modal-content .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.modal-content .form-group:last-of-type {
+    margin-bottom: 0;
 }
 
 /* Modal Messages */
@@ -1453,7 +1475,7 @@ img[src*="logo"] {
     }
     
     .action-buttons {
-        flex-direction: column;
+        flex-direction: row;
         gap: 0.25rem;
     }
     
@@ -1464,5 +1486,1132 @@ img[src*="logo"] {
     
     .modal-actions {
         flex-direction: column;
+    }
+}
+
+/* === GESTIÓN DE ESPACIOS === */
+.espacios-container {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    padding: 1rem;
+    background: #fafafa;
+}
+
+.espacios-list {
+    margin-bottom: 1rem;
+}
+
+.espacio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.espacio-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.espacio-name {
+    font-weight: 500;
+    color: var(--text-color);
+    flex: 1;
+}
+
+.espacios-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.espacios-actions input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.no-espacios {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    background: white;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-small);
+}
+
+/* Responsive para espacios */
+@media (max-width: 768px) {
+    .espacios-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .espacios-actions input {
+        min-width: auto;
+        margin-bottom: 0.5rem;
+    }
+    
+    .espacio-item {
+        padding: 0.5rem;
+    }
+}
+
+/* === COLUMNA DE ESPACIOS EN TABLA === */
+.espacios-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.espacios-cell .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.text-muted {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Responsive para columna de espacios */
+@media (max-width: 768px) {
+    .espacios-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.125rem;
+    }
+    
+    .espacios-cell .badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* === ESTILOS INFORMES Y EXPORTACIÓN === */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+}
+
+.breadcrumb-current {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.admin-header-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.admin-header-section h1 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.admin-header-section p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.filters-section {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.filters-section h2 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.filter-group .form-control {
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-small);
+    font-size: 1rem;
+    transition: var(--transition);
+    background: white;
+}
+
+.filter-group .form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(211, 62, 34, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.export-section {
+    margin-bottom: 2rem;
+}
+
+.export-section h2 {
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.export-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.export-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.export-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+}
+
+.export-card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.export-icon {
+    font-size: 2rem;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+}
+
+.export-card-header h3 {
+    color: var(--text-color);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.export-card-content {
+    padding: 1.5rem;
+}
+
+.export-card-content p {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.export-fields {
+    background: var(--secondary-color);
+    padding: 1rem;
+    border-radius: var(--border-radius-small);
+    font-size: 0.9rem;
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+.export-card-actions {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    background: #fafafa;
+}
+
+.export-card-actions .btn {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-small);
+}
+
+.export-status {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    min-width: 300px;
+}
+
+.export-status::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: -1;
+}
+
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--border-color);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#export-message {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Responsive para informes */
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .export-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .admin-header-section h1 {
+        font-size: 2rem;
+    }
+    
+    .filters-section,
+    .export-card {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        border-radius: 0;
+    }
+    
+    .export-status {
+        margin: 0 1rem;
+        min-width: auto;
+        max-width: calc(100% - 2rem);
+    }
+}
+
+/* === ESTILOS ESPECÍFICOS PARA CONTROL DE FLUJO POR ESPACIOS === */
+
+/* Espacios Container */
+#espacios-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Tarjetas de Espacios */
+.espacio-card {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.espacio-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 15px rgba(211, 62, 34, 0.1);
+}
+
+.espacio-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 1rem 1.5rem;
+    margin: 0;
+}
+
+.espacio-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.espacio-content {
+    padding: 1.5rem;
+}
+
+/* Total Summary */
+.total-summary {
+    background: #fff;
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.total-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.2rem;
+}
+
+.total-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.total-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    background: rgba(211, 62, 34, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    min-width: 80px;
+    display: inline-block;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    border: 1px solid transparent;
+}
+
+.alert-warning {
+    background-color: var(--warning-bg);
+    border-color: #ffcc02;
+    color: #8a6d00;
+}
+
+.alert-warning strong {
+    color: #8a6d00;
+}
+
+/* Responsive para Control de Flujo */
+@media (max-width: 768px) {
+    #espacios-container {
+        gap: 1rem;
+    }
+    
+    .espacio-content {
+        padding: 1rem;
+    }
+    
+    .total-card {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .total-number {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .espacio-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .espacio-header h4 {
+        font-size: 1rem;
+    }
+    
+    .total-summary {
+        padding: 1rem;
+    }
+    
+    .alert {
+        padding: 1rem;
+    }
+}
+
+/* === ESTILOS ESPECÍFICOS PARA BOTIQUÍN === */
+
+/* Header unificado del botiquín */
+.botiquin-header {
+    background: linear-gradient(135deg, var(--success-color), #4caf50);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+}
+
+.botiquin-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.botiquin-header h1 {
+    margin: 0;
+    font-size: 2.2em;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.user-badge, .instalacion-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    backdrop-filter: blur(5px);
+}
+
+.btn.btn-outline {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    backdrop-filter: blur(5px);
+}
+
+.btn.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.botiquin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.botiquin-stats .stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 5px 15px;
+    border-radius: 8px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.botiquin-stats .stat-number {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Controles de búsqueda y acciones */
+.botiquin-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 16px;
+    transition: var(--transition);
+}
+
+.search-box input:focus {
+    border-color: var(--success-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 18px;
+}
+
+/* Botones de acción integrados */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.btn-action {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón outline para contextos fuera del header verde */
+.btn-action.btn-outline {
+    background: white;
+    border: 2px solid var(--success-color);
+    color: var(--success-color);
+}
+
+.btn-action.btn-outline:hover {
+    background: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+.category-filter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--border-color);
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.filter-btn.active {
+    background: var(--success-color);
+    color: white;
+    border-color: var(--success-color);
+}
+
+.filter-btn:hover {
+    border-color: var(--success-color);
+}
+
+/* Secciones de categorías */
+.categoria-section {
+    margin-bottom: 30px;
+}
+
+.categoria-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid var(--success-color);
+}
+
+.categoria-title {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--success-color);
+    margin: 0;
+}
+
+.categoria-count {
+    background: var(--success-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+/* Grid de elementos - Responsive mejorado */
+.elementos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 0;
+}
+
+@media (max-width: 768px) {
+    .elementos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .elementos-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+/* Tarjetas de elementos - Diseño compacto */
+.elemento-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+}
+
+.elemento-card:hover {
+    border-color: var(--success-color);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+    transform: translateY(-1px);
+}
+
+.elemento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.elemento-nombre {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--success-color);
+    margin: 0;
+    flex: 1;
+    line-height: 1.2;
+}
+
+.elemento-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.action-btn {
+    padding: 4px 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: var(--transition);
+    opacity: 0.7;
+}
+
+.action-btn.edit {
+    background: var(--warning-color);
+    color: white;
+}
+
+.action-btn.delete {
+    background: var(--error-color);
+    color: white;
+}
+
+.action-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.elemento-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Controles de cantidad inline */
+.cantidad-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.cantidad-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 6px 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-cantidad {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cantidad:hover {
+    transform: scale(1.05);
+}
+
+.btn-cantidad:active {
+    transform: scale(0.95);
+}
+
+.btn-minus {
+    background: #ef4444;
+}
+
+.btn-minus:hover {
+    background: #dc2626;
+}
+
+.btn-plus {
+    background: #10b981;
+}
+
+.btn-plus:hover {
+    background: #059669;
+}
+
+.cantidad-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 70px;
+    justify-content: center;
+}
+
+.cantidad-input {
+    background: transparent;
+    border: none;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--success-color);
+    text-align: center;
+    width: 50px;
+    padding: 2px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.cantidad-input:focus {
+    outline: none;
+    background: white;
+    box-shadow: 0 0 0 2px var(--success-color);
+}
+
+.cantidad-input.editing {
+    background: #fff3cd;
+    animation: pulse 1s infinite;
+}
+
+.cantidad-input.success {
+    background: #d1fae5;
+}
+
+.cantidad-input.error {
+    background: #fee2e2;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.cantidad-unidad {
+    font-size: 0.75em;
+    color: var(--text-light);
+    text-transform: lowercase;
+    white-space: nowrap;
+}
+
+.elemento-observaciones {
+    background: #f1f5f9;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border-left: 3px solid var(--info-color);
+    font-size: 0.8em;
+    color: #475569;
+    line-height: 1.3;
+}
+
+.elemento-meta {
+    font-size: 0.7em;
+    color: var(--text-light);
+    text-align: center;
+    padding-top: 6px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* Botones flotantes - ELIMINADOS - Ahora se usan botones integrados en la barra de herramientas */
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+}
+
+.empty-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+/* Elementos de solicitud - Responsive fix */
+.elemento-solicitud {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.elemento-solicitud input {
+    margin: 0;
+}
+
+.elemento-solicitud button {
+    background: var(--error-color);
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Historial */
+.historial-item {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.historial-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.historial-accion {
+    color: var(--success-color);
+}
+
+.historial-fecha {
+    color: var(--text-light);
+    font-size: 0.9em;
+}
+
+.historial-usuario,
+.historial-cantidad,
+.historial-observaciones {
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+/* Responsive para botiquín */
+@media (max-width: 768px) {
+    .botiquin-header {
+        padding: 15px;
+    }
+
+    .botiquin-header-top {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .botiquin-header h1 {
+        font-size: 1.5em;
+        justify-content: center;
+    }
+
+    .header-actions {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .user-badge, .instalacion-badge {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+    }
+
+    .btn.btn-outline {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+    }
+
+    .botiquin-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .botiquin-stats .stat-card {
+        padding: 10px;
+    }
+
+    .botiquin-stats .stat-number {
+        font-size: 1.5em;
+    }
+
+    .botiquin-controls {
+        flex-direction: column;
+        gap: 15px;
+        padding: 0 15px;
+        align-items: stretch;
+    }
+
+    .action-buttons {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-action {
+        flex: 1;
+        min-width: 0;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .search-box input {
+        font-size: 16px; /* Evita zoom en iOS */
+    }
+
+    /* Botones flotantes eliminados - Ya no se usan */
+
+    .elemento-solicitud {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .elemento-card {
+        padding: 10px;
+        min-height: 110px;
+    }
+
+    .elemento-nombre {
+        font-size: 0.9em;
+    }
+
+    .cantidad-controls {
+        padding: 4px 6px;
+        gap: 6px;
+    }
+
+    .btn-cantidad {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+    }
+
+    .cantidad-input {
+        font-size: 1.2em;
+        width: 45px;
     }
 }

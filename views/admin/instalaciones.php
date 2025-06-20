@@ -76,8 +76,8 @@ $admin = $adminAuth->getAdminActual();
                             <th>Nombre</th>
                             <th>Dirección</th>
                             <th>Coordinador</th>
+                            <th>Espacios</th>
                             <th>Socorristas</th>
-                            <th>Fecha Creación</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -129,6 +129,30 @@ $admin = $adminAuth->getAdminActual();
                     <select id="coordinador_id" name="coordinador_id" class="form-input" required>
                         <option value="">Selecciona un coordinador</option>
                     </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aforo_maximo">Aforo Máximo</label>
+                    <input type="number" id="aforo_maximo" name="aforo_maximo" class="form-input" min="1" max="10000"
+                           placeholder="Ej: 500">
+                    <div class="form-help">Capacidad máxima para cálculo de porcentajes (opcional)</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="espacios">Espacios de la Instalación</label>
+                    <div class="espacios-container">
+                        <div id="espacios-list">
+                            <!-- Los espacios se añaden dinámicamente -->
+                        </div>
+                        <div class="espacios-actions">
+                            <input type="text" id="nuevo-espacio" placeholder="Nombre del espacio (ej: Vaso grande)" 
+                                   class="form-input" maxlength="50">
+                            <button type="button" class="btn btn-secondary btn-small" onclick="addEspacio()">
+                                ➕ Añadir Espacio
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-help">Define los espacios específicos de esta instalación para control de aforo</div>
                 </div>
                 
                 <div class="modal-actions">
@@ -301,17 +325,23 @@ $admin = $adminAuth->getAdminActual();
                     <td>${inst.direccion || '-'}</td>
                     <td>${escapeHtml(inst.coordinador_nombre || '-')}</td>
                     <td>
+                        <div class="espacios-cell">
+                            ${inst.espacios && inst.espacios.length > 0 
+                                ? inst.espacios.map(espacio => `<span class="badge badge-gray">${escapeHtml(espacio)}</span>`).join(' ')
+                                : '<span class="text-muted">Sin espacios</span>'
+                            }
+                        </div>
+                    </td>
+                    <td>
                         <span class="badge badge-interactive ${inst.total_socorristas > 0 ? 'badge-success' : 'badge-gray'}"
                               ${inst.total_socorristas > 0 ? `
-                                  onmouseenter="showSocorristasTooltip(event, ${inst.id})"
-                                  onmouseleave="hideTooltip()"
                                   onclick="showSocorristasModal(${inst.id}, '${escapeHtml(inst.nombre)}')"
                                   title="Click para ver detalles"
+                                  style="cursor: pointer;"
                               ` : ''}>
                             ${inst.total_socorristas} socorrista${inst.total_socorristas !== 1 ? 's' : ''}
                         </span>
                     </td>
-                    <td>${formatDate(inst.fecha_creacion)}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-small btn-secondary" onclick="editInstalacion(${inst.id})" title="Editar">
@@ -343,6 +373,8 @@ $admin = $adminAuth->getAdminActual();
             document.getElementById('instalacion-form').reset();
             document.getElementById('instalacion-id').value = '';
             document.getElementById('modal-message-container').innerHTML = '';
+            // Limpiar espacios
+            loadEspacios([]);
             editingId = null;
             document.getElementById('instalacion-modal').style.display = 'flex';
             document.getElementById('nombre').focus();
@@ -375,6 +407,12 @@ $admin = $adminAuth->getAdminActual();
                 coordinadorSelect.value = inst.coordinador_id;
             }
             
+            // Cargar aforo máximo
+            document.getElementById('aforo_maximo').value = inst.aforo_maximo || '';
+            
+            // Cargar espacios existentes
+            loadEspacios(inst.espacios || []);
+            
             editingId = id;
             document.getElementById('instalacion-modal').style.display = 'flex';
             document.getElementById('nombre').focus();
@@ -388,7 +426,9 @@ $admin = $adminAuth->getAdminActual();
             const data = {
                 nombre: formData.get('nombre'),
                 direccion: formData.get('direccion') || null,
-                coordinador_id: formData.get('coordinador_id')
+                coordinador_id: formData.get('coordinador_id'),
+                aforo_maximo: formData.get('aforo_maximo') || null,
+                espacios: getEspaciosArray()
             };
             
             if (editingId) {
@@ -565,38 +605,6 @@ $admin = $adminAuth->getAdminActual();
         // Cache para socorristas
         let socorristasCache = {};
         
-        // Tooltip para socorristas
-        async function showSocorristasTooltip(event, instalacionId) {
-            try {
-                // Usar cache si está disponible
-                let socorristas = socorristasCache[instalacionId];
-                
-                if (!socorristas) {
-                    const response = await fetch(`/admin/api/instalacion-socorristas?instalacion_id=${instalacionId}`);
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        socorristas = data.socorristas;
-                        socorristasCache[instalacionId] = socorristas;
-                    } else {
-                        return;
-                    }
-                }
-                
-                if (socorristas.length === 0) return;
-                
-                // Crear mensaje del tooltip
-                const message = socorristas.slice(0, 3).map(soc => 
-                    `👤 ${soc.nombre}${soc.activo ? '' : ' (inactivo)'}`
-                ).join('\n') + (socorristas.length > 3 ? `\n... y ${socorristas.length - 3} más` : '');
-                
-                showTooltip(event, message);
-                
-            } catch (error) {
-                console.error('Error cargando socorristas:', error);
-            }
-        }
-        
         // Modal de socorristas
         async function showSocorristasModal(instalacionId, instalacionNombre) {
             document.getElementById('socorristas-modal-title').textContent = 
@@ -689,6 +697,96 @@ $admin = $adminAuth->getAdminActual();
         function closeSocorristasModal() {
             document.getElementById('socorristas-modal').style.display = 'none';
         }
+        
+        // ========== FUNCIONES DE GESTIÓN DE ESPACIOS ==========
+        
+        // Cargar espacios en el modal
+        function loadEspacios(espacios) {
+            const container = document.getElementById('espacios-list');
+            container.innerHTML = '';
+            
+            if (espacios.length === 0) {
+                container.innerHTML = '<div class="no-espacios">No hay espacios definidos</div>';
+                return;
+            }
+            
+            espacios.forEach((espacio, index) => {
+                const espacioElement = document.createElement('div');
+                espacioElement.className = 'espacio-item';
+                espacioElement.innerHTML = `
+                    <span class="espacio-name">${escapeHtml(espacio)}</span>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removeEspacio(${index})" title="Eliminar espacio">
+                        🗑️
+                    </button>
+                `;
+                container.appendChild(espacioElement);
+            });
+        }
+        
+        // Añadir nuevo espacio
+        function addEspacio() {
+            const input = document.getElementById('nuevo-espacio');
+            const nombre = input.value.trim();
+            
+            if (!nombre) {
+                showModalMessage('Por favor, introduce el nombre del espacio', 'error');
+                return;
+            }
+            
+            // Obtener espacios actuales
+            const espaciosActuales = getEspaciosArray();
+            
+            // Verificar que no existe ya
+            if (espaciosActuales.includes(nombre)) {
+                showModalMessage('Este espacio ya existe', 'error');
+                return;
+            }
+            
+            // Añadir el nuevo espacio
+            espaciosActuales.push(nombre);
+            loadEspacios(espaciosActuales);
+            
+            // Limpiar input
+            input.value = '';
+            input.focus();
+        }
+        
+        // Eliminar espacio por índice
+        function removeEspacio(index) {
+            const espaciosActuales = getEspaciosArray();
+            const nombreEspacio = espaciosActuales[index];
+            
+            // Mostrar confirmación
+            if (confirm(`⚠️ ¿Estás seguro de eliminar el espacio "${nombreEspacio}"?\n\n` +
+                       `ADVERTENCIA: Esta acción puede afectar el histórico de control de flujo.\n` +
+                       `Si este espacio tiene datos históricos registrados, se perderán las referencias.\n\n` +
+                       `¿Continuar con la eliminación?`)) {
+                espaciosActuales.splice(index, 1);
+                loadEspacios(espaciosActuales);
+                showModalMessage(`Espacio "${nombreEspacio}" eliminado correctamente`, 'success');
+            }
+        }
+        
+        // Obtener array de espacios desde el DOM
+        function getEspaciosArray() {
+            const espacioItems = document.querySelectorAll('.espacio-item');
+            return Array.from(espacioItems).map(item => 
+                item.querySelector('.espacio-name').textContent
+            );
+        }
+        
+        // Event listener para añadir espacio con Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const nuevoEspacioInput = document.getElementById('nuevo-espacio');
+            if (nuevoEspacioInput) {
+                nuevoEspacioInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addEspacio();
+                    }
+                });
+            }
+        });
         
         // Cerrar modales al hacer clic fuera
         window.onclick = function(event) {

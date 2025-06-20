@@ -1,151 +1,185 @@
-# ResQ - Aplicación para Socorristas
-**Dominio de despliegue**: resq.ebone.es
+# ResQ - Sistema de Gestión de Socorristas
 
 ## Background and Motivation
 
-ResQ es una aplicación web PHP completa para gestión de socorristas desplegada en `resq.ebone.es`. El sistema cuenta con:
-
-**✅ COMPLETADO ANTERIORMENTE:**
-- Panel de administración completo (Coordinadores, Instalaciones, Socorristas)
-- Sistema de autenticación y sesiones
-- 3 formularios funcionales: Control Flujo, Incidencias, Parte Accidente (con notificaciones email)
-- Diseño consistente con tema naranja socorrista y logo implementado
-
-**🚀 NUEVA FASE:** Implementación de funcionalidades avanzadas de gestión e informes.
+**Proyecto**: ResQ - Sistema web PHP para gestión de socorristas en instalaciones acuáticas
+**URL**: https://resq.ebone.es  
+**Objetivo**: Implementar 3 funcionalidades principales solicitadas por el usuario
 
 ## Key Challenges and Analysis
 
-### ✅ ANÁLISIS TÉCNICO COMPLETADO - FORMULARIOS JSON:
-Los formularios actuales se almacenan correctamente en `tabla formularios` con `datos_json` tipo JSON, lo que permite exportación directa a Excel por columnas sin modificar el procesamiento existente.
+### ✅ **FASE 1 COMPLETADA**: Sistema de Gestión de Espacios
+- Modificación tabla `instalaciones` con campos `espacios` (JSON) y `aforo_maximo` (INT)
+- Interfaz admin completa para CRUD de espacios por instalación
+- UI con tarjetas, badges y confirmaciones de seguridad
 
-### 🔧 NUEVAS MODIFICACIONES ESTRUCTURALES REQUERIDAS:
-1. **Tabla instalaciones**: Añadir campos `espacios` (JSON) y `aforo_maximo` (INT nullable)
-2. **Nuevas tablas botiquín**: `botiquin_elementos` y `botiquin_checks`
-3. **Reemplazar formulario control_flujo**: Nuevo sistema por espacios y franjas horarias
+### ✅ **FASE 2 COMPLETADA**: Sistema de Exportación/Informes
+- Backend completo con 3 tipos de exportación CSV
+- Interfaz profesional con filtros avanzados
+- Formato Excel-compatible con UTF-8 BOM
 
-## High-level Task Breakdown
+### ✅ **FASE 3 COMPLETADA**: Nuevo Control de Flujo Basado en Espacios
+- Formulario renovado con valores por defecto inteligentes
+- Control individual por espacio con cálculo automático
+- Exportación mejorada con columnas dinámicas
+- Compatibilidad total con datos históricos
 
-### 🏗️ FASE 1: MODIFICACIONES BASE DE DATOS Y INSTALACIONES
-**Objetivo**: Preparar estructura para las nuevas funcionalidades
-
-#### Subtarea 1.1: Modificar tabla instalaciones ⚡
-- [📋] Añadir campo `espacios` (JSON) para almacenar espacios personalizables
-- [📋] Añadir campo `aforo_maximo` (INT nullable) para cálculo de porcentajes
-- [📋] Crear migración SQL para actualizar tabla existente
-- [📋] **Criterio éxito**: Tabla modificada sin perder datos existentes
-
-#### Subtarea 1.2: Actualizar gestión de instalaciones 🔧
-- [📋] Modificar `views/admin/instalaciones.php` para incluir gestión de espacios
-- [📋] Añadir campo aforo máximo al formulario de instalaciones
-- [📋] Actualizar `AdminService.php` para manejar espacios y aforo
-- [📋] Implementar CRUD de espacios (añadir, editar, eliminar con histórico)
-- [📋] **Criterio éxito**: Gestión completa de espacios desde panel admin
-
-### 📊 FASE 2: HERRAMIENTA DE INFORMES
-**Objetivo**: Sistema de exportación Excel con filtros
-
-#### Subtarea 2.1: Backend de exportación ⚙️
-- [📋] Crear `controllers/admin/informes.php` para API de exportación
-- [📋] Implementar generación Excel desde JSON (usar PhpSpreadsheet si no existe composer alternativo)
-- [📋] Funciones de filtrado: instalación, socorrista, rango fechas
-- [📋] Cálculos específicos: suma personas, porcentaje aforo
-- [📋] **Criterio éxito**: API funcional que genera Excel desde datos JSON
-
-#### Subtarea 2.2: Frontend modal de informes 🎨
-- [📋] Crear modal de exportación en dashboard de admin
-- [📋] Formulario con selectores: tipo formulario, instalación, socorrista, fechas
-- [📋] Botón de descarga que llama a API y descarga Excel
-- [📋] Feedback visual durante generación del reporte
-- [📋] **Criterio éxito**: Modal funcional que descarga Excel correctamente
-
-### 👥 FASE 3: NUEVO CONTROL FLUJO PERSONAL POR ESPACIOS
-**Objetivo**: Sistema de control de aforo por espacios y franjas horarias
-
-#### Subtarea 3.1: Nuevo formulario control flujo 📝
-- [📋] Reemplazar `views/formularios/control_flujo.php` completamente
-- [📋] Modal con franjas de media hora exactas (dropdown)
-- [📋] Mostrar espacios de la instalación del socorrista
-- [📋] Campos numéricos para cantidad de personas por espacio
-- [📋] **Criterio éxito**: Formulario funcional con espacios dinámicos
-
-#### Subtarea 3.2: Backend nuevo control flujo ⚙️
-- [📋] Actualizar `controllers/control_flujo.php` para nueva estructura JSON
-- [📋] Validaciones: franjas horarias válidas, cantidades por espacio
-- [📋] Mantener compatibilidad con histórico (datos antiguos)
-- [📋] **Criterio éxito**: Sistema almacena correctamente datos por espacios
-
-### 🏥 FASE 4: SISTEMA CHEQUEO MATERIAL BOTIQUÍN
-**Objetivo**: Gestión diaria de inventario de botiquín
-
-#### Subtarea 4.1: Crear tablas botiquín 🗄️
-- [📋] Tabla `botiquin_elementos` (instalacion_id, elemento, cantidad_minima)
-- [📋] Tabla `botiquin_checks` (instalacion_id, socorrista_id, fecha, elementos_json)
-- [📋] Migración SQL para crear tablas
-- [📋] **Criterio éxito**: Tablas creadas y relacionadas correctamente
-
-#### Subtarea 4.2: Gestión elementos botiquín (Admin) 🔧
-- [📋] Vista admin para gestionar elementos por instalación
-- [📋] CRUD de elementos: añadir, editar, eliminar
-- [📋] Configuración de cantidades mínimas
-- [📋] **Criterio éxito**: Admin puede gestionar inventario base por instalación
-
-#### Subtarea 4.3: Formulario check diario (Socorristas) ✅
-- [📋] Nueva vista `views/formularios/check_botiquin.php`
-- [📋] Tabla con elementos de la instalación y cantidades actuales
-- [📋] Campos editables para actualizar cantidades
-- [📋] Botón "Solicitar Material" que marca elementos y envía email
-- [📋] **Criterio éxito**: Check diario funcional con solicitud por email
+### 🎯 FASE 4: Sistema de Botiquín (PENDIENTE)
+- [ ] **4.1**: Diseñar estructura base de datos
+- [ ] **4.2**: Crear interfaz admin para elementos
+- [ ] **4.3**: Implementar sistema de revisiones diarias
+- [ ] **4.4**: Añadir alertas de stock mínimo
 
 ## Project Status Board
 
-### 🎯 ESTADO ACTUAL: PLANIFICACIÓN COMPLETADA
-**Siguiente paso**: Iniciar Fase 1 con modificaciones de base de datos
+### ✅ Completadas
+- [x] **Gestión espacios**: Sistema completo con CRUD y UI
+- [x] **Exportación informes**: 3 tipos CSV con filtros avanzados
+- [x] **Nuevo control flujo**: Formulario renovado con espacios dinámicos
+- [x] **Exportación mejorada**: Columnas dinámicas para espacios
+- [x] **Valores inteligentes**: Fecha actual + franja horaria automática
+- [x] **Compatibilidad**: Datos históricos funcionando perfectamente
 
-#### 📋 TAREAS PENDIENTES (Por orden de ejecución):
-- [ ] **FASE 1.1**: Modificar tabla instalaciones (espacios + aforo_maximo)
-- [ ] **FASE 1.2**: Actualizar gestión de instalaciones en admin
-- [ ] **FASE 2.1**: Backend de exportación Excel
-- [ ] **FASE 2.2**: Frontend modal de informes
-- [ ] **FASE 3.1**: Nuevo formulario control flujo
-- [ ] **FASE 3.2**: Backend nuevo control flujo
-- [ ] **FASE 4.1**: Crear tablas botiquín
-- [ ] **FASE 4.2**: Gestión elementos botiquín (Admin)
-- [ ] **FASE 4.3**: Formulario check diario (Socorristas)
-
-### 🎛️ CONFIGURACIÓN CONFIRMADA:
-- **Espacios**: Completamente personalizables por instalación
-- **Histórico**: Se mantiene al modificar espacios
-- **Franjas**: Media hora exactas (09:00, 09:30, 10:00...)
-- **Control flujo actual**: Se reemplaza completamente
-- **Informes**: Suma personas + porcentaje aforo + filtros básicos
-- **Botiquín**: Elementos por instalación + cantidades exactas + solicitud manual
+### 🎯 Siguiente Fase Disponible
+- [ ] **Sistema botiquín**: Estructura completa con revisiones diarias
 
 ## Current Status / Progress Tracking
 
-**PLANNER STATUS**: ✅ Planificación completada y aprobada por usuario
+**🎉 FASE 3 COMPLETADA AL 100% - NUEVO CONTROL DE FLUJO FUNCIONANDO PERFECTAMENTE** ✅
 
-**Respuestas de clarificación recibidas y documentadas**:
-- Control Flujo Personal: Espacios personalizables, histórico mantenido, franjas exactas
-- Herramienta Informes: Datos tabulares, suma/porcentaje, filtros básicos
-- Botiquín: Elementos por instalación, cantidades exactas, solicitud manual
+### ✅ **ÉXITO TOTAL - SISTEMA COMPLETO IMPLEMENTADO**:
 
-**PRÓXIMO PASO**: Cambiar a modo Executor para iniciar Fase 1.1
+**Formulario nuevo**:
+- ✅ **Valores por defecto inteligentes**: Fecha actual + franja horaria más cercana
+- ✅ **Espacios dinámicos**: Carga automática desde instalación del socorrista  
+- ✅ **Cálculo en tiempo real**: Total de personas actualizado automáticamente
+- ✅ **UX moderna**: Tarjetas por espacio, alertas informativas, responsive
+
+**Exportación mejorada**:
+- ✅ **Una fila por registro**: Toda la información en una línea
+- ✅ **Columnas dinámicas**: Se crean automáticamente según espacios existentes
+- ✅ **Formato Excel-friendly**: "[Espacio] - Personas" y "[Espacio] - Observaciones"
+- ✅ **Compatibilidad total**: Registros antiguos y nuevos funcionan perfectamente
+- ✅ **Cálculos automáticos**: Total personas y porcentaje de ocupación
+
+### 📁 **ARCHIVOS IMPLEMENTADOS**:
+- `views/formularios/control_flujo.php` - Formulario completamente renovado
+- `controllers/control_flujo.php` - Backend con nueva estructura JSON
+- `controllers/admin/informes.php` - Exportación mejorada con columnas dinámicas
+- `assets/css/styles.css` - Estilos para tarjetas de espacios
 
 ## Executor's Feedback or Assistance Requests
 
-**ESPERANDO CONFIRMACIÓN DEL USUARIO**:
-¿Proceder con Fase 1.1 (Modificar tabla instalaciones) o prefieres revisar algún aspecto del plan?
+**🚀 FASE 4 - SISTEMA DE BOTIQUÍN EN PROGRESO** 
+
+### 📋 **Requisitos confirmados**:
+
+**IMPORTANTE**: El sistema de botiquín **REEMPLAZA COMPLETAMENTE** la sección "parte de accidentes"
+- ✅ **Routing actualizado**: Eliminado "parte_accidente", añadido "botiquin" 
+- ✅ **Dashboard actualizado**: Tarjeta de accidentes reemplazada por botiquín
+- ✅ **Navegación actualizada**: Menús y enlaces corregidos
+
+**Gestión 100% manual por socorristas**:
+- ✅ **Sin mínimos**: No hay cantidades mínimas establecidas
+- ✅ **Sin alertas automáticas**: Todo es decisión manual del socorrista
+- ✅ **Control total**: Socorristas gestionan inventario completo
+- ✅ **Solicitudes bajo demanda**: Cuando ellos consideren necesario
+
+### ✅ **PROGRESO ACTUAL - PASOS COMPLETADOS**:
+
+**PASO 1**: ✅ **Tablas de base de datos creadas**
+- ✅ Archivo `database/botiquin_tables.sql` creado
+- ✅ Tabla `inventario_botiquin` con todos los campos necesarios
+- ✅ Tabla `historial_botiquin` para auditoría de cambios
+
+**PASO 2**: ✅ **Routing actualizado**
+- ✅ Eliminado `/api/parte-accidente` → Añadido `/api/botiquin`
+- ✅ Eliminado `/formulario/parte-accidente` → Añadido `/formulario/botiquin`
+- ✅ Dashboard actualizado: Tarjeta "Parte de Accidente" → "Botiquín"
+
+**PASO 3**: ✅ **Controlador backend creado**
+- ✅ Archivo `controllers/botiquin.php` creado por el usuario
+- ✅ API completa con CRUD, historial y solicitudes
+- ✅ Validación y autenticación implementada
+
+**PASO 4**: ✅ **Interfaz de usuario optimizada**
+- ✅ Archivo `views/formularios/botiquin.php` creado por el usuario
+- ✅ CSS movido a `assets/css/styles.css` 
+- ✅ Reutilización de estilos existentes (container, form-*, btn-*, etc.)
+- ✅ Estilos específicos del botiquín añadidos al CSS central
+
+### ✅ **MEJORAS UX IMPLEMENTADAS**:
+
+**PASO 5**: ✅ **Mejoras UX críticas completadas**
+- ✅ **Edición inline**: Controles +/- para cambiar cantidad directamente en tarjetas
+- ✅ **Layout compacto**: Tarjetas más pequeñas para mostrar más elementos
+- ✅ **Sin categorías**: Sistema simplificado sin filtros de categoría
+- ✅ **Responsive mejorado**: Mejor uso del espacio en móviles y tablets
+- ✅ **Visual feedback**: Estados de edición, éxito y error en inputs
+- ✅ **Estadísticas actualizadas**: Total elementos, cantidad total, stock bajo
+
+**PASO 6**: ✅ **Header unificado implementado**
+- ✅ **UI limpia**: Eliminado header superior redundante
+- ✅ **Información consolidada**: Usuario, instalación y acciones en header verde
+- ✅ **Navegación mejorada**: Botones Dashboard y Cerrar Sesión integrados
+- ✅ **Responsive optimizado**: Layout adaptativo para móvil y tablet
+- ✅ **Consistencia visual**: Badges y botones con estilo unificado
+
+**PASO 7**: ✅ **Navegación consistente en todos los formularios**
+- ✅ **Botiquín optimizado**: Eliminadas estadísticas redundantes (Cantidad Total, Stock Bajo)
+- ✅ **Control de Flujo**: Añadido botón "← Dashboard" al header
+- ✅ **Incidencias**: Añadido botón "← Dashboard" al header
+- ✅ **Parte de Accidente**: Añadido botón "← Dashboard" al header
+- ✅ **UX consistente**: Navegación uniforme en toda la aplicación
+
+**PASO 8**: ✅ **Estilo de botones unificado**
+- ✅ **Estilo btn-outline**: Todos los botones de navegación usan el mismo estilo elegante
+- ✅ **Control de Flujo**: Botones actualizados a btn-outline con función limpiarCacheLogout()
+- ✅ **Incidencias**: Botones actualizados a btn-outline con función limpiarCacheLogout()
+- ✅ **Consistencia visual**: Fondo semitransparente y bordes en todos los formularios
+
+**PASO 9**: ✅ **Limpieza de código y dashboard actualizado**
+- ✅ **Función limpiarCacheLogout eliminada**: No es necesaria, el SW maneja la caché automáticamente
+- ✅ **Dashboard actualizado**: Header con mismo estilo que formularios (btn-outline)
+- ✅ **Información completa**: Dashboard ahora muestra usuario + instalación + cerrar sesión
+- ✅ **Código limpio**: Eliminadas funciones innecesarias de todos los archivos
+
+**PASO 10**: ✅ **UX del botiquín optimizada**
+- ✅ **Botones flotantes eliminados**: Reemplazados por barra de acciones integrada
+- ✅ **Acciones en barra de herramientas**: "➕ Añadir" y "📧 Solicitar" junto a la búsqueda
+- ✅ **Margen inferior añadido**: Padding-bottom de 2rem para evitar elementos pegados al borde
+- ✅ **Responsive optimizado**: Botones se adaptan perfectamente a móvil y tablet
+- ✅ **UX mejorada**: No interfieren con la interacción, siempre accesibles, contexto lógico
+
+### 🎯 **PRÓXIMOS PASOS**:
+
+**PASO 11**: **Integración con base de datos**
+- Ejecutar script SQL para crear tablas
+- Probar conexiones y consultas
+- Verificar historial de cambios
+
+### 🔧 **OPTIMIZACIONES REALIZADAS**:
+
+- ✅ **CSS centralizado**: Todo el CSS movido al archivo principal
+- ✅ **Reutilización de estilos**: Uso de clases existentes (.container, .btn, .form-*)
+- ✅ **Consistencia visual**: Mantenimiento del diseño general de la app
+- ✅ **Responsive design**: Adaptación móvil incluida
+- ✅ **Performance**: Eliminación de CSS inline duplicado
+
+### 📊 **ESTADO TÉCNICO**:
+- **Base de datos**: ✅ Diseñada y lista para ejecutar
+- **Backend**: ✅ Controlador completo implementado  
+- **Frontend**: ✅ Interfaz creada y optimizada
+- **Routing**: ✅ Configuración actualizada
+- **CSS**: ✅ Estilos centralizados y optimizados
+
+**🎉 FASE 4 CASI COMPLETA - LISTA PARA TESTING**
 
 ## Lessons
 
-### Lecciones de Planificación:
-1. **Análisis previo es clave**: Revisar estructura JSON existente evitó reprocessing innecesario
-2. **Clarificación de requisitos**: Preguntas específicas evitan re-trabajo posterior
-3. **Fases incrementales**: Dividir en fases pequeñas con criterios de éxito claros
-4. **Compatibilidad histórica**: Importante mantener datos existentes al hacer cambios estructurales
-
-### 🔧 WORKFLOW IMPORTANTE - INSTRUCCIONES DEL USUARIO:
-1. **CSS**: Todo el código CSS va en `assets/css/styles.css` (mantener código limpio)
-2. **Base de Datos**: Solo proporcionar SQL, el usuario crea/actualiza las tablas en servidor
-3. **Archivos**: El usuario sube los archivos al servidor después de actualizarlos en local
-4. **Código Limpio**: Mantener el código lo más limpio y estructurado posible
+### Lecciones Técnicas Aprendidas
+- **Cache del servidor**: Usar versioning en funciones para evitar cache agresivo
+- **Exportación CSV**: UTF-8 BOM + separador `;` para compatibilidad Excel
+- **Compatibilidad**: Mantener estructura antigua para datos históricos
+- **Valores por defecto**: Lógica de redondeo inteligente mejora UX significativamente
+- **Columnas dinámicas**: Detectar espacios únicos para crear headers automáticamente

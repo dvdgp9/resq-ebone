@@ -1,43 +1,71 @@
-const CACHE_NAME = 'resq-v1.0.1';
+const CACHE_NAME = 'resq-v1.3.0'; // Logos optimizados: login (fondo blanco) usa logo.png, dashboard (fondo naranja) usa logo-negativo-soco.png
 const urlsToCache = [
-  '/',
-  '/dashboard',
   '/assets/css/styles.css',
   '/assets/images/logo.png',
+  '/assets/images/logo-negativo-soco.png',
   '/manifest.json'
 ];
 
 // Instalación del Service Worker
 self.addEventListener('install', (event) => {
+  console.log('SW Install - Versión:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache abierto');
+        console.log('Cache abierto:', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );
+  // Forzar activación inmediata del nuevo SW
+  self.skipWaiting();
 });
 
-// Interceptar peticiones de red - Estrategia Network First para formularios
+// Interceptar peticiones de red - Estrategia mejorada
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Para formularios: siempre intentar red primero
-  if (url.pathname.startsWith('/formulario/') || url.pathname.startsWith('/api/')) {
+  // Para formularios y API: siempre intentar red primero
+  if (url.pathname.startsWith('/formulario/') || 
+      url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request).then((response) => {
         // Si la respuesta es exitosa, devolverla directamente
         if (response && response.status === 200) {
           return response;
         }
+        // Para redirects (301, 302), también devolverlos
+        if (response && (response.status === 301 || response.status === 302)) {
+          return response;
+        }
         throw new Error('Network response was not ok');
-      }).catch((error) => {
-        console.log('Fetch failed for:', event.request.url, error);
-        // Para formularios, no usar caché - mostrar error
-        return new Response(
-          JSON.stringify({ error: 'No hay conexión disponible' }), 
-          { status: 503, headers: { 'Content-Type': 'application/json' } }
-        );
+              }).catch((error) => {
+          console.log('Fetch failed for:', event.request.url, error);
+          // Para formularios y API, mostrar error
+          return new Response(
+            JSON.stringify({ error: 'No hay conexión disponible' }), 
+            { status: 503, headers: { 'Content-Type': 'application/json' } }
+          );
+        })
+    );
+    return;
+  }
+  
+  // Para CSS y JS: Network First con fallback a cache
+  if (url.pathname.includes('.css') || url.pathname.includes('.js')) {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response && response.status === 200) {
+          // Actualizar cache con nueva versión
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        }
+        throw new Error('Network response was not ok');
+      }).catch(() => {
+        // Si falla la red, usar cache como fallback
+        return caches.match(event.request);
       })
     );
     return;
@@ -77,17 +105,23 @@ self.addEventListener('fetch', (event) => {
 
 // Actualizar Service Worker
 self.addEventListener('activate', (event) => {
+  console.log('SW Activate - Versión:', CACHE_NAME);
   const cacheWhitelist = [CACHE_NAME];
   
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      console.log('Caches existentes:', cacheNames);
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Eliminando cache antiguo:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      // Tomar control inmediato de todas las páginas
+      return self.clients.claim();
     })
   );
 });
@@ -120,4 +154,12 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     clients.openWindow('/')
   );
+});
+
+// Manejar mensajes del cliente
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'skipWaiting') {
+    console.log('Recibido skipWaiting del cliente');
+    self.skipWaiting();
+  }
 }); 

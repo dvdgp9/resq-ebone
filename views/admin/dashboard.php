@@ -106,10 +106,10 @@ $stats = $adminService->getEstadisticas();
                 <div class="nav-card-arrow">→</div>
             </a>
             
-            <a href="/admin/reportes" class="admin-nav-card">
+            <a href="/admin/informes" class="admin-nav-card">
                 <div class="nav-card-icon">📊</div>
-                <h3>Ver Reportes</h3>
-                <p>Consultar formularios enviados y estadísticas</p>
+                <h3>Informes y Exportación</h3>
+                <p>Exportar formularios a Excel con filtros personalizados</p>
                 <div class="nav-card-arrow">→</div>
             </a>
         </div>

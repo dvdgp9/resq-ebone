@@ -191,7 +191,7 @@ class AdminService {
             $stmt = $db->prepare("
                 SELECT i.id, i.nombre, i.direccion, i.activo,
                        i.fecha_creacion, i.fecha_actualizacion,
-                       i.coordinador_id,
+                       i.coordinador_id, i.espacios, i.aforo_maximo,
                        c.nombre as coordinador_nombre, c.email as coordinador_email,
                        COUNT(s.id) as total_socorristas
                 FROM instalaciones i
@@ -202,7 +202,18 @@ class AdminService {
             ");
             
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $instalaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Decodificar JSON de espacios
+            foreach ($instalaciones as &$instalacion) {
+                if (!empty($instalacion['espacios'])) {
+                    $instalacion['espacios'] = json_decode($instalacion['espacios'], true);
+                } else {
+                    $instalacion['espacios'] = [];
+                }
+            }
+            
+            return $instalaciones;
             
         } catch (Exception $e) {
             logMessage("Error obteniendo instalaciones: " . $e->getMessage(), 'ERROR');
@@ -232,15 +243,26 @@ class AdminService {
                 throw new Exception("Coordinador no encontrado");
             }
             
+            // Procesar espacios
+            $espacios = [];
+            if (!empty($datos['espacios']) && is_array($datos['espacios'])) {
+                $espacios = array_filter($datos['espacios'], function($espacio) {
+                    return !empty(trim($espacio));
+                });
+            }
+            $espaciosJson = !empty($espacios) ? json_encode(array_values($espacios)) : null;
+            
             $stmt = $db->prepare("
-                INSERT INTO instalaciones (nombre, direccion, coordinador_id, activo)
-                VALUES (?, ?, ?, 1)
+                INSERT INTO instalaciones (nombre, direccion, coordinador_id, espacios, aforo_maximo, activo)
+                VALUES (?, ?, ?, ?, ?, 1)
             ");
             
             $stmt->execute([
                 $datos['nombre'],
                 $datos['direccion'] ?? null,
-                $datos['coordinador_id']
+                $datos['coordinador_id'],
+                $espaciosJson,
+                !empty($datos['aforo_maximo']) ? (int)$datos['aforo_maximo'] : null
             ]);
             
             $instalacionId = $db->lastInsertId();
@@ -277,9 +299,18 @@ class AdminService {
                 }
             }
             
+            // Procesar espacios
+            $espacios = [];
+            if (!empty($datos['espacios']) && is_array($datos['espacios'])) {
+                $espacios = array_filter($datos['espacios'], function($espacio) {
+                    return !empty(trim($espacio));
+                });
+            }
+            $espaciosJson = !empty($espacios) ? json_encode(array_values($espacios)) : null;
+            
             $stmt = $db->prepare("
                 UPDATE instalaciones 
-                SET nombre = ?, direccion = ?, coordinador_id = ?
+                SET nombre = ?, direccion = ?, coordinador_id = ?, espacios = ?, aforo_maximo = ?
                 WHERE id = ?
             ");
             
@@ -287,6 +318,8 @@ class AdminService {
                 $datos['nombre'],
                 $datos['direccion'] ?? null,
                 $datos['coordinador_id'],
+                $espaciosJson,
+                !empty($datos['aforo_maximo']) ? (int)$datos['aforo_maximo'] : null,
                 $id
             ]);
             
@@ -554,6 +587,28 @@ class AdminService {
                 'socorristas' => 0,
                 'formularios_mes' => 0
             ];
+        }
+    }
+    
+    /**
+     * Obtiene los espacios de una instalación específica
+     */
+    public function getEspaciosInstalacion($instalacionId) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("SELECT espacios FROM instalaciones WHERE id = ?");
+            $stmt->execute([$instalacionId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result && !empty($result['espacios'])) {
+                return json_decode($result['espacios'], true);
+            }
+            
+            return [];
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo espacios de instalación: " . $e->getMessage(), 'ERROR');
+            return [];
         }
     }
 }

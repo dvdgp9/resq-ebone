@@ -25,7 +25,8 @@ $socorrista = $auth->getSocorristaActual();
             <div class="user-info">
                 <span>👤 <?php echo htmlspecialchars($socorrista['nombre']); ?></span>
                 <span>🏢 <?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?></span>
-                <a href="/logout" class="btn-logout">Cerrar Sesión</a>
+                <a href="/dashboard" class="btn btn-outline">← Dashboard</a>
+                <a href="/logout" class="btn btn-outline">Cerrar Sesión</a>
             </div>
         </header>
 

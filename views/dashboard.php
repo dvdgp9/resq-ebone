@@ -2,6 +2,7 @@
 // Vista del Dashboard para ResQ
 // Página principal después del login
 
+require_once 'config/app.php';
 require_once 'classes/AuthService.php';
 
 $authService = new AuthService();
@@ -43,17 +44,18 @@ $socorrista = $authService->getSocorristaActual();
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/logo.png">
     
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= assetVersion('/assets/css/styles.css') ?>">
 </head>
 <body class="dashboard-page">
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
+                <img src="/assets/images/logo-negativo-soco.png" alt="ResQ Logo" class="header-logo">
             </div>
             <div class="user-info">
                 <span>👤 <?= htmlspecialchars($socorrista['nombre']) ?></span>
-                <a href="/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
+                <span>🏢 <?= htmlspecialchars($socorrista['instalacion_nombre']) ?></span>
+                <a href="/logout" class="btn btn-outline">Cerrar Sesión</a>
             </div>
         </div>
     </header>
@@ -91,16 +93,20 @@ $socorrista = $authService->getSocorristaActual();
                 <a href="/formulario/incidencias" class="btn btn-primary">Acceder</a>
             </div>
             
-            <!-- Parte de Accidente -->
-            <div class="form-card" onclick="location.href='/formulario/parte-accidente'">
-                <div class="form-icon">🚨</div>
-                <h2 class="form-title">Parte de Accidente</h2>
+            <!-- Botiquín -->
+            <div class="form-card" onclick="location.href='/formulario/botiquin'">
+                <div class="form-icon">🏥</div>
+                <h2 class="form-title">Botiquín</h2>
                 <p class="form-description">
-                    Documenta accidentes laborales o emergencias médicas ocurridas.
+                    Gestiona el inventario del botiquín y solicita material cuando sea necesario.
                 </p>
-                <a href="/formulario/parte-accidente" class="btn btn-primary">Acceder</a>
+                <a href="/formulario/botiquin" class="btn btn-primary">Acceder</a>
             </div>
         </div>
     </div>
+
+    <script>
+        // Dashboard script placeholder
+    </script>
 </body>
 </html> 
