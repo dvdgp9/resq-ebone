@@ -54,6 +54,14 @@ switch ($path) {
         require_once 'views/dashboard.php';
         break;
         
+    case '/mi-cuenta':
+        if (!$authService->estaAutenticado()) {
+            header('Location: /login');
+            exit;
+        }
+        require_once 'controllers/mi_cuenta.php';
+        break;
+        
     case '/logout':
         require_once 'controllers/logout.php';
         break;

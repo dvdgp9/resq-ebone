@@ -170,11 +170,7 @@ function crearElemento($socorrista) {
         }
     }
     
-    // Validar categoría
-    $categorias_validas = ['medicamentos', 'material_curacion', 'instrumental', 'otros'];
-    if (!in_array($input['categoria'], $categorias_validas)) {
-        throw new Exception('Categoría no válida');
-    }
+    // Sin validación de categorías - sistema simplificado
     
     // Validar cantidad
     if (!is_numeric($input['cantidad_actual']) || $input['cantidad_actual'] < 0) {
@@ -269,11 +265,11 @@ function actualizarElemento($socorrista) {
         }
     }
     
-    if (isset($input['categoria']) && in_array($input['categoria'], ['medicamentos', 'material_curacion', 'instrumental', 'otros'])) {
+    if (isset($input['categoria']) && trim($input['categoria']) !== '') {
         $campos[] = 'categoria = ?';
-        $valores[] = $input['categoria'];
-        if ($elemento['categoria'] !== $input['categoria']) {
-            $cambios[] = "Categoría: '{$elemento['categoria']}' → '{$input['categoria']}'";
+        $valores[] = trim($input['categoria']);
+        if ($elemento['categoria'] !== trim($input['categoria'])) {
+            $cambios[] = "Categoría: '{$elemento['categoria']}' → '" . trim($input['categoria']) . "'";
         }
     }
     

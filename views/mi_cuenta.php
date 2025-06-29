@@ -1,27 +1,13 @@
 <?php
-// Vista del Dashboard para ResQ
-// Página principal después del login
-
-require_once 'config/app.php';
-require_once 'classes/AuthService.php';
-
-$authService = new AuthService();
-
-// Verificar autenticación
-if (!$authService->estaAutenticado()) {
-    header('Location: /login');
-    exit;
-}
-
-// Obtener datos del socorrista actual
-$socorrista = $authService->getSocorristaActual();
+// Vista de Mi Cuenta para ResQ
+// Página de información personal del socorrista
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResQ - Dashboard</title>
+    <title>ResQ - Mi Cuenta</title>
     
     <!-- PWA Meta Tags -->
     <meta name="description" content="Sistema de gestión para socorristas y salvavidas">
@@ -53,7 +39,7 @@ $socorrista = $authService->getSocorristaActual();
                 <img src="/assets/images/logo-negativo-soco.png" alt="ResQ Logo" class="header-logo">
             </div>
             <div class="header-title">
-                <h1>¡Bienvenida/o!</h1>
+                <h1>Mi Cuenta</h1>
             </div>
             <div class="header-actions">
                 <a href="/logout" class="btn-logout">
@@ -68,73 +54,106 @@ $socorrista = $authService->getSocorristaActual();
     </header>
     
     <div class="dashboard-container">
-        <div class="forms-grid">
-            <!-- Control de Flujo de Personas -->
-            <h2 class="form-section-title">Control de Flujo de Personas</h2>
-            <div class="form-card">
-                <div class="form-card-image">
-                    <img src="../assets/images/flujo-resq.png" alt="Control de Flujo" />
-                </div>
-                <div class="form-card-content">
-                    <p class="form-card-description">
-                        Registra el control de acceso y flujo de personas usuarias en las instalaciones.
-                    </p>
-                    <a href="/formulario/control-flujo" class="form-card-button">
-                        <span>Acceder</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <?php if (isset($error)): ?>
+            <div class="error-message">
+                <p><?= htmlspecialchars($error) ?></p>
+            </div>
+        <?php else: ?>
+            <div class="profile-section">
+                <!-- Información Personal -->
+                <h2 class="form-section-title">Información Personal</h2>
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="7" r="4" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                    </a>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-field">
+                            <label>Nombre Completo</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['nombre']) ?></p>
+                        </div>
+                        <div class="profile-field">
+                            <label>DNI</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['dni']) ?></p>
+                        </div>
+                        <?php if ($socorristaCompleto['email']): ?>
+                        <div class="profile-field">
+                            <label>Email</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['email']) ?></p>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($socorristaCompleto['telefono']): ?>
+                        <div class="profile-field">
+                            <label>Teléfono</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['telefono']) ?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Instalación Asignada -->
+                <h2 class="form-section-title">Instalación Asignada</h2>
+                <div class="profile-card">
+                    <div class="profile-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-field">
+                            <label>Instalación</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['instalacion_nombre']) ?></p>
+                        </div>
+                        <?php if ($socorristaCompleto['instalacion_direccion']): ?>
+                        <div class="profile-field">
+                            <label>Dirección</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['instalacion_direccion']) ?></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Coordinador -->
+                <h2 class="form-section-title">Coordinador</h2>
+                <div class="profile-card">
+                    <div class="profile-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 21V19C16 17.9391 15.5786 16.9217 14.8284 16.1716C14.0783 15.4214 13.0609 15 12 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="8.5" cy="7" r="4" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M20 8V14" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M23 11H17" stroke="#D33E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-field">
+                            <label>Nombre</label>
+                            <p><?= htmlspecialchars($socorristaCompleto['coordinador_nombre']) ?></p>
+                        </div>
+                        <?php if ($socorristaCompleto['coordinador_email']): ?>
+                        <div class="profile-field">
+                            <label>Email</label>
+                            <p><a href="mailto:<?= htmlspecialchars($socorristaCompleto['coordinador_email']) ?>"><?= htmlspecialchars($socorristaCompleto['coordinador_email']) ?></a></p>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($socorristaCompleto['coordinador_telefono']): ?>
+                        <div class="profile-field">
+                            <label>Teléfono</label>
+                            <p><a href="tel:<?= htmlspecialchars($socorristaCompleto['coordinador_telefono']) ?>"><?= htmlspecialchars($socorristaCompleto['coordinador_telefono']) ?></a></p>
+                        </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Incidencias -->
-            <h2 class="form-section-title">Incidencias</h2>
-            <div class="form-card">
-                <div class="form-card-image">
-                    <img src="../assets/images/incidencias-resq.png" alt="Incidencias" />
-                </div>
-                <div class="form-card-content">
-                    <p class="form-card-description">
-                        Reporta incidencias, anomalías o situaciones que requieran atención.
-                    </p>
-                    <a href="/formulario/incidencias" class="form-card-button">
-                        <span>Acceder</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Botiquín -->
-            <h2 class="form-section-title">Botiquín</h2>
-            <div class="form-card">
-                <div class="form-card-image">
-                    <img src="../assets/images/botiquin-resq.png" alt="Botiquín" />
-                </div>
-                <div class="form-card-content">
-                    <p class="form-card-description">
-                        Gestiona el inventario del botiquín y solicita material cuando sea necesario.
-                    </p>
-                    <a href="/formulario/botiquin" class="form-card-button">
-                        <span>Acceder</span>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Footer de Navegación -->
     <footer class="nav-footer">
         <div class="nav-footer-container">
-            <button class="nav-item active" data-nav="inicio">
+            <button class="nav-item" data-nav="inicio">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -153,7 +172,7 @@ $socorrista = $authService->getSocorristaActual();
                 <span class="nav-label">Formularios</span>
             </button>
             
-            <button class="nav-item" data-nav="cuenta">
+            <button class="nav-item active" data-nav="cuenta">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -235,4 +254,4 @@ $socorrista = $authService->getSocorristaActual();
         });
     </script>
 </body>
-</html> 
+</html>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v1.3.0'; // Logos optimizados: login (fondo blanco) usa logo.png, dashboard (fondo naranja) usa logo-negativo-soco.png
+const CACHE_NAME = 'resq-v1.4'; // Tweak: Rediseño app y añadir mi cuenta
 const urlsToCache = [
   '/assets/css/styles.css',
   '/assets/images/logo.png',
@@ -24,9 +24,14 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Para formularios y API: siempre intentar red primero
-  if (url.pathname.startsWith('/formulario/') || 
-      url.pathname.startsWith('/api/')) {
+  // Para APIs: NUNCA interceptar, siempre ir directo a la red
+  if (url.pathname.startsWith('/api/')) {
+    // No interceptar APIs, dejar que vayan directo al servidor
+    return;
+  }
+  
+  // Para formularios: intentar red primero
+  if (url.pathname.startsWith('/formulario/')) {
     event.respondWith(
       fetch(event.request).then((response) => {
         // Si la respuesta es exitosa, devolverla directamente
@@ -38,14 +43,14 @@ self.addEventListener('fetch', (event) => {
           return response;
         }
         throw new Error('Network response was not ok');
-              }).catch((error) => {
-          console.log('Fetch failed for:', event.request.url, error);
-          // Para formularios y API, mostrar error
-          return new Response(
-            JSON.stringify({ error: 'No hay conexión disponible' }), 
-            { status: 503, headers: { 'Content-Type': 'application/json' } }
-          );
-        })
+      }).catch((error) => {
+        console.log('Fetch failed for:', event.request.url, error);
+        // Para formularios, mostrar error básico
+        return new Response(
+          '<html><body><h1>Sin conexión</h1><p>Inténtalo de nuevo cuando tengas conexión.</p></body></html>',
+          { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+        );
+      })
     );
     return;
   }
