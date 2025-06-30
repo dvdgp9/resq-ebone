@@ -721,5 +721,7 @@ $socorrista = $auth->getSocorristaActual();
 
         // Los estilos de elemento-solicitud están ahora en assets/css/styles.css
     </script>
+
+    <?php include __DIR__ . '/../partials/footer-navigation.php'; ?>
 </body>
 </html>

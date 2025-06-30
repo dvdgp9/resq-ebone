@@ -337,5 +337,7 @@ $espacios = $adminService->getEspaciosInstalacion($socorrista['instalacion_id'])
             submitBtn.textContent = '📝 Registrar Control de Flujo';
         });
     </script>
+
+    <?php include __DIR__ . '/../partials/footer-navigation.php'; ?>
 </body>
 </html> 

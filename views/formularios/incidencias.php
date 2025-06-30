@@ -257,5 +257,7 @@ $socorrista = $auth->getSocorristaActual();
             submitBtn.textContent = '📤 Enviar Reporte de Incidencia';
         });
     </script>
+
+    <?php include __DIR__ . '/../partials/footer-navigation.php'; ?>
 </body>
 </html> 
