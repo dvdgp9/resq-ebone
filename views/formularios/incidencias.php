@@ -20,15 +20,10 @@ $socorrista = $auth->getSocorristaActual();
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1>⚠️ Reporte de Incidencias</h1>
-            <div class="user-info">
-                <span>👤 <?php echo htmlspecialchars($socorrista['nombre']); ?></span>
-                <span>🏢 <?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?></span>
-                <a href="/dashboard" class="btn btn-outline">← Dashboard</a>
-                <a href="/logout" class="btn btn-outline">Cerrar Sesión</a>
-            </div>
-        </header>
+        <?php 
+        $titulo = "Reporte de Incidencias";
+        include __DIR__ . '/../partials/header-universal.php'; 
+        ?>
 
         <main class="main-content">
             <div class="form-container">

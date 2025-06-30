@@ -25,15 +25,10 @@ $espacios = $adminService->getEspaciosInstalacion($socorrista['instalacion_id'])
 </head>
 <body>
     <div class="container">
-        <header class="header">
-            <h1>📊 Control de Flujo por Espacios</h1>
-            <div class="user-info">
-                <span>👤 <?php echo htmlspecialchars($socorrista['nombre']); ?></span>
-                <span>🏢 <?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?></span>
-                <a href="/dashboard" class="btn btn-outline">← Dashboard</a>
-                <a href="/logout" class="btn btn-outline">Cerrar Sesión</a>
-            </div>
-        </header>
+        <?php 
+        $titulo = "Control de Flujo";
+        include __DIR__ . '/../partials/header-universal.php'; 
+        ?>
 
         <main class="main-content">
             <div class="form-container">

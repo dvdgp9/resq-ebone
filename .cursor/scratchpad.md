@@ -91,7 +91,7 @@
 - [x] **PASO 5.2**: Rediseño tarjetas layout horizontal  
 - [x] **PASO 5.3**: Footer navegación universal + modal formularios
 
-### 🎯 **FASE ACTUAL - REDISEÑO UI/UX FORMULARIOS**
+### ✅ **FASE ANTERIOR - REDISEÑO UI/UX FORMULARIOS** (COMPLETADA)
 - [x] **A1**: Crear variables CSS minimalistas (spacing, colors, typography) ✅
 - [x] **A2**: Rediseñar `.form-section` sin gradientes ni efectos ornamentales ✅  
 - [x] **A3**: Simplificar `.form-group` y labels (eliminar emojis, optimizar spacing) ✅
@@ -103,6 +103,20 @@
 - [x] **C1**: Aplicar cambios a formulario de control de flujo ✅ (automático con nuevo CSS)
 - [x] **C2**: Rediseñar modal de botiquín con mismo approach minimalista ✅ (botón arreglado + coordinación)
 - [x] **C3**: Unificar patrones de diseño en toda la aplicación ✅
+
+### 🎯 **FASE ACTUAL - UNIFICACIÓN HEADERS UI/UX**
+- [ ] **A1**: Crear `views/partials/header-universal.php` con patrón dashboard ⏳
+- [ ] **A2**: Parametrizar título dinámico y logout redirect ⏳
+- [ ] **A3**: Unificar logo a `logo-negativo-soco.png` en todo el sistema ⏳
+- [ ] **A4**: CSS unificado eliminando `.admin-header` duplicado ⏳
+- [ ] **B1**: Reemplazar header Control Flujo por include universal ⏳
+- [ ] **B2**: Reemplazar header Incidencias por include universal ⏳
+- [ ] **B3**: Rediseñar header Botiquín para usar include universal ⏳
+- [ ] **B4**: Actualizar Mi Cuenta para usar include universal ⏳
+- [ ] **C1**: Actualizar dashboard admin para usar header universal ⏳
+- [ ] **C2**: Migrar headers coordinadores, instalaciones, socorristas ⏳
+- [ ] **C3**: Unificar informes y otras páginas admin ⏳
+- [ ] **C4**: Limpiar CSS obsoleto (`.admin-header`) ⏳
 
 ## Current Status / Progress Tracking
 
@@ -615,3 +629,158 @@
 - **Modal sizing**: Usar `modal-large` para formularios complejos mejora la experiencia de usuario
 - **Form-help texts**: Textos de ayuda contextuales hacen interfaces más intuitivas
 - **Grid responsive**: Layout 2-1 en desktop que colapsa a columna única en móvil es patrón muy efectivo
+- **Emails de solicitudes**: Usar métodos estándar de email service en lugar de crear funciones custom
+- **Manejo de errores email**: Separar respuesta HTTP del envío de email para evitar cortes de JSON
+
+## Executor's Feedback or Assistance Requests
+
+### 🎯 **NUEVA FASE: ANÁLISIS UI/UX HEADERS - MODO PLANNER ACTIVO**
+
+**Objetivo**: Unificar todos los headers del sistema ResQ para crear experiencia de usuario consistente y profesional.
+
+## 🔍 **ANÁLISIS SISTEMÁTICO DE HEADERS ACTUALES**
+
+### **1. DASHBOARD PRINCIPAL (SOCORRISTAS)**
+- ✅ **Ya modernizado**: Header minimalista con logo + saludo + logout SVG
+- ✅ **Responsive perfecto**: 64px altura, background #D33E22, border-radius 12px
+- ✅ **Design system**: Funciona como referencia para unificación
+
+### **2. FORMULARIOS (CONTROL FLUJO, INCIDENCIAS, BOTIQUÍN)**
+- ❌ **Inconsistentes**: Cada uno tiene header diferente y obsoleto
+- ❌ **Control Flujo**: `<h1>📊 Control de Flujo por Espacios</h1>` + info usuario verbose
+- ❌ **Incidencias**: `<h1>⚠️ Reporte de Incidencias</h1>` + info usuario verbose 
+- ❌ **Botiquín**: Header personalizado con stats, estilo completamente diferente
+- ⚠️ **Problemas**: Info de usuario duplicada, emojis inconsistentes, botones desalineados
+
+### **3. MI CUENTA**
+- ✅ **Parcialmente bueno**: Usa mismo patrón que dashboard principal
+- ✅ **Logo y logout**: Estructura similar a dashboard modernizado
+- ✅ **Inconsistencia menor**: Título "Mi Cuenta" vs "¡Bienvenida/o!"
+
+### **4. PANEL ADMIN (DASHBOARD, COORDINADORES, INSTALACIONES, ETC.)**
+- ❌ **Headers admin obsoletos**: Estructura diferente a socorristas
+- ❌ **Logo diferente**: `/assets/images/logo.png` vs `/assets/images/logo-negativo-soco.png`
+- ❌ **Patrón diferente**: `class="admin-header"` con estilos propios
+- ❌ **Info usuario**: Formato badge diferente, estructura inconsistente
+
+## 🎯 **PROBLEMAS IDENTIFICADOS**
+
+### **A. INCONSISTENCIA VISUAL**
+- **4 patrones diferentes** de headers en la aplicación
+- **Logotipos mixtos**: `logo.png` vs `logo-negativo-soco.png`
+- **Estilos divergentes**: `.header` vs `.admin-header` vs headers custom
+- **Información usuario**: Formatos y ubicaciones inconsistentes
+
+### **B. INFORMACIÓN REDUNDANTE**
+- **Formularios verbose**: Nombre + instalación + DNI + fecha sesión repetida
+- **Navegación duplicada**: Botones "Dashboard" + "Cerrar Sesión" en formularios
+- **Info contextual**: Datos mostrados que ya están en footer navigation
+
+### **C. EXPERIENCE FRAGMENTADA**
+- **Saltos visuales**: Cada sección parece aplicación diferente
+- **Cognitive load**: Usuario debe reaprender navegación en cada sección
+- **Brand dilution**: Falta cohesión visual de ResQ como sistema unificado
+
+## 💡 **ESTRATEGIA DE UNIFICACIÓN PROPUESTA**
+
+### **APPROACH 1: HEADER UNIVERSAL COMPONENT**
+**Crear componente `views/partials/header-universal.php` reutilizable**
+
+**Características del nuevo header unificado**:
+- ✅ **Logo consistente**: Solo `logo-negativo-soco.png` en todo el sistema
+- ✅ **Background unificado**: `#D33E22` con border-radius consistente  
+- ✅ **Información mínima**: Solo título dinámico + logout button
+- ✅ **Responsive**: Mismas medidas que dashboard actual (64px altura)
+- ✅ **Estructura universal**: Mismo HTML/CSS en socorristas y admin
+
+**Títulos dinámicos por página**:
+- Dashboard: "¡Bienvenida/o!"
+- Control Flujo: "Control de Flujo"
+- Incidencias: "Reporte de Incidencias"  
+- Botiquín: "Gestión de Botiquín"
+- Mi Cuenta: "Mi Cuenta"
+- Admin Dashboard: "Panel Administración"
+- Etc.
+
+### **APPROACH 2: ELIMINACIÓN INFORMACIÓN REDUNDANTE**
+**Quitar datos de contexto innecesarios de headers**:
+- ❌ **Eliminar**: Nombre usuario, instalación, DNI, fecha sesión
+- ❌ **Eliminar**: Badges de usuario verbose en headers
+- ❌ **Eliminar**: Links "Dashboard" y "Cerrar Sesión" de formularios
+- ✅ **Mantener**: Solo logout icon universal + título página
+
+**Justificación**: Footer navigation ya tiene acceso a Inicio y Mi Cuenta tiene toda la info personal
+
+## 📋 **PLAN DE IMPLEMENTACIÓN EFICIENTE**
+
+### **FASE A: CREAR HEADER UNIVERSAL**
+- **A1**: Crear `views/partials/header-universal.php` con patrón del dashboard
+- **A2**: Parametrizar título dinámico y logout redirect
+- **A3**: Unificar logo a `logo-negativo-soco.png` en todo el sistema
+- **A4**: CSS unificado eliminando `.admin-header` duplicado
+
+### **FASE B: MIGRACIÓN FORMULARIOS** 
+- **B1**: Reemplazar header Control Flujo por include universal
+- **B2**: Reemplazar header Incidencias por include universal  
+- **B3**: Rediseñar header Botiquín para usar include universal
+- **B4**: Actualizar Mi Cuenta para usar include universal
+
+### **FASE C: MIGRACIÓN ADMIN**
+- **C1**: Actualizar dashboard admin para usar header universal
+- **C2**: Migrar headers de coordinadores, instalaciones, socorristas
+- **C3**: Unificar informes y otras páginas admin
+- **C4**: Limpiar CSS obsoleto (`.admin-header`)
+
+### **FASE D: POLISH & TESTING**
+- **D1**: Verificar responsive en todos los dispositivos
+- **D2**: Testing de navegación unificada
+- **D3**: Cleanup de código obsoleto
+- **D4**: Documentar nuevo componente header
+
+## 🏗️ **ESPECIFICACIONES TÉCNICAS HEADER UNIVERSAL**
+
+```php
+// views/partials/header-universal.php
+// Parámetros: $titulo, $logout_url (opcional)
+```
+
+**Estructura HTML**:
+```html
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <img src="/assets/images/logo-negativo-soco.png" alt="ResQ Logo" class="header-logo">
+        </div>
+        <div class="header-title">
+            <h1><?= $titulo ?></h1>
+        </div>
+        <div class="header-actions">
+            <a href="<?= $logout_url ?? '/logout' ?>" class="btn-logout">
+                <!-- SVG logout icon -->
+            </a>
+        </div>
+    </div>
+</header>
+```
+
+**CSS Unificado**:
+- Reutilizar estilos existentes del dashboard
+- Eliminar duplicación `.admin-header`
+- Responsive consistente en todas las páginas
+
+## 🎯 **RESULTADO ESPERADO**
+
+### **BENEFICIOS DE LA UNIFICACIÓN**:
+- ✅ **Cohesión visual**: Sistema unificado con brand consistency
+- ✅ **Mantenibilidad**: Un solo componente header para toda la app
+- ✅ **User experience**: Navegación intuitiva y predecible
+- ✅ **Performance**: Eliminación código duplicado
+- ✅ **Escalabilidad**: Nuevas páginas usan automáticamente header estándar
+
+### **MÉTRICAS DE ÉXITO**:
+- ✅ **100% páginas** usando header universal
+- ✅ **1 solo componente** header en lugar de 4+ variantes
+- ✅ **Logo consistente** en toda la aplicación
+- ✅ **Responsive perfecto** mantenido en todos los contextos
+
+**Estado actual**: 🎯 **ANÁLISIS COMPLETO - ESPERANDO CONFIRMACIÓN PARA PROCEDER CON IMPLEMENTACIÓN**

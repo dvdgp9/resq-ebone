@@ -22,27 +22,20 @@ $socorrista = $auth->getSocorristaActual();
 <body>
     <div class="container">
         <main class="botiquin-container" style="padding-bottom: 2rem;">
-            <!-- Header unificado del botiquín -->
-            <div class="botiquin-header">
-                <div class="botiquin-header-top">
-                    <h1>🏥 Gestión de Botiquín</h1>
-                    <div class="header-actions">
-                        <span class="user-badge">👤 <?php echo htmlspecialchars($socorrista['nombre']); ?></span>
-                        <span class="instalacion-badge">🏢 <?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?></span>
-                        <a href="/dashboard" class="btn btn-outline">← Dashboard</a>
-                        <a href="/logout" class="btn btn-outline">Cerrar Sesión</a>
-                    </div>
+            <?php 
+            $titulo = "Gestión de Botiquín";
+            include __DIR__ . '/../partials/header-universal.php'; 
+            ?>
+            
+            <!-- Stats del botiquín -->
+            <div class="botiquin-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-elementos">-</div>
+                    <div>Total Elementos</div>
                 </div>
-                
-                <div class="botiquin-stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="total-elementos">-</div>
-                        <div>Total Elementos</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="ultima-actualizacion">-</div>
-                        <div>Última Actualización</div>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="ultima-actualizacion">-</div>
+                    <div>Última Actualización</div>
                 </div>
             </div>
 
