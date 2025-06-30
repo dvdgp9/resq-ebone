@@ -70,36 +70,66 @@ $socorrista = $auth->getSocorristaActual();
 
     <!-- Modal para solicitar material -->
     <div id="modal-solicitud" class="modal">
-        <div class="modal-content">
+        <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2 class="modal-title">📧 Solicitar Material</h2>
+                <h2 class="modal-title">📧 Solicitar Material al Coordinador</h2>
                 <button class="modal-close" onclick="cerrarModal('modal-solicitud')">&times;</button>
             </div>
             
             <form id="form-solicitud">
-                <div class="form-group">
-                    <label>📋 Elementos a Solicitar</label>
-                    <div id="elementos-solicitud">
-                        <div class="elemento-solicitud">
-                            <input type="text" placeholder="Nombre del elemento" required>
-                            <input type="number" placeholder="Cantidad" required min="1">
-                            <input type="text" placeholder="Observaciones (opcional)">
-                            <button type="button" onclick="eliminarElementoSolicitud(this)">❌</button>
+                <!-- Sección de elementos -->
+                <div class="form-section">
+                    <h3>📋 Elementos a Solicitar</h3>
+                    <div class="form-help">Añade todos los elementos que necesitas y especifica las cantidades</div>
+                    
+                    <div id="elementos-solicitud" class="elementos-solicitud-container">
+                        <div class="elemento-solicitud-item">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>📦 Nombre del elemento *</label>
+                                    <input type="text" placeholder="Ej: Aspirinas 500mg, Vendas elásticas..." required>
+                                    <div class="form-help">Especifica el elemento que necesitas</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>🔢 Cantidad *</label>
+                                    <input type="number" placeholder="1" required min="1">
+                                    <div class="form-help">¿Cuántos necesitas?</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>💭 Observaciones</label>
+                                <input type="text" placeholder="Urgente, marca específica, etc... (opcional)">
+                                <div class="form-help">Información adicional sobre este elemento</div>
+                            </div>
+                            <div class="elemento-actions">
+                                <button type="button" class="btn-remove-elemento" onclick="eliminarElementoSolicitud(this)" title="Eliminar elemento">
+                                    🗑️ Eliminar
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <button type="button" onclick="añadirElementoSolicitud()" class="btn btn-secondary">
-                        ➕ Añadir Elemento
-                    </button>
+                    
+                    <div class="add-elemento-section">
+                        <button type="button" onclick="añadirElementoSolicitud()" class="btn btn-secondary">
+                            ➕ Añadir Otro Elemento
+                        </button>
+                        <div class="form-help">Puedes solicitar múltiples elementos en una sola petición</div>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="mensaje-adicional">💬 Mensaje Adicional</label>
-                    <textarea id="mensaje-adicional" rows="4" placeholder="Información adicional para el coordinador (opcional)"></textarea>
+                <!-- Sección de mensaje -->
+                <div class="form-section">
+                    <h3>💬 Mensaje para el Coordinador</h3>
+                    <div class="form-group">
+                        <label for="mensaje-adicional">Información adicional</label>
+                        <textarea id="mensaje-adicional" rows="4" placeholder="Contexto adicional: ¿Para qué necesitas estos elementos? ¿Hay alguna urgencia? ¿Preferencias de marca?"></textarea>
+                        <div class="form-help">Este mensaje ayudará al coordinador a entender mejor tu solicitud</div>
+                    </div>
                 </div>
                 
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-solicitud')">
-                        Cancelar
+                        ✖️ Cancelar
                     </button>
                     <button type="submit" class="btn btn-primary">
                         📧 Enviar Solicitud
@@ -449,11 +479,29 @@ $socorrista = $auth->getSocorristaActual();
             // Resetear elementos de solicitud
             const container = document.getElementById('elementos-solicitud');
             container.innerHTML = `
-                <div class="elemento-solicitud">
-                    <input type="text" placeholder="Nombre del elemento" required>
-                    <input type="number" placeholder="Cantidad" required min="1">
-                    <input type="text" placeholder="Observaciones (opcional)">
-                    <button type="button" onclick="eliminarElementoSolicitud(this)">❌</button>
+                <div class="elemento-solicitud-item">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>📦 Nombre del elemento *</label>
+                            <input type="text" placeholder="Ej: Aspirinas 500mg, Vendas elásticas..." required>
+                            <div class="form-help">Especifica el elemento que necesitas</div>
+                        </div>
+                        <div class="form-group">
+                            <label>🔢 Cantidad *</label>
+                            <input type="number" placeholder="1" required min="1">
+                            <div class="form-help">¿Cuántos necesitas?</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>💭 Observaciones</label>
+                        <input type="text" placeholder="Urgente, marca específica, etc... (opcional)">
+                        <div class="form-help">Información adicional sobre este elemento</div>
+                    </div>
+                    <div class="elemento-actions">
+                        <button type="button" class="btn-remove-elemento" onclick="eliminarElementoSolicitud(this)" title="Eliminar elemento">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
                 </div>
             `;
             mostrarModal('modal-solicitud');
@@ -463,12 +511,30 @@ $socorrista = $auth->getSocorristaActual();
         function añadirElementoSolicitud() {
             const container = document.getElementById('elementos-solicitud');
             const nuevoElemento = document.createElement('div');
-            nuevoElemento.className = 'elemento-solicitud';
+            nuevoElemento.className = 'elemento-solicitud-item';
             nuevoElemento.innerHTML = `
-                <input type="text" placeholder="Nombre del elemento" required>
-                <input type="number" placeholder="Cantidad" required min="1">
-                <input type="text" placeholder="Observaciones (opcional)">
-                <button type="button" onclick="eliminarElementoSolicitud(this)">❌</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📦 Nombre del elemento *</label>
+                        <input type="text" placeholder="Ej: Aspirinas 500mg, Vendas elásticas..." required>
+                        <div class="form-help">Especifica el elemento que necesitas</div>
+                    </div>
+                    <div class="form-group">
+                        <label>🔢 Cantidad *</label>
+                        <input type="number" placeholder="1" required min="1">
+                        <div class="form-help">¿Cuántos necesitas?</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>💭 Observaciones</label>
+                    <input type="text" placeholder="Urgente, marca específica, etc... (opcional)">
+                    <div class="form-help">Información adicional sobre este elemento</div>
+                </div>
+                <div class="elemento-actions">
+                    <button type="button" class="btn-remove-elemento" onclick="eliminarElementoSolicitud(this)" title="Eliminar elemento">
+                        🗑️ Eliminar
+                    </button>
+                </div>
             `;
             container.appendChild(nuevoElemento);
         }
@@ -477,7 +543,9 @@ $socorrista = $auth->getSocorristaActual();
         function eliminarElementoSolicitud(button) {
             const container = document.getElementById('elementos-solicitud');
             if (container.children.length > 1) {
-                button.parentElement.remove();
+                button.parentElement.parentElement.remove();
+            } else {
+                mostrarError('Debe tener al menos un elemento en la solicitud');
             }
         }
 
@@ -485,7 +553,7 @@ $socorrista = $auth->getSocorristaActual();
         async function enviarSolicitud(e) {
             e.preventDefault();
             
-            const elementosDiv = document.querySelectorAll('.elemento-solicitud');
+            const elementosDiv = document.querySelectorAll('.elemento-solicitud-item');
             const elementos = [];
             
             elementosDiv.forEach(div => {

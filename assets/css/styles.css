@@ -2526,29 +2526,103 @@ img[src*="logo"] {
     opacity: 0.5;
 }
 
-/* Elementos de solicitud - Responsive fix */
-.elemento-solicitud {
+/* === MODAL SOLICITUD MEJORADO === */
+.elementos-solicitud-container {
+    margin: 20px 0;
+}
+
+.elemento-solicitud-item {
+    background: #FAFAFA;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.elemento-solicitud-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(211, 62, 34, 0.1);
+}
+
+.elemento-solicitud-item .form-row {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 15px;
 }
 
-.elemento-solicitud input {
-    margin: 0;
+.elemento-solicitud-item .form-group {
+    margin-bottom: 15px;
 }
 
-.elemento-solicitud button {
+.elemento-solicitud-item .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.elemento-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-remove-elemento {
     background: var(--error-color);
     color: white;
     border: none;
-    padding: 8px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-remove-elemento:hover {
+    background: #c62828;
+    transform: translateY(-1px);
+}
+
+.add-elemento-section {
+    text-align: center;
+    margin: 25px 0;
+    padding: 20px;
+    background: #F0F9FF;
+    border: 2px dashed #38BDF8;
+    border-radius: 12px;
+}
+
+.add-elemento-section .btn {
+    margin-bottom: 8px;
+}
+
+.add-elemento-section .form-help {
+    margin-top: 8px;
+    color: #0284C7;
+    font-style: italic;
+}
+
+/* Responsive para modal solicitud */
+@media (max-width: 768px) {
+    .elemento-solicitud-item .form-row {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .elemento-solicitud-item {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .add-elemento-section {
+        padding: 15px;
+        margin: 20px 0;
+    }
 }
 
 /* Historial */
@@ -2653,11 +2727,6 @@ img[src*="logo"] {
     }
 
     /* Botones flotantes eliminados - Ya no se usan */
-
-    .elemento-solicitud {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
 
     .elemento-card {
         padding: 10px;
