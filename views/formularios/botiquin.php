@@ -26,18 +26,6 @@ $socorrista = $auth->getSocorristaActual();
             $titulo = "Gestión de Botiquín";
             include __DIR__ . '/../partials/header-universal.php'; 
             ?>
-            
-            <!-- Stats del botiquín -->
-            <div class="botiquin-stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="total-elementos">-</div>
-                    <div>Total Elementos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="ultima-actualizacion">-</div>
-                    <div>Última Actualización</div>
-                </div>
-            </div>
 
             <!-- Controles con acciones integradas -->
             <div class="botiquin-controls">
@@ -188,7 +176,6 @@ $socorrista = $auth->getSocorristaActual();
 
                 if (data.success) {
                     inventario = data.inventario;
-                    actualizarEstadisticas(data);
                     renderizarInventario();
                 } else {
                     mostrarError('Error cargando inventario: ' + data.error);
@@ -198,31 +185,7 @@ $socorrista = $auth->getSocorristaActual();
             }
         }
 
-        // Actualizar estadísticas
-        function actualizarEstadisticas(data) {
-            const todosElementos = Object.values(inventario).flat();
-            document.getElementById('total-elementos').textContent = todosElementos.length;
-            
-            // Encontrar última actualización
-            let ultimaFecha = null;
-            todosElementos.forEach(elemento => {
-                if (elemento.fecha_ultima_actualizacion) {
-                    const fecha = new Date(elemento.fecha_ultima_actualizacion);
-                    if (!ultimaFecha || fecha > ultimaFecha) {
-                        ultimaFecha = fecha;
-                    }
-                }
-            });
-            
-            if (ultimaFecha) {
-                const ahora = new Date();
-                const diff = Math.floor((ahora - ultimaFecha) / (1000 * 60 * 60 * 24));
-                document.getElementById('ultima-actualizacion').textContent = 
-                    diff === 0 ? 'Hoy' : `${diff} día${diff !== 1 ? 's' : ''}`;
-            } else {
-                document.getElementById('ultima-actualizacion').textContent = 'N/A';
-            }
-        }
+
 
         // Renderizar inventario
         function renderizarInventario() {
@@ -344,8 +307,6 @@ $socorrista = $auth->getSocorristaActual();
                 const result = await response.json();
                 
                 if (result.success) {
-                    // Actualizar estadísticas
-                    actualizarEstadisticas();
                     input.classList.remove('editing');
                     input.classList.add('success');
                     setTimeout(() => input.classList.remove('success'), 1000);
