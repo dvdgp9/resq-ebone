@@ -112,7 +112,8 @@ class EmailService {
         $nombres = [
             'control_flujo' => 'Control de Flujo de Personas',
             'incidencias' => 'Reporte de Incidencia',
-            'parte_accidente' => 'Parte de Accidente'
+            'parte_accidente' => 'Parte de Accidente',
+            'solicitud_botiquin' => 'Solicitud de Material para Botiquín'
         ];
         
         return $nombres[$tipo] ?? 'Formulario';
@@ -132,6 +133,8 @@ class EmailService {
                 .header { background-color: #d32f2f; color: white; padding: 20px; text-align: center; }
                 .content { padding: 20px; }
                 .info-box { background-color: #f5f5f5; padding: 15px; margin: 10px 0; border-left: 4px solid #d32f2f; }
+                .elementos-box { background-color: #e8f5e8; padding: 15px; margin: 10px 0; border-left: 4px solid #4caf50; }
+                .mensaje-box { background-color: #f3e5f5; padding: 15px; margin: 10px 0; border-left: 4px solid #9c27b0; }
                 .footer { background-color: #f0f0f0; padding: 10px; text-align: center; font-size: 12px; }
             </style>
         </head>
@@ -151,8 +154,37 @@ class EmailService {
                     <p><strong>Fecha y Hora:</strong> {$fecha}</p>
                     <p><strong>ID del Formulario:</strong> #{$formularioData['id']}</p>
                     <p><strong>Socorrista:</strong> {$formularioData['socorrista_nombre']}</p>
-                </div>
+                </div>";
+        
+        // Contenido específico para solicitudes de botiquín
+        if ($formularioData['tipo_formulario'] === 'solicitud_botiquin') {
+            if (isset($formularioData['elementos_solicitados']) && !empty($formularioData['elementos_solicitados'])) {
+                $html .= "
+                <div class='elementos-box'>
+                    <h3>📦 Elementos Solicitados:</h3>
+                    <ul>";
                 
+                foreach ($formularioData['elementos_solicitados'] as $elemento) {
+                    $html .= "<li><strong>{$elemento['nombre']}</strong>: {$elemento['cantidad']} unidades";
+                    if (!empty($elemento['observaciones'])) {
+                        $html .= " <em>({$elemento['observaciones']})</em>";
+                    }
+                    $html .= "</li>";
+                }
+                
+                $html .= "</ul></div>";
+            }
+            
+            if (isset($formularioData['mensaje_adicional']) && !empty($formularioData['mensaje_adicional'])) {
+                $html .= "
+                <div class='mensaje-box'>
+                    <h3>💭 Mensaje Adicional:</h3>
+                    <p>" . nl2br(htmlspecialchars($formularioData['mensaje_adicional'])) . "</p>
+                </div>";
+            }
+        }
+        
+        $html .= "
                 <p>Para revisar los detalles completos del formulario, accede al panel de administración de ResQ.</p>
                 
                 <p><a href='" . BASE_URL . "/admin' style='background-color: #d32f2f; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Acceder al Panel</a></p>

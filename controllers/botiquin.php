@@ -444,22 +444,6 @@ function crearSolicitud($socorrista) {
 
 // Función para enviar email de solicitud
 function enviarEmailSolicitud($socorrista, $elementos, $mensajeAdicional, $solicitudId) {
-    $db = Database::getInstance()->getConnection();
-    
-    // Obtener coordinador
-    $stmt = $db->prepare("
-        SELECT c.email, c.nombre, i.nombre as instalacion_nombre
-        FROM coordinadores c 
-        JOIN instalaciones i ON c.id = i.coordinador_id 
-        WHERE i.id = ?
-    ");
-    $stmt->execute([$socorrista['instalacion_id']]);
-    $coordinador = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$coordinador) {
-        throw new Exception('Coordinador no encontrado');
-    }
-    
     // Cargar servicio de email
     if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
         require_once __DIR__ . '/../classes/EmailService.php';
@@ -469,60 +453,22 @@ function enviarEmailSolicitud($socorrista, $elementos, $mensajeAdicional, $solic
         $emailService = new SimpleEmailService();
     }
     
-    // Preparar contenido del email
-    $subject = "ResQ - Solicitud de Material para Botiquín 🏥";
+    // Preparar datos del formulario para el servicio de email
+    $formularioData = [
+        'id' => $solicitudId,
+        'socorrista_id' => $socorrista['id'],
+        'tipo_formulario' => 'solicitud_botiquin',
+        'fecha_creacion' => date('Y-m-d H:i:s'),
+        'socorrista_nombre' => $socorrista['nombre'],
+        'elementos_solicitados' => $elementos,
+        'mensaje_adicional' => $mensajeAdicional
+    ];
     
-    $elementosHtml = '';
-    foreach ($elementos as $elemento) {
-        $elementosHtml .= "<li><strong>{$elemento['nombre']}</strong>: {$elemento['cantidad']} unidades";
-        if (!empty($elemento['observaciones'])) {
-            $elementosHtml .= " <em>({$elemento['observaciones']})</em>";
-        }
-        $elementosHtml .= "</li>";
-    }
+    // Usar el método estándar de envío que funciona en incidencias
+    $resultado = $emailService->enviarNotificacionFormulario($formularioData);
     
-    $body = "
-    <h2 style='color: #2e7d32;'>🏥 Solicitud de Material para Botiquín</h2>
-    
-    <div style='background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #4caf50;'>
-        <h3>INFORMACIÓN GENERAL</h3>
-        <p><strong>Instalación:</strong> {$coordinador['instalacion_nombre']}</p>
-        <p><strong>Socorrista:</strong> {$socorrista['nombre']}</p>
-        <p><strong>Fecha:</strong> " . date('d/m/Y H:i') . "</p>
-    </div>
-    
-    <div style='background: #fff3e0; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #ff9800;'>
-        <h3>ELEMENTOS SOLICITADOS</h3>
-        <ul style='margin: 10px 0; padding-left: 20px;'>
-            {$elementosHtml}
-        </ul>
-    </div>";
-    
-    if (!empty($mensajeAdicional)) {
-        $body .= "
-        <div style='background: #f3e5f5; padding: 15px; border-radius: 5px; margin: 10px 0; border-left: 4px solid #9c27b0;'>
-            <h3>MENSAJE ADICIONAL</h3>
-            <div style='background: white; padding: 10px; border-radius: 3px;'>
-                " . nl2br(htmlspecialchars($mensajeAdicional)) . "
-            </div>
-        </div>";
-    }
-    
-    $body .= "
-    <div style='background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 10px 0; text-align: center;'>
-        <p><strong>📋 SOLICITUD DE MATERIAL - BOTIQUÍN</strong></p>
-        <p><small>Solicitud #{$solicitudId} - " . date('d/m/Y H:i:s') . "</small></p>
-        <p><small>Sistema ResQ - Gestión de Botiquín</small></p>
-    </div>";
-    
-    // Enviar email
-    $mail = $emailService->crearMail();
-    $mail->addAddress($coordinador['email'], $coordinador['nombre']);
-    $mail->Subject = $subject;
-    $mail->Body = $body;
-    
-    if (!$mail->send()) {
-        throw new Exception('Error enviando email: ' . $mail->ErrorInfo);
+    if (!$resultado) {
+        throw new Exception('Error enviando email de solicitud');
     }
 }
 ?>

@@ -74,7 +74,8 @@ class SimpleEmailService {
         $nombres = [
             'control_flujo' => 'Control de Flujo de Personas',
             'incidencias' => 'Reporte de Incidencia',
-            'parte_accidente' => 'Parte de Accidente'
+            'parte_accidente' => 'Parte de Accidente',
+            'solicitud_botiquin' => 'Solicitud de Material para Botiquín'
         ];
         
         return $nombres[$tipo] ?? 'Formulario';
@@ -84,7 +85,7 @@ class SimpleEmailService {
         $tipoFormulario = $this->obtenerNombreFormulario($formularioData['tipo_formulario']);
         $fecha = date('d/m/Y H:i', strtotime($formularioData['fecha_creacion']));
         
-        return "
+        $mensaje = "
 ResQ - Notificación de Formulario
 
 Hola {$coordinadorData['nombre']},
@@ -95,13 +96,32 @@ Detalles del Formulario:
 - Tipo: {$tipoFormulario}
 - Fecha y Hora: {$fecha}
 - ID del Formulario: #{$formularioData['id']}
-- Socorrista: {$formularioData['socorrista_nombre']}
+- Socorrista: {$formularioData['socorrista_nombre']}";
 
-Para revisar los detalles completos, accede al panel de administración:
+        // Contenido específico para solicitudes de botiquín
+        if ($formularioData['tipo_formulario'] === 'solicitud_botiquin') {
+            if (isset($formularioData['elementos_solicitados']) && !empty($formularioData['elementos_solicitados'])) {
+                $mensaje .= "\n\nElementos Solicitados:";
+                foreach ($formularioData['elementos_solicitados'] as $elemento) {
+                    $mensaje .= "\n- {$elemento['nombre']}: {$elemento['cantidad']} unidades";
+                    if (!empty($elemento['observaciones'])) {
+                        $mensaje .= " ({$elemento['observaciones']})";
+                    }
+                }
+            }
+            
+            if (isset($formularioData['mensaje_adicional']) && !empty($formularioData['mensaje_adicional'])) {
+                $mensaje .= "\n\nMensaje Adicional:\n{$formularioData['mensaje_adicional']}";
+            }
+        }
+
+        $mensaje .= "\n\nPara revisar los detalles completos, accede al panel de administración:
 " . BASE_URL . "/admin
 
 Este es un mensaje automático del sistema ResQ.
         ";
+        
+        return $mensaje;
     }
     
     /**
