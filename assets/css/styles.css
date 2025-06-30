@@ -2433,7 +2433,7 @@ img[src*="logo"] {
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
+    padding: 12px 20px;
     transition: var(--transition);
     position: relative;
     overflow: hidden;
@@ -2619,6 +2619,7 @@ img[src*="logo"] {
 }
 
 .elemento-meta {
+    display: none;
     font-size: 0.7em;
     color: var(--text-light);
     text-align: center;
@@ -2858,7 +2859,6 @@ img[src*="logo"] {
     /* Botones flotantes eliminados - Ya no se usan */
 
     .elemento-card {
-        padding: 10px;
         min-height: 110px;
     }
 
