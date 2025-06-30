@@ -33,96 +33,84 @@ $socorrista = $auth->getSocorristaActual();
         <main class="main-content">
             <div class="form-container">
                 <form id="incidenciasForm" class="form">
-                    <!-- Información del Socorrista (Autorrellenada) -->
+                    <!-- Información contextual colapsada -->  
                     <div class="form-section">
-                        <h3>👤 Información del Socorrista</h3>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="nombre_socorrista">Nombre Socorrista</label>
-                                <input type="text" id="nombre_socorrista" name="nombre_socorrista" 
-                                       value="<?php echo htmlspecialchars($socorrista['nombre']); ?>" readonly>
-                                <div class="form-help">Autorrellenado desde tu perfil</div>
+                        <details class="context-info">
+                            <summary>Información contextual</summary>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nombre_socorrista">Socorrista</label>
+                                    <input type="text" id="nombre_socorrista" name="nombre_socorrista" 
+                                           value="<?php echo htmlspecialchars($socorrista['nombre']); ?>" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="fecha">Fecha</label>
+                                    <input type="text" id="fecha" name="fecha" readonly>
+                                </div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="fecha">📅 Fecha</label>
-                                <input type="text" id="fecha" name="fecha" readonly>
-                                <div class="form-help">Día y mes actual</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="instalacion">Instalación</label>
+                                    <input type="text" id="instalacion" name="instalacion" 
+                                           value="<?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?>" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="coordinador">Coordinador/a</label>
+                                    <input type="text" id="coordinador" name="coordinador" readonly>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="instalacion">🏢 Instalación</label>
-                                <input type="text" id="instalacion" name="instalacion" 
-                                       value="<?php echo htmlspecialchars($socorrista['instalacion_nombre']); ?>" readonly>
-                                <div class="form-help">Tu instalación asignada</div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="coordinador">👨‍💼 Coordinador/a</label>
-                                <input type="text" id="coordinador" name="coordinador" readonly>
-                                <div class="form-help">Coordinador de tu instalación</div>
-                            </div>
-                        </div>
+                        </details>
                     </div>
 
-                    <!-- Detalles de la Incidencia -->
+                    <!-- Campos principales -->
                     <div class="form-section">
-                        <h3>⚠️ Detalles de la Incidencia</h3>
+                        <h3>Reporte de Incidencia</h3>
                         
                         <div class="form-group">
-                            <label for="descripcion">📝 Descripción de la incidencia *</label>
+                            <label for="descripcion" class="required">Descripción de la incidencia</label>
                             <textarea id="descripcion" name="descripcion" rows="4" required
                                       placeholder="Describe detalladamente qué ocurrió..."></textarea>
-                            <div class="form-help">Explica claramente la incidencia ocurrida</div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="ubicacion">📍 Ubicación *</label>
-                            <input type="text" id="ubicacion" name="ubicacion" required
-                                   placeholder="Ej: Planta 2, Sala de máquinas, Entrada principal...">
-                            <div class="form-help">Lugar específico donde ocurrió la incidencia</div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="acciones_tomadas">🛠️ Acciones tomadas *</label>
-                            <textarea id="acciones_tomadas" name="acciones_tomadas" rows="3" required
-                                      placeholder="Describe las medidas que se tomaron inmediatamente..."></textarea>
-                            <div class="form-help">Qué se hizo para resolver o mitigar la incidencia</div>
-                        </div>
-                    </div>
-
-                    <!-- Estado y Seguimiento -->
-                    <div class="form-section">
-                        <h3>✅ Estado y Seguimiento</h3>
-                        
                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="ubicacion" class="required">Ubicación</label>
+                                <input type="text" id="ubicacion" name="ubicacion" required
+                                       placeholder="Ej: Planta 2, Sala de máquinas...">
+                            </div>
+                            
                             <div class="form-group">
                                 <label class="checkbox-label">
                                     <input type="checkbox" id="resuelta" name="resuelta">
                                     <span class="checkmark"></span>
                                     ¿Resuelta?
                                 </label>
-                                <div class="form-help">Marca si la incidencia ya está completamente resuelta</div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="total_dias">📊 Total días</label>
-                                <input type="number" id="total_dias" name="total_dias" 
-                                       min="0" max="365" value="1" placeholder="1">
-                                <div class="form-help">Número de días que ha durado la incidencia</div>
-                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="acciones_tomadas" class="required">Acciones tomadas</label>
+                            <textarea id="acciones_tomadas" name="acciones_tomadas" rows="3" required
+                                      placeholder="Describe las medidas que se tomaron..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="total_dias">Duración (días)</label>
+                            <input type="number" id="total_dias" name="total_dias" 
+                                   min="0" max="365" value="1" placeholder="1">
+                            <div class="form-help">Número de días que ha durado la incidencia</div>
                         </div>
                     </div>
 
                     <div class="form-actions">
                         <button type="button" onclick="window.location.href='/dashboard'" class="btn btn-secondary">
-                            ← Volver al Dashboard
+                            Cancelar
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            📤 Enviar Reporte de Incidencia
+                            Enviar Reporte
                         </button>
                     </div>
                 </form>
