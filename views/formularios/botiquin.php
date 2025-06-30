@@ -72,7 +72,7 @@ $socorrista = $auth->getSocorristaActual();
     <div id="modal-solicitud" class="modal">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2 class="modal-title">📧 Solicitar Material al Coordinador</h2>
+                <h2 class="modal-title">📧 Solicitar Material a Coordinación</h2>
                 <button class="modal-close" onclick="cerrarModal('modal-solicitud')">&times;</button>
             </div>
             
@@ -119,11 +119,11 @@ $socorrista = $auth->getSocorristaActual();
                 
                 <!-- Sección de mensaje -->
                 <div class="form-section">
-                    <h3>💬 Mensaje para el Coordinador</h3>
+                    <h3>💬 Mensaje para Coordinación</h3>
                     <div class="form-group">
                         <label for="mensaje-adicional">Información adicional</label>
                         <textarea id="mensaje-adicional" rows="4" placeholder="Contexto adicional: ¿Para qué necesitas estos elementos? ¿Hay alguna urgencia? ¿Preferencias de marca?"></textarea>
-                        <div class="form-help">Este mensaje ayudará al coordinador a entender mejor tu solicitud</div>
+                        <div class="form-help">Este mensaje ayudará a coordinación a entender mejor tu solicitud</div>
                     </div>
                 </div>
                 

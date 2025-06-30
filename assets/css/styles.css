@@ -2722,6 +2722,20 @@ img[src*="logo"] {
     font-style: italic;
 }
 
+/* === FIX BOTÓN SECUNDARIO EN MODALES/FORMULARIOS === */
+.form-section .btn-secondary,
+.modal-content .btn-secondary {
+    background: var(--bg-gray);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.form-section .btn-secondary:hover,
+.modal-content .btn-secondary:hover {
+    background: var(--border-light);
+    border-color: var(--text-light);
+}
+
 /* Responsive para modal solicitud */
 @media (max-width: 768px) {
     .elemento-solicitud-item .form-row {
