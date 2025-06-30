@@ -219,8 +219,8 @@ $socorrista = $auth->getSocorristaActual();
                     <div class="empty-state">
                         <div class="empty-icon">🏥</div>
                         <h3>No hay elementos en el inventario</h3>
-                        <p>El coordinador añadirá elementos al botiquín desde el panel de administración</p>
-                        <p>Mientras tanto, puedes usar el botón "📧 Solicitar" para pedir material</p>
+                        <p>Los coordinadores pueden añadir elementos desde el panel de administración</p>
+                        <p>Si necesitas material, puedes usar el botón <strong>"📧 Solicitar"</strong> para hacer una petición</p>
                     </div>
                 `;
                 return;
@@ -247,9 +247,16 @@ $socorrista = $auth->getSocorristaActual();
                     
                     <div class="elemento-content">
                         <div class="cantidad-section">
-                            <div class="cantidad-display">
-                                <span class="cantidad-readonly">${elemento.cantidad_actual}</span>
-                                <span class="cantidad-unidad">${elemento.unidad_medida}</span>
+                            <div class="cantidad-controls">
+                                <button class="btn-cantidad btn-minus" onclick="cambiarCantidad(${elemento.id}, -1)" title="Reducir">-</button>
+                                <div class="cantidad-display">
+                                    <input type="number" class="cantidad-input" id="cantidad-${elemento.id}" 
+                                           value="${elemento.cantidad_actual}" min="0" 
+                                           onchange="actualizarCantidad(${elemento.id}, this.value)"
+                                           onblur="this.classList.remove('editing')">
+                                    <span class="cantidad-unidad">${elemento.unidad_medida}</span>
+                                </div>
+                                <button class="btn-cantidad btn-plus" onclick="cambiarCantidad(${elemento.id}, 1)" title="Aumentar">+</button>
                             </div>
                         </div>
                         
@@ -272,8 +279,74 @@ $socorrista = $auth->getSocorristaActual();
             renderizarInventario();
         }
 
-        // Funciones de administración de inventario eliminadas
-        // Solo los coordinadores pueden añadir/editar/eliminar elementos desde el panel admin
+
+
+
+
+
+
+        // Cambiar cantidad con botones +/-
+        async function cambiarCantidad(id, cambio) {
+            const input = document.getElementById(`cantidad-${id}`);
+            const nuevaCantidad = Math.max(0, parseInt(input.value) + cambio);
+            input.value = nuevaCantidad;
+            input.classList.add('editing');
+            await actualizarCantidad(id, nuevaCantidad);
+        }
+
+        // Actualizar cantidad
+        async function actualizarCantidad(id, nuevaCantidad) {
+            const elemento = encontrarElementoPorId(id);
+            if (!elemento) return;
+
+            // Optimistic update
+            const input = document.getElementById(`cantidad-${id}`);
+            const valorAnterior = elemento.cantidad_actual;
+            elemento.cantidad_actual = parseInt(nuevaCantidad);
+
+            try {
+                const response = await fetch('/api/botiquin?action=actualizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: id,
+                        nombre_elemento: elemento.nombre_elemento,
+                        categoria: elemento.categoria,
+                        cantidad_actual: parseInt(nuevaCantidad),
+                        unidad_medida: elemento.unidad_medida,
+                        observaciones: elemento.observaciones
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Actualizar estadísticas
+                    actualizarEstadisticas();
+                    input.classList.remove('editing');
+                    input.classList.add('success');
+                    setTimeout(() => input.classList.remove('success'), 1000);
+                } else {
+                    // Revertir cambio
+                    elemento.cantidad_actual = valorAnterior;
+                    input.value = valorAnterior;
+                    input.classList.remove('editing');
+                    input.classList.add('error');
+                    setTimeout(() => input.classList.remove('error'), 2000);
+                    mostrarError(result.error);
+                }
+            } catch (error) {
+                // Revertir cambio
+                elemento.cantidad_actual = valorAnterior;
+                input.value = valorAnterior;
+                input.classList.remove('editing');
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 2000);
+                mostrarError('Error de conexión: ' + error.message);
+            }
+        }
+
+
 
         // Ver historial
         async function verHistorial(id) {
