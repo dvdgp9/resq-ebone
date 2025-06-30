@@ -53,10 +53,7 @@ $socorrista = $auth->getSocorristaActual();
                     <span class="search-icon">🔍</span>
                 </div>
                 <div class="action-buttons">
-                    <button class="btn btn-primary btn-action" onclick="mostrarModalCrear()" title="Añadir nuevo elemento">
-                        ➕ Añadir
-                    </button>
-                    <button class="btn btn-outline btn-action" onclick="mostrarModalSolicitar()" title="Solicitar material">
+                    <button class="btn btn-primary btn-action" onclick="mostrarModalSolicitar()" title="Solicitar material">
                         📧 Solicitar
                     </button>
                 </div>
@@ -69,50 +66,7 @@ $socorrista = $auth->getSocorristaActual();
         </main>
     </div>
 
-    <!-- Modal para crear/editar elemento -->
-    <div id="modal-elemento" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modal-elemento-title">➕ Añadir Elemento</h2>
-                <button class="modal-close" onclick="cerrarModal('modal-elemento')">&times;</button>
-            </div>
-            
-            <form id="form-elemento">
-                <input type="hidden" id="elemento-id">
-                
-                <div class="form-group">
-                    <label for="elemento-nombre">📝 Nombre del Elemento *</label>
-                    <input type="text" id="elemento-nombre" required placeholder="Ej: Aspirinas 500mg">
-                </div>
-                
-                <input type="hidden" id="elemento-categoria" name="categoria" value="general">
-                
-                <div class="form-group">
-                    <label for="elemento-cantidad">📊 Cantidad Actual *</label>
-                    <input type="number" id="elemento-cantidad" required min="0" placeholder="0">
-                </div>
-                
-                <div class="form-group">
-                    <label for="elemento-unidad">📏 Unidad de Medida *</label>
-                    <input type="text" id="elemento-unidad" required placeholder="Ej: cajas, unidades, frascos">
-                </div>
-                
-                <div class="form-group">
-                    <label for="elemento-observaciones">📝 Observaciones</label>
-                    <textarea id="elemento-observaciones" rows="3" placeholder="Información adicional (opcional)"></textarea>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-elemento')">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        💾 Guardar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+
 
     <!-- Modal para solicitar material -->
     <div id="modal-solicitud" class="modal">
@@ -173,7 +127,6 @@ $socorrista = $auth->getSocorristaActual();
         // Variables globales
         let inventario = {};
         let filtroTexto = '';
-        let editandoElemento = null;
 
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -192,7 +145,6 @@ $socorrista = $auth->getSocorristaActual();
             // Los filtros de categoría se han eliminado para simplificar
 
             // Formularios
-            document.getElementById('form-elemento').addEventListener('submit', guardarElemento);
             document.getElementById('form-solicitud').addEventListener('submit', enviarSolicitud);
 
             // Cerrar modales al hacer clic fuera
@@ -267,10 +219,8 @@ $socorrista = $auth->getSocorristaActual();
                     <div class="empty-state">
                         <div class="empty-icon">🏥</div>
                         <h3>No hay elementos en el inventario</h3>
-                        <p>Añade elementos al botiquín para comenzar la gestión</p>
-                        <button class="btn btn-primary" onclick="mostrarModalCrear()">
-                            ➕ Añadir Primer Elemento
-                        </button>
+                        <p>El coordinador añadirá elementos al botiquín desde el panel de administración</p>
+                        <p>Mientras tanto, puedes usar el botón "📧 Solicitar" para pedir material</p>
                     </div>
                 `;
                 return;
@@ -293,28 +243,13 @@ $socorrista = $auth->getSocorristaActual();
                 <div class="elemento-card">
                     <div class="elemento-header">
                         <h4 class="elemento-nombre">${elemento.nombre_elemento}</h4>
-                        <div class="elemento-actions">
-                            <button class="action-btn edit" onclick="editarElemento(${elemento.id})" title="Editar">
-                                ✏️
-                            </button>
-                            <button class="action-btn delete" onclick="eliminarElemento(${elemento.id})" title="Eliminar">
-                                🗑️
-                            </button>
-                        </div>
                     </div>
                     
                     <div class="elemento-content">
                         <div class="cantidad-section">
-                            <div class="cantidad-controls">
-                                <button class="btn-cantidad btn-minus" onclick="cambiarCantidad(${elemento.id}, -1)" title="Reducir">-</button>
-                                <div class="cantidad-display">
-                                    <input type="number" class="cantidad-input" id="cantidad-${elemento.id}" 
-                                           value="${elemento.cantidad_actual}" min="0" 
-                                           onchange="actualizarCantidad(${elemento.id}, this.value)"
-                                           onblur="this.classList.remove('editing')">
-                                    <span class="cantidad-unidad">${elemento.unidad_medida}</span>
-                                </div>
-                                <button class="btn-cantidad btn-plus" onclick="cambiarCantidad(${elemento.id}, 1)" title="Aumentar">+</button>
+                            <div class="cantidad-display">
+                                <span class="cantidad-readonly">${elemento.cantidad_actual}</span>
+                                <span class="cantidad-unidad">${elemento.unidad_medida}</span>
                             </div>
                         </div>
                         
@@ -337,161 +272,8 @@ $socorrista = $auth->getSocorristaActual();
             renderizarInventario();
         }
 
-        // Mostrar modal crear
-        function mostrarModalCrear() {
-            editandoElemento = null;
-            document.getElementById('modal-elemento-title').textContent = '➕ Añadir Elemento';
-            document.getElementById('form-elemento').reset();
-            document.getElementById('elemento-id').value = '';
-            mostrarModal('modal-elemento');
-        }
-
-        // Editar elemento
-        function editarElemento(id) {
-            const elemento = encontrarElementoPorId(id);
-            if (!elemento) return;
-
-            editandoElemento = elemento;
-            document.getElementById('modal-elemento-title').textContent = '✏️ Editar Elemento';
-            document.getElementById('elemento-id').value = elemento.id;
-            document.getElementById('elemento-nombre').value = elemento.nombre_elemento;
-            document.getElementById('elemento-categoria').value = elemento.categoria;
-            document.getElementById('elemento-cantidad').value = elemento.cantidad_actual;
-            document.getElementById('elemento-unidad').value = elemento.unidad_medida;
-            document.getElementById('elemento-observaciones').value = elemento.observaciones || '';
-            
-            mostrarModal('modal-elemento');
-        }
-
-        // Guardar elemento
-        async function guardarElemento(e) {
-            e.preventDefault();
-            
-            const formData = {
-                nombre_elemento: document.getElementById('elemento-nombre').value,
-                categoria: document.getElementById('elemento-categoria').value,
-                cantidad_actual: parseInt(document.getElementById('elemento-cantidad').value),
-                unidad_medida: document.getElementById('elemento-unidad').value,
-                observaciones: document.getElementById('elemento-observaciones').value
-            };
-
-            const elementoId = document.getElementById('elemento-id').value;
-            const action = elementoId ? 'actualizar' : 'crear';
-            
-            if (elementoId) {
-                formData.id = parseInt(elementoId);
-            }
-
-            try {
-                const response = await fetch(`/api/botiquin?action=${action}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    mostrarExito(result.message);
-                    cerrarModal('modal-elemento');
-                    cargarInventario();
-                } else {
-                    mostrarError(result.error);
-                }
-            } catch (error) {
-                mostrarError('Error de conexión: ' + error.message);
-            }
-        }
-
-        // Cambiar cantidad con botones +/-
-        async function cambiarCantidad(id, cambio) {
-            const input = document.getElementById(`cantidad-${id}`);
-            const nuevaCantidad = Math.max(0, parseInt(input.value) + cambio);
-            input.value = nuevaCantidad;
-            input.classList.add('editing');
-            await actualizarCantidad(id, nuevaCantidad);
-        }
-
-        // Actualizar cantidad
-        async function actualizarCantidad(id, nuevaCantidad) {
-            const elemento = encontrarElementoPorId(id);
-            if (!elemento) return;
-
-            // Optimistic update
-            const input = document.getElementById(`cantidad-${id}`);
-            const valorAnterior = elemento.cantidad_actual;
-            elemento.cantidad_actual = parseInt(nuevaCantidad);
-
-            try {
-                const response = await fetch('/api/botiquin?action=actualizar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        id: id,
-                        nombre_elemento: elemento.nombre_elemento,
-                        categoria: elemento.categoria,
-                        cantidad_actual: parseInt(nuevaCantidad),
-                        unidad_medida: elemento.unidad_medida,
-                        observaciones: elemento.observaciones
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Actualizar estadísticas
-                    actualizarEstadisticas();
-                    input.classList.remove('editing');
-                    input.classList.add('success');
-                    setTimeout(() => input.classList.remove('success'), 1000);
-                } else {
-                    // Revertir cambio
-                    elemento.cantidad_actual = valorAnterior;
-                    input.value = valorAnterior;
-                    input.classList.remove('editing');
-                    input.classList.add('error');
-                    setTimeout(() => input.classList.remove('error'), 2000);
-                    mostrarError(result.error);
-                }
-            } catch (error) {
-                // Revertir cambio
-                elemento.cantidad_actual = valorAnterior;
-                input.value = valorAnterior;
-                input.classList.remove('editing');
-                input.classList.add('error');
-                setTimeout(() => input.classList.remove('error'), 2000);
-                mostrarError('Error de conexión: ' + error.message);
-            }
-        }
-
-        // Eliminar elemento
-        async function eliminarElemento(id) {
-            const elemento = encontrarElementoPorId(id);
-            if (!elemento) return;
-
-            if (!confirm(`¿Estás seguro de eliminar "${elemento.nombre_elemento}"?`)) {
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/botiquin?action=eliminar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    mostrarExito(result.message);
-                    cargarInventario();
-                } else {
-                    mostrarError(result.error);
-                }
-            } catch (error) {
-                mostrarError('Error de conexión: ' + error.message);
-            }
-        }
+        // Funciones de administración de inventario eliminadas
+        // Solo los coordinadores pueden añadir/editar/eliminar elementos desde el panel admin
 
         // Ver historial
         async function verHistorial(id) {

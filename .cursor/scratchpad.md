@@ -261,6 +261,50 @@
 - ✅ Modal formularios accesible desde cualquier página
 - ✅ Código mantenible y sin duplicación
 
+**✅ BOTIQUÍN: ELIMINAR BOTÓN AÑADIR - COMPLETADO EXITOSAMENTE**
+
+### 📋 **MODIFICACIÓN REALIZADA**:
+
+**Funcionalidad eliminada para socorristas**:
+- ✅ **Botón "Añadir"**: Eliminado del formulario de botiquín
+- ✅ **Modal crear/editar**: Completamente removido del código
+- ✅ **Botones +/- cantidad**: Eliminados, ahora solo visualización
+- ✅ **Botones editar/eliminar**: Removidos de las tarjetas de elementos
+- ✅ **Funciones JavaScript**: Todas las funciones de administración eliminadas
+
+**Funcionalidad mantenida para socorristas**:
+- ✅ **Botón "Solicitar"**: Funciona perfectamente para pedir material
+- ✅ **Visualización inventario**: Los socorristas ven cantidades actuales
+- ✅ **Modal solicitud**: Pueden solicitar múltiples elementos
+- ✅ **Historial**: Pueden ver historial de cambios (solo lectura)
+
+**Estado empty-state actualizado**:
+- ✅ **Mensaje actualizado**: "El coordinador añadirá elementos desde panel admin"
+- ✅ **Guía clara**: Se indica usar el botón "Solicitar" para pedir material
+- ✅ **Sin botón añadir**: Eliminado completamente del estado vacío
+
+### 🎯 **RESULTADO OBTENIDO**:
+
+**Separación clara de permisos**:
+- 👥 **Socorristas**: Solo pueden VER inventario + SOLICITAR material
+- 👨‍💼 **Coordinadores**: Podrán ADMINISTRAR inventario desde panel admin (futuro)
+- 🔒 **Seguridad**: Los socorristas no pueden modificar cantidades ni elementos
+
+**Archivos modificados**:
+- ✅ **Actualizado**: `views/formularios/botiquin.php`
+  - Botón "Añadir" eliminado
+  - Modal crear/editar eliminado completamente
+  - Controles de cantidad convertidos a solo lectura
+  - Botones de editar/eliminar removidos
+  - Funciones JavaScript de administración eliminadas
+  - Estado empty-state actualizado
+
+**Funcionalidad limpia**:
+- ✅ **Solo visualización**: Socorristas ven el inventario actual
+- ✅ **Solo solicitud**: Pueden pedir material al coordinador
+- ✅ **Sin modificación directa**: No pueden cambiar cantidades ni elementos
+- ✅ **UX clara**: Mensajes indican quién puede hacer qué
+
 **✅ PASO 5.1 HEADER - COMPLETADO Y FUNCIONANDO**
 
 ### 📋 **RESULTADO EXITOSO**:
@@ -319,3 +363,6 @@
 - **Estados activos**: Detectar página actual con PHP es más confiable que JavaScript
 - **Paths absolutos**: Usar `/assets/` en lugar de `../assets/` evita problemas de rutas
 - **Include paths**: `__DIR__ . '/../partials/'` garantiza rutas correctas desde cualquier directorio
+- **Separación de permisos**: Eliminar funcionalidad por rol (socorristas vs coordinadores) mejora UX y seguridad
+- **Estados empty inteligentes**: Mensajes contextuales explican qué puede hacer cada rol
+- **Refactoring progresivo**: Eliminar funcionalidad innecesaria simplifica código y reduce errores
