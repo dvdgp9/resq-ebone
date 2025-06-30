@@ -1,5 +1,6 @@
 # Archivos de configuración sensibles
 config/database.php
+config/local.php
 
 # Archivos de prueba y debug
 test_*.php
