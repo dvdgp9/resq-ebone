@@ -200,6 +200,11 @@ $socorrista = $auth->getSocorristaActual();
                 elemento.nombre_elemento.toLowerCase().includes(filtroTexto)
             );
 
+            // Ordenar alfabéticamente por nombre
+            elementosFiltrados.sort((a, b) => 
+                a.nombre_elemento.localeCompare(b.nombre_elemento, 'es', { sensitivity: 'base' })
+            );
+
             if (elementosFiltrados.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
