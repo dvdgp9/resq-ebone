@@ -417,8 +417,19 @@ function crearSolicitud($socorrista) {
     
     $solicitudId = $db->lastInsertId();
     
-    // Enviar email al coordinador
+    // Responder inmediatamente al usuario
+    echo json_encode([
+        'success' => true,
+        'message' => 'Solicitud enviada correctamente',
+        'solicitud_id' => $solicitudId
+    ]);
+    
+    // Intentar enviar email al coordinador en segundo plano
     try {
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request(); // Terminar respuesta HTTP antes del email
+        }
+        
         enviarEmailSolicitud($socorrista, $input['elementos'], $input['mensaje_adicional'] ?? '', $solicitudId);
         
         // Marcar como enviada
@@ -429,12 +440,6 @@ function crearSolicitud($socorrista) {
         // Log error pero no fallar la solicitud
         error_log("Error enviando email solicitud: " . $e->getMessage());
     }
-    
-    echo json_encode([
-        'success' => true,
-        'message' => 'Solicitud enviada correctamente',
-        'solicitud_id' => $solicitudId
-    ]);
 }
 
 // Función para enviar email de solicitud
