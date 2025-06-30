@@ -2276,6 +2276,7 @@ img[src*="logo"] {
     display: flex;
     gap: 15px;
     margin-bottom: 25px;
+    margin-top: 20px;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
