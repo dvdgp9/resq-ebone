@@ -296,8 +296,8 @@ function exportIncidencias($db) {
 
 
 function generateCSV($data, $filename) {
-    // Headers específicos para Excel con codificación Windows-1252
-    header('Content-Type: application/csv; charset=Windows-1252');
+    // Headers alternativos - CSV como texto plano UTF-8
+    header('Content-Type: text/plain; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
     header('Pragma: no-cache');
     header('Expires: 0');
@@ -306,19 +306,21 @@ function generateCSV($data, $filename) {
     // Abrir output stream
     $output = fopen('php://output', 'w');
     
-    // Escribir datos CSV con conversión a Windows-1252 para Excel
+    // BOM UTF-8 (volvemos a intentar pero con text/plain)
+    fwrite($output, "\xEF\xBB\xBF");
+    
+    // Escribir datos CSV manteniendo UTF-8 original
     foreach ($data as $row) {
-        // Convertir cada campo de UTF-8 a Windows-1252 (codificación nativa de Excel)
-        $excelRow = array_map(function($field) {
+        // Mantener datos exactamente como vienen, solo limpiar espacios
+        $cleanRow = array_map(function($field) {
             if (is_string($field)) {
-                // Convertir UTF-8 a Windows-1252 para compatibilidad total con Excel
-                return mb_convert_encoding(trim($field), 'Windows-1252', 'UTF-8');
+                return trim($field);
             }
             return $field;
         }, $row);
         
-        // Usar ';' como separador (estándar europeo) y '"' como encerramiento
-        fputcsv($output, $excelRow, ';', '"');
+        // Usar ';' como separador y '"' como encerramiento
+        fputcsv($output, $cleanRow, ';', '"');
     }
     
     fclose($output);

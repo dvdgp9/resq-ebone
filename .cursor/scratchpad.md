@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**🔄 ESTADO ACTUAL: BOM NO FUNCIONÓ - PROBANDO CODIFICACIÓN WINDOWS-1252**
+**🎯 ESTADO ACTUAL: INTENTO 3 - TEXT/PLAIN UTF-8 CON BOM**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -114,39 +114,40 @@
 - **Codificación UTF-8 en CSV**: Eliminar BOM y mb_convert_encoding 'auto' previene corrupción de caracteres especiales (ñ, acentos)
 - **Charset en consultas JOIN**: Añadir `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci` antes de consultas con JOIN previene corrupción en recuperación de datos
 - **Excel y UTF-8**: Excel requiere BOM UTF-8 (`\xEF\xBB\xBF`) para interpretar correctamente caracteres especiales. Preview/otros lectores CSV no lo necesitan
+- **Excel problemático con UTF-8**: Cuando BOM falla, convertir a Windows-1252 usando `mb_convert_encoding()` garantiza compatibilidad total con Excel
+- **Windows-1252 puede empeorar**: Conversión UTF-8→Windows-1252 puede crear "MarÍa" en lugar de "María". Mejor mantener UTF-8 y cambiar Content-Type a text/plain
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: 🔄 **NUEVA ESTRATEGIA - CONVERSIÓN A WINDOWS-1252**
+**Estado**: 🎯 **ESTRATEGIA 3: CSV COMO TEXT/PLAIN + UTF-8**
 
-### 🎯 **PROBLEMA PERSISTENTE CON EXCEL**
+### 🎯 **ANÁLISIS DE INTENTOS FALLIDOS**
 
-**DIAGNÓSTICO ACTUALIZADO**:
-- ✅ **Preview funciona**: Confirma que datos están bien en UTF-8
-- ❌ **BOM UTF-8 falló**: Excel sigue sin interpretar correctamente UTF-8 con BOM
-- 🎯 **Nueva estrategia**: Convertir a Windows-1252 (codificación nativa de Excel)
+**HISTÓRICO DE INTENTOS**:
+- ❌ **Intento 1**: UTF-8 + BOM con `application/csv` → Excel seguía mostrando caracteres corruptos
+- ❌ **Intento 2**: Windows-1252 → Empeoró: "MarÍa GarcÍa PÉrez" (peor que antes)
+- 🎯 **Intento 3**: UTF-8 + BOM con `text/plain` (nuevo enfoque)
 
-**NUEVA SOLUCIÓN IMPLEMENTADA**:
-- 🔄 **Conversión explícita**: `mb_convert_encoding()` de UTF-8 a Windows-1252
-- 🔄 **Headers actualizados**: `charset=Windows-1252` en Content-Type
-- ❌ **BOM eliminado**: No necesario para Windows-1252
-- ✅ **SET NAMES mantenido**: Consultas SQL siguen correctas
+**NUEVA ESTRATEGIA IMPLEMENTADA**:
+- 🔄 **Content-Type cambiado**: `text/plain; charset=UTF-8` en lugar de `application/csv`
+- ✅ **Volver a UTF-8**: Eliminada conversión Windows-1252 que empeoró las cosas
+- ✅ **BOM UTF-8 restaurado**: `\xEF\xBB\xBF` de nuevo
+- ✅ **Sin conversiones**: Solo `trim()`, manteniendo datos originales
 
-### 📋 **CÓDIGO WINDOWS-1252 PARA EXCEL**
+### 📋 **CÓDIGO TEXT/PLAIN PARA EXCEL**
 
 ```php
 function generateCSV($data, $filename) {
-    // Headers para Excel con Windows-1252
-    header('Content-Type: application/csv; charset=Windows-1252');
+    // Headers alternativos - CSV como texto plano
+    header('Content-Type: text/plain; charset=UTF-8');
     
-    // Conversión UTF-8 → Windows-1252
-    $excelRow = array_map(function($field) {
-        return mb_convert_encoding(trim($field), 'Windows-1252', 'UTF-8');
-    }, $row);
+    // BOM UTF-8 con text/plain
+    fwrite($output, "\xEF\xBB\xBF");
+    
+    // Sin conversiones, datos originales
+    $cleanRow = array_map('trim', $row);
 }
 ```
 
-### 🧪 **PRUEBA REQUERIDA**
-- Exportar CSV y abrir en Excel  
-- Verificar "María García Pérez" en Excel
-- Comprobar que Preview sigue funcionando correctamente 
+### 🧪 **TEORÍA**
+Excel podría interpretar mejor UTF-8 cuando viene etiquetado como `text/plain` en lugar de `application/csv` 
