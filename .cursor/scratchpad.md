@@ -462,3 +462,24 @@ Antes de proceder con el botiquín, necesito hacer testing rápido del sistema d
 ### 🔧 **CONTINUANDO PASO 2D: Implementar gestión básica de productos (CRUD)**
 
 **El sistema está listo para hacer pruebas** - Se puede acceder a `http://localhost/admin/botiquin` para probar la interfaz administrativa. 
+
+### 🚨 **PROBLEMA DETECTADO: API devuelve HTML en lugar de JSON**
+
+**Síntomas:**
+- Error: "Unexpected token '<'" en llamadas AJAX
+- Dashboard no carga datos
+- Las funciones JavaScript reciben HTML en lugar de JSON
+
+**Diagnóstico realizado:**
+- ✅ Controlador admin/botiquin.php sintácticamente correcto
+- ✅ AdminPermissionsService tiene todas las funciones necesarias  
+- ✅ Tablas definidas correctamente en `database/botiquin_tables.sql`
+- ❓ **POSIBLE CAUSA: Tablas de botiquín no ejecutadas en BD**
+
+**🔧 SOLUCIÓN EN PROCESO:**
+- Creado archivo `/debug-botiquin` para diagnóstico
+- **USUARIO DEBE ACCEDER A**: `http://localhost/debug-botiquin`
+- Verificar autenticación admin y existencia de tablas
+- Probablemente ejecutar `database/botiquin_tables.sql`
+
+### 🎯 **PRÓXIMO PASO: Ejecutar diagnóstico** 
