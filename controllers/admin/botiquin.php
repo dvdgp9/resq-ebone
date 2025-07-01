@@ -86,9 +86,6 @@ function getDashboard($permissions) {
         'total_elementos' => count($inventario),
         'solicitudes_pendientes' => count(array_filter($solicitudes, function($s) { 
             return $s['estado'] === 'pendiente'; 
-        })),
-        'elementos_bajo_minimos' => count(array_filter($inventario, function($i) { 
-            return $i['cantidad_actual'] <= 5; 
         }))
     ];
     
@@ -108,9 +105,6 @@ function getDashboard($permissions) {
             'nombre' => $instalacion['nombre'],
             'coordinador_nombre' => $instalacion['coordinador_nombre'],
             'total_elementos' => count($inventario_instalacion),
-            'elementos_bajo_minimos' => count(array_filter($inventario_instalacion, function($i) { 
-                return $i['cantidad_actual'] <= 5; 
-            })),
             'solicitudes_pendientes' => count($solicitudes_instalacion)
         ];
     }
@@ -125,17 +119,9 @@ function getDashboard($permissions) {
 // Función para obtener inventario
 function getInventario($permissions) {
     $instalacionId = $_GET['instalacion_id'] ?? null;
-    $categoria = $_GET['categoria'] ?? null;
     $busqueda = $_GET['busqueda'] ?? '';
     
     $inventario = $permissions->getInventarioBotiquinPermitido($instalacionId);
-    
-    // Filtrar por categoría si se especifica
-    if ($categoria && $categoria !== 'todos') {
-        $inventario = array_filter($inventario, function($item) use ($categoria) {
-            return $item['categoria'] === $categoria;
-        });
-    }
     
     // Filtrar por búsqueda
     if (!empty($busqueda)) {

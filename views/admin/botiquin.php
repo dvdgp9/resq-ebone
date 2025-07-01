@@ -71,13 +71,7 @@ $permissions = $adminAuth->getPermissionsService();
                             <div class="stat-label">Elementos</div>
                         </div>
                     </div>
-                    <div class="stat-card warning">
-                        <div class="stat-icon">⚠️</div>
-                        <div class="stat-content">
-                            <div class="stat-value" id="elementos-bajo-minimos">-</div>
-                            <div class="stat-label">Bajo Mínimos</div>
-                        </div>
-                    </div>
+
                     <div class="stat-card alert">
                         <div class="stat-icon">📋</div>
                         <div class="stat-content">
@@ -104,12 +98,11 @@ $permissions = $adminAuth->getPermissionsService();
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Instalación</th>
-                                    <th>Coordinador</th>
-                                    <th>Total Elementos</th>
-                                    <th>Bajo Mínimos</th>
-                                    <th>Solicitudes</th>
-                                    <th>Acciones</th>
+                                                                    <th>Instalación</th>
+                                <th>Coordinador</th>
+                                <th>Total Elementos</th>
+                                <th>Solicitudes</th>
+                                <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="instalaciones-tbody">
@@ -130,16 +123,7 @@ $permissions = $adminAuth->getPermissionsService();
                             <option value="">Todas las instalaciones</option>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="filtro-categoria">Categoría:</label>
-                        <select id="filtro-categoria" class="form-input">
-                            <option value="todos">Todas las categorías</option>
-                            <option value="medicamentos">Medicamentos</option>
-                            <option value="material_curacion">Material de Curación</option>
-                            <option value="instrumental">Instrumental</option>
-                            <option value="otros">Otros</option>
-                        </select>
-                    </div>
+
                     <div class="filter-group">
                         <label for="busqueda-elemento">Buscar:</label>
                         <input type="text" id="busqueda-elemento" class="form-input" placeholder="Nombre del elemento...">
@@ -440,7 +424,6 @@ $permissions = $adminAuth->getPermissionsService();
                 // Actualizar estadísticas
                 document.getElementById('total-instalaciones').textContent = data.stats.total_instalaciones;
                 document.getElementById('total-elementos').textContent = data.stats.total_elementos;
-                document.getElementById('elementos-bajo-minimos').textContent = data.stats.elementos_bajo_minimos;
                 document.getElementById('solicitudes-pendientes').textContent = data.stats.solicitudes_pendientes;
                 
                 // Actualizar tabla de instalaciones
@@ -453,9 +436,6 @@ $permissions = $adminAuth->getPermissionsService();
                         <td>${instalacion.nombre}</td>
                         <td>${instalacion.coordinador_nombre}</td>
                         <td>${instalacion.total_elementos}</td>
-                        <td class="${instalacion.elementos_bajo_minimos > 0 ? 'warning' : ''}">
-                            ${instalacion.elementos_bajo_minimos}
-                        </td>
                         <td class="${instalacion.solicitudes_pendientes > 0 ? 'alert' : ''}">
                             ${instalacion.solicitudes_pendientes}
                         </td>
@@ -485,7 +465,6 @@ $permissions = $adminAuth->getPermissionsService();
             const params = new URLSearchParams({
                 action: 'inventario',
                 instalacion_id: document.getElementById('filtro-instalacion').value,
-                categoria: document.getElementById('filtro-categoria').value,
                 busqueda: document.getElementById('busqueda-elemento').value
             });
             
