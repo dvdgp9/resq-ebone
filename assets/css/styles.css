@@ -1227,6 +1227,7 @@ img[src*="logo"] {
 
 /* Admin Tables */
 .admin-table-container {
+    width: 100%;
     background: white;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -3256,8 +3257,9 @@ img[src*="logo"] {
 
 /* Container específico para botiquín admin */
 .admin-botiquin-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     padding: var(--space-md);
 }
 
@@ -3294,15 +3296,7 @@ img[src*="logo"] {
     font-weight: var(--font-weight-semibold);
 }
 
-/* Secciones admin */
-.admin-section {
-    display: none;
-    animation: fadeIn 0.3s ease-in;
-}
-
-.admin-section.active {
-    display: block;
-}
+/* Secciones admin - REGLA OBSOLETA - MOVIDA ABAJO */
 
 /* Header admin específico para botiquín */
 .admin-header-content {
@@ -3366,10 +3360,7 @@ img[src*="logo"] {
     border-left: 4px solid var(--error-color);
 }
 
-/* Estados de inventario */
-.instalacion-inventario {
-    margin-bottom: var(--space-xl);
-}
+/* Estados de inventario - REGLA OBSOLETA - MOVIDA ABAJO */
 
 .instalacion-inventario h3 {
     margin: 0 0 var(--space-md) 0;
@@ -3624,12 +3615,12 @@ img[src*="logo"] {
 /* Controles modernos de filtros para admin */
 .admin-filters {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 25px;
     margin-top: 20px;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
+    align-items: end;
+    justify-content: flex-start;
 }
 
 /* Búsqueda moderna para admin */
@@ -3679,17 +3670,18 @@ img[src*="logo"] {
 }
 
 .admin-filter-group label {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--primary-color);
     margin-bottom: 0;
+    text-align: center;
 }
 
 .admin-filter-select {
-    padding: 10px 12px;
+    padding: 12px 15px;
     border: 2px solid var(--border-color);
-    border-radius: 12px;
-    font-size: 0.95rem;
+    border-radius: 25px;
+    font-size: 16px;
     transition: all 0.3s ease;
     background: white;
     cursor: pointer;
@@ -3699,7 +3691,8 @@ img[src*="logo"] {
 .admin-filter-select:hover {
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    transform: scale(1.02);
 }
 
 /* Botones admin mejorados */
@@ -3769,10 +3762,17 @@ img[src*="logo"] {
     
     .admin-search-box {
         min-width: unset;
+        order: 2;
     }
     
     .admin-filter-group {
         min-width: unset;
+        order: 1;
+    }
+    
+    .admin-filter-group label {
+        text-align: left;
+        font-size: 1rem;
     }
 }
 
@@ -3800,4 +3800,51 @@ img[src*="logo"] {
     font-size: 3rem;
     margin-bottom: 1rem;
     opacity: 0.5;
+}
+
+/* ===== TABLAS ANCHO COMPLETO BOTIQUÍN ADMIN ===== */
+
+/* Contenedores de instalación ocupan todo el ancho */
+.instalacion-inventario {
+    width: 100%;
+    margin-bottom: var(--space-xl);
+}
+
+/* Secciones admin ocupan todo el ancho */
+.admin-section {
+    width: 100%;
+    display: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.admin-section.active {
+    display: block;
+    width: 100%;
+}
+
+/* Contenido de inventario y solicitudes */
+#inventario-content,
+#solicitudes-content {
+    width: 100%;
+}
+
+/* Todas las tablas dentro del botiquín admin a ancho completo */
+.admin-botiquin-container .admin-table,
+.admin-botiquin-container .admin-table-container,
+.admin-botiquin-container table {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Responsive: mantener ancho completo en móviles */
+@media (max-width: 768px) {
+    .admin-botiquin-container,
+    .admin-section,
+    .admin-table-container,
+    .instalacion-inventario,
+    #inventario-content,
+    #solicitudes-content {
+        width: 100% !important;
+        max-width: none !important;
+    }
 }

@@ -21,7 +21,7 @@ $permissions = $adminAuth->getPermissionsService();
     <link rel="stylesheet" href="<?= assetVersion('/assets/css/styles.css') ?>">
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="max-width: none; width: 100%; padding: 0;">
         <main class="admin-botiquin-container">
             <!-- Header Admin -->
             <header class="admin-header">
@@ -65,7 +65,7 @@ $permissions = $adminAuth->getPermissionsService();
                 <!-- Filtros Mejorados -->
                 <div class="admin-filters">
                     <div class="admin-filter-group">
-                        <label for="filtro-instalacion">🏢 Instalación</label>
+                        <label for="filtro-instalacion">🏢</label>
                         <select id="filtro-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>
@@ -94,7 +94,7 @@ $permissions = $adminAuth->getPermissionsService();
                 <!-- Filtros Solicitudes Mejorados -->
                 <div class="admin-filters">
                     <div class="admin-filter-group">
-                        <label for="filtro-solicitud-instalacion">🏢 Instalación</label>
+                        <label for="filtro-solicitud-instalacion">🏢</label>
                         <select id="filtro-solicitud-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>
