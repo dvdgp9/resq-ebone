@@ -296,8 +296,8 @@ function exportIncidencias($db) {
 
 
 function generateCSV($data, $filename) {
-    // Headers para descarga CSV con codificación UTF-8
-    header('Content-Type: text/csv; charset=UTF-8');
+    // Headers específicos para compatibilidad Excel con UTF-8
+    header('Content-Type: application/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
     header('Pragma: no-cache');
     header('Expires: 0');
@@ -306,18 +306,22 @@ function generateCSV($data, $filename) {
     // Abrir output stream
     $output = fopen('php://output', 'w');
     
-    // Escribir datos CSV sin BOM para evitar problemas de codificación
+    // BOM UTF-8 ESPECÍFICO PARA EXCEL - necesario para que Excel detecte UTF-8 correctamente
+    fwrite($output, "\xEF\xBB\xBF");
+    
+    // Escribir datos CSV con codificación optimizada para Excel
     foreach ($data as $row) {
-        // Limpiar y preparar cada campo
-        $cleanRow = array_map(function($field) {
+        // Preparar cada campo para Excel
+        $excelRow = array_map(function($field) {
             if (is_string($field)) {
-                // Solo limpiar caracteres problemáticos, mantener UTF-8 original
+                // Mantener caracteres UTF-8 exactamente como están, solo limpiar espacios
                 return trim($field);
             }
             return $field;
         }, $row);
         
-        fputcsv($output, $cleanRow, ';', '"'); // Usar ';' como separador y '"' como encerramiento
+        // Usar ';' como separador (estándar europeo) y '"' como encerramiento
+        fputcsv($output, $excelRow, ';', '"');
     }
     
     fclose($output);

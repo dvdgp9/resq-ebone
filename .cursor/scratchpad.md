@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**✅ ESTADO ACTUAL: CHARSET JOIN CONFIGURADO - PRUEBA PENDIENTE**
+**✅ ESTADO ACTUAL: BOM UTF-8 AÑADIDO PARA EXCEL - PRUEBA PENDIENTE**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -113,39 +113,41 @@
 - **Implementación incremental**: Pasos pequeños con confirmación mejoran control de calidad
 - **Codificación UTF-8 en CSV**: Eliminar BOM y mb_convert_encoding 'auto' previene corrupción de caracteres especiales (ñ, acentos)
 - **Charset en consultas JOIN**: Añadir `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci` antes de consultas con JOIN previene corrupción en recuperación de datos
+- **Excel y UTF-8**: Excel requiere BOM UTF-8 (`\xEF\xBB\xBF`) para interpretar correctamente caracteres especiales. Preview/otros lectores CSV no lo necesitan
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: ✅ **SOLUCIÓN APLICADA - SET NAMES UTF8MB4 EN CONSULTAS JOIN**
+**Estado**: ✅ **SOLUCIÓN EXCEL ESPECÍFICA IMPLEMENTADA - BOM UTF-8 AÑADIDO**
 
-### 🎯 **PROBLEMA IDENTIFICADO Y SOLUCIONADO**
+### 🎯 **PROBLEMA REAL IDENTIFICADO**
 
-**DIAGNÓSTICO CONFIRMADO**:
-- ✅ **BD almacena correctamente**: Verificado que datos JSON contienen "María García" sin corrupción
-- ✅ **Problema en JOINs**: Corrupción ocurre al hacer JOIN con tablas `socorristas` e `instalaciones`  
-- ✅ **Causa raíz**: Falta configuración charset específica en consultas de exportación
+**DIAGNÓSTICO FINAL CORRECTO**:
+- ✅ **CSV está bien generado**: Confirmado - Preview Mac muestra "María García Pérez" correctamente
+- ✅ **Excel interpreta mal UTF-8**: El problema es que Excel no detecta UTF-8 sin BOM
+- ✅ **Causa raíz**: Excel necesita BOM (Byte Order Mark) para interpretar UTF-8 correctamente
 
 **SOLUCIÓN IMPLEMENTADA**:
-- ✅ **SET NAMES añadido**: `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci` antes de cada función de exportación
-- ✅ **Ambas funciones corregidas**: `exportControlFlujo()` y `exportIncidencias()` actualizadas
-- ✅ **Configuración específica**: Charset establecido explícitamente para consultas con JOIN
+- ✅ **BOM UTF-8 añadido**: `\xEF\xBB\xBF` específico para Excel al inicio del archivo
+- ✅ **Headers optimizados**: `Content-Type: application/csv` para mejor compatibilidad Excel
+- ✅ **SET NAMES mantenido**: Consultas SQL siguen con charset correcto
+- ✅ **Separador europeo**: `;` para Excel en español
 
-### 📋 **CÓDIGO MODIFICADO**
+### 📋 **CÓDIGO MODIFICADO PARA EXCEL**
 
 ```php
-// Añadido al inicio de exportControlFlujo() y exportIncidencias()
-$db->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
-```
-
-**CONSULTAS AFECTADAS**:
-```sql
-SELECT f.*, i.nombre as instalacion_nombre, i.aforo_maximo, s.nombre as socorrista_nombre 
-FROM formularios f 
-LEFT JOIN socorristas s ON f.socorrista_id = s.id 
-LEFT JOIN instalaciones i ON s.instalacion_id = i.id
+function generateCSV($data, $filename) {
+    // Headers específicos para Excel
+    header('Content-Type: application/csv; charset=UTF-8');
+    
+    // BOM UTF-8 ESPECÍFICO PARA EXCEL
+    fwrite($output, "\xEF\xBB\xBF");
+    
+    // Datos con separador europeo
+    fputcsv($output, $excelRow, ';', '"');
+}
 ```
 
 ### 🧪 **PRUEBA REQUERIDA**
-- Exportar CSV de Control de Flujo e Incidencias
-- Verificar que nombres aparezcan como "María García" en lugar de "MarÃ-a GarcÃ-a"
-- Confirmar que acentos y caracteres especiales se muestren correctamente 
+- Exportar CSV y abrir en Excel
+- Verificar que Excel muestre "María García Pérez" correctamente
+- Confirmar que tanto Preview como Excel muestran acentos bien 
