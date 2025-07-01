@@ -159,20 +159,8 @@ switch ($path) {
         require_once 'controllers/admin/informes.php';
         break;
         
-    case '/admin/botiquin':
-        require_once 'views/admin/botiquin.php';
-        break;
-        
-    case '/admin/api/botiquin':
-        require_once 'controllers/admin/botiquin.php';
-        break;
-        
     case '/debug':
         require_once 'debug_pwa.php';
-        break;
-        
-    case '/debug-botiquin':
-        require_once 'debug_botiquin.php';
         break;
         
     default:

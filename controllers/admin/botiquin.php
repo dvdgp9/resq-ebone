@@ -15,11 +15,8 @@ $admin = $adminAuth->getAdminActual();
 $permissions = $adminAuth->getPermissionsService();
 
 // Limpiar output y configurar headers
-if (ob_get_level()) {
-    ob_clean();
-}
+ob_clean();
 error_reporting(0);
-ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
 $method = $_SERVER['REQUEST_METHOD'];

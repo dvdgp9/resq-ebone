@@ -91,26 +91,12 @@
 - [x] **Paso 1B**: Implementar SQL de tabla intermedia (COMPLETADO)
 - [x] **Paso 1C**: Crear AdminPermissionsService (COMPLETADO)
 - [x] **Paso 1D**: Actualizar AdminAuthService con nuevos permisos (COMPLETADO)
-- [x] **Paso 1E**: Testing de permisos (OMITIDO - continuar con botiquín)
+- [ ] **Paso 1E**: Testing de permisos
 
-**FASE 2: BOTIQUÍN CON PERMISOS (4-5 horas)** 🚀
-- [x] **Paso 2A**: Crear controlador admin/botiquin.php (COMPLETADO)
-- [x] **Paso 2B**: Crear vista admin/botiquin.php con dashboard inicial (COMPLETADO)
-- [x] **Paso 2C**: Añadir entrada en menú del panel admin (COMPLETADO)
-- [ ] **Paso 2D**: Implementar gestión básica de productos (CRUD)
-- [ ] **Paso 2E**: Implementar gestión de solicitudes
-- [ ] **Paso 2F**: Implementar importación masiva
-- [ ] **Paso 2G**: Testing y refinamiento
-
-### 🚀 **INICIANDO FASE 2: BOTIQUÍN ADMINISTRATIVO**
-
-**🎯 OBJETIVO ACTUAL:** Crear sistema completo de gestión de botiquín para coordinadores/admins con:
-- Dashboard de resumen por instalaciones
-- CRUD de productos con permisos
-- Gestión de solicitudes de socorristas
-- Importación masiva de inventarios
-
-### 🔥 **COMENZANDO PASO 2A: Controlador admin/botiquin.php**
+**FASE 2: BOTIQUÍN CON PERMISOS (4-5 horas)**
+- [ ] **Paso 2A**: Crear controlador `admin/botiquin.php` con permisos
+- [ ] **Paso 2B**: Crear vista `admin/botiquin.php` con filtros por permisos
+- [ ] **Paso 2C**: Implementar funcionalidades restantes
 
 ### 🔍 **NECESITO CAPTURAS DE TABLAS ANTES DE PROCEDER:**
 
@@ -414,72 +400,4 @@ Ahora procedo a crear el sistema de verificación de permisos.
 
 Antes de proceder con el botiquín, necesito hacer testing rápido del sistema de permisos para asegurarme de que funciona correctamente.
 
-**¿Quieres que cree un script de testing para verificar permisos o prefieres que continúe directamente con la implementación del botiquín?**
-
-### ✅ **PASO 2A COMPLETADO: Controlador Creado**
-
-**🎯 FUNCIONALIDADES IMPLEMENTADAS:**
-- API completa con permisos integrados ✅
-- Dashboard con estadísticas por instalación ✅
-- CRUD completo de elementos de botiquín ✅
-- Gestión de solicitudes de material ✅
-- Importación masiva desde CSV ✅
-- Verificación de permisos en todas las acciones ✅
-
-### 🎨 **CONTINUANDO PASO 2B: Vista admin/botiquin.php**
-
-### ✅ **PASO 2B COMPLETADO: Vista Creada**
-
-**🎯 FUNCIONALIDADES DE LA VISTA:**
-- Interfaz completa con 4 secciones (Dashboard/Inventario/Solicitudes/Importar) ✅
-- Dashboard con estadísticas y resumen por instalación ✅
-- Gestión de inventario con filtros avanzados ✅
-- Gestión de solicitudes con cambio de estados ✅
-- Importación masiva desde CSV ✅
-- Modales para CRUD de elementos ✅
-- JavaScript completo con todas las funciones ✅
-
-### 🔗 **CONTINUANDO PASO 2C: Añadir al menú admin**
-
-### ✅ **PASO 2C COMPLETADO: Menú integrado**
-
-**🎯 MODIFICACIONES REALIZADAS:**
-
-1. **Dashboard admin** (`views/admin/dashboard.php`):
-   - Añadida nueva carta de navegación para "Gestión de Botiquín" ✅
-   - Añadida estadística de "Solicitudes Pendientes" ✅
-
-2. **AdminService** (`classes/AdminService.php`):
-   - Añadida estadística de `solicitudes_pendientes` en `getEstadisticas()` ✅
-   - Manejo de error si tabla no existe aún ✅
-
-3. **Router** (`index.php`):
-   - Añadida ruta `/admin/botiquin` para la vista ✅
-   - Añadida ruta `/admin/api/botiquin` para el controlador ✅
-
-**✅ La funcionalidad de botiquín está completamente integrada en el panel admin**
-
-### 🔧 **CONTINUANDO PASO 2D: Implementar gestión básica de productos (CRUD)**
-
-**El sistema está listo para hacer pruebas** - Se puede acceder a `http://localhost/admin/botiquin` para probar la interfaz administrativa. 
-
-### 🚨 **PROBLEMA DETECTADO: API devuelve HTML en lugar de JSON**
-
-**Síntomas:**
-- Error: "Unexpected token '<'" en llamadas AJAX
-- Dashboard no carga datos
-- Las funciones JavaScript reciben HTML en lugar de JSON
-
-**Diagnóstico realizado:**
-- ✅ Controlador admin/botiquin.php sintácticamente correcto
-- ✅ AdminPermissionsService tiene todas las funciones necesarias  
-- ✅ Tablas definidas correctamente en `database/botiquin_tables.sql`
-- ❓ **POSIBLE CAUSA: Tablas de botiquín no ejecutadas en BD**
-
-**🔧 SOLUCIÓN EN PROCESO:**
-- Creado archivo `/debug-botiquin` para diagnóstico
-- **USUARIO DEBE ACCEDER A**: `http://localhost/debug-botiquin`
-- Verificar autenticación admin y existencia de tablas
-- Probablemente ejecutar `database/botiquin_tables.sql`
-
-### 🎯 **PRÓXIMO PASO: Ejecutar diagnóstico** 
+**¿Quieres que cree un script de testing para verificar permisos o prefieres que continúe directamente con la implementación del botiquín?** 

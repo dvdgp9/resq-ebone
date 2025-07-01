@@ -40,6 +40,7 @@ class AdminPermissionsService {
             // Superadmin puede ver todos los coordinadores
             $stmt = $this->db->prepare("
                 SELECT * FROM coordinadores 
+                WHERE activo = 1 
                 ORDER BY nombre
             ");
             $stmt->execute();
@@ -51,7 +52,7 @@ class AdminPermissionsService {
             $stmt = $this->db->prepare("
                 SELECT c.* FROM coordinadores c
                 INNER JOIN admin_coordinadores ac ON c.id = ac.coordinador_id
-                WHERE ac.admin_id = ? AND ac.activo = 1
+                WHERE ac.admin_id = ? AND ac.activo = 1 AND c.activo = 1
                 ORDER BY c.nombre
             ");
             $stmt->execute([$this->admin['id']]);
@@ -62,7 +63,7 @@ class AdminPermissionsService {
             // Coordinador solo puede verse a sí mismo
             $stmt = $this->db->prepare("
                 SELECT * FROM coordinadores 
-                WHERE id = ?
+                WHERE id = ? AND activo = 1
             ");
             $stmt->execute([$this->admin['coordinador_id']]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -89,6 +90,7 @@ class AdminPermissionsService {
                 SELECT i.*, c.nombre as coordinador_nombre 
                 FROM instalaciones i
                 INNER JOIN coordinadores c ON i.coordinador_id = c.id
+                WHERE i.activo = 1 
                 ORDER BY i.nombre
             ");
             $stmt->execute();
@@ -106,7 +108,7 @@ class AdminPermissionsService {
             SELECT i.*, c.nombre as coordinador_nombre 
             FROM instalaciones i
             INNER JOIN coordinadores c ON i.coordinador_id = c.id
-            WHERE i.coordinador_id IN ($placeholders)
+            WHERE i.coordinador_id IN ($placeholders) AND i.activo = 1
             ORDER BY i.nombre
         ");
         $stmt->execute($coordinadorIds);
@@ -136,7 +138,7 @@ class AdminPermissionsService {
             FROM socorristas s
             INNER JOIN instalaciones i ON s.instalacion_id = i.id
             INNER JOIN coordinadores c ON i.coordinador_id = c.id
-            WHERE s.instalacion_id IN ($placeholders)
+            WHERE s.instalacion_id IN ($placeholders) AND s.activo = 1
             ORDER BY s.nombre
         ");
         $stmt->execute($instalacionIds);

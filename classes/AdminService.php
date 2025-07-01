@@ -575,21 +575,6 @@ class AdminService {
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             $stats['formularios_mes'] = $result ? $result['count'] : 0;
             
-            // Solicitudes de botiquín pendientes
-            try {
-                $stmt = $db->prepare("
-                    SELECT COUNT(*) as count 
-                    FROM solicitudes_botiquin 
-                    WHERE estado = 'pendiente'
-                ");
-                $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                $stats['solicitudes_pendientes'] = $result ? $result['count'] : 0;
-            } catch (Exception $e) {
-                // Si la tabla no existe aún, poner 0
-                $stats['solicitudes_pendientes'] = 0;
-            }
-            
             logMessage("Estadísticas obtenidas correctamente: " . json_encode($stats), 'INFO');
             return $stats;
             
@@ -600,8 +585,7 @@ class AdminService {
                 'coordinadores' => 0,
                 'instalaciones' => 0,
                 'socorristas' => 0,
-                'formularios_mes' => 0,
-                'solicitudes_pendientes' => 0
+                'formularios_mes' => 0
             ];
         }
     }
