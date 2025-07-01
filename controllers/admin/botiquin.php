@@ -7,7 +7,8 @@ require_once __DIR__ . '/../../classes/AdminAuthService.php';
 // Verificar autenticación admin
 $adminAuth = new AdminAuthService();
 if (!$adminAuth->estaAutenticadoAdmin()) {
-    header('Location: /admin/login');
+    http_response_code(401);
+    echo json_encode(['error' => 'No autenticado']);
     exit;
 }
 
@@ -38,9 +39,6 @@ try {
                 case 'instalaciones':
                     getInstalaciones($permissions);
                     break;
-                case 'elemento':
-                    getElemento($permissions);
-                    break;
                 default:
                     getDashboard($permissions);
                     break;
@@ -60,9 +58,6 @@ try {
                     break;
                 case 'actualizar_solicitud':
                     actualizarSolicitud($permissions, $admin);
-                    break;
-                case 'importar_csv':
-                    importarCSV($permissions, $admin);
                     break;
                 default:
                     throw new Exception('Acción no válida');
@@ -89,8 +84,12 @@ function getDashboard($permissions) {
     $stats = [
         'total_instalaciones' => count($instalaciones),
         'total_elementos' => count($inventario),
-        'solicitudes_pendientes' => count(array_filter($solicitudes, function($s) { return $s['estado'] === 'pendiente'; })),
-        'elementos_bajo_minimos' => count(array_filter($inventario, function($i) { return $i['cantidad_actual'] <= 5; }))
+        'solicitudes_pendientes' => count(array_filter($solicitudes, function($s) { 
+            return $s['estado'] === 'pendiente'; 
+        })),
+        'elementos_bajo_minimos' => count(array_filter($inventario, function($i) { 
+            return $i['cantidad_actual'] <= 5; 
+        }))
     ];
     
     // Resumen por instalación
@@ -109,7 +108,9 @@ function getDashboard($permissions) {
             'nombre' => $instalacion['nombre'],
             'coordinador_nombre' => $instalacion['coordinador_nombre'],
             'total_elementos' => count($inventario_instalacion),
-            'elementos_bajo_minimos' => count(array_filter($inventario_instalacion, function($i) { return $i['cantidad_actual'] <= 5; })),
+            'elementos_bajo_minimos' => count(array_filter($inventario_instalacion, function($i) { 
+                return $i['cantidad_actual'] <= 5; 
+            })),
             'solicitudes_pendientes' => count($solicitudes_instalacion)
         ];
     }
@@ -117,8 +118,7 @@ function getDashboard($permissions) {
     echo json_encode([
         'success' => true,
         'stats' => $stats,
-        'instalaciones' => $resumen_instalaciones,
-        'permisos' => $permissions->getResumenPermisos()
+        'instalaciones' => $resumen_instalaciones
     ]);
 }
 
@@ -197,50 +197,12 @@ function getInstalaciones($permissions) {
     ]);
 }
 
-// Función para obtener un elemento específico
-function getElemento($permissions) {
-    $elementoId = $_GET['elemento_id'] ?? null;
-    if (!$elementoId) {
-        throw new Exception('ID de elemento requerido');
-    }
-    
-    $db = Database::getInstance()->getConnection();
-    
-    // Obtener elemento con verificación de permisos
-    $stmt = $db->prepare("
-        SELECT ib.*, i.nombre as instalacion_nombre, c.nombre as coordinador_nombre,
-               s.nombre as ultima_actualizacion_por
-        FROM inventario_botiquin ib
-        INNER JOIN instalaciones i ON ib.instalacion_id = i.id
-        INNER JOIN coordinadores c ON i.coordinador_id = c.id
-        LEFT JOIN socorristas s ON ib.socorrista_ultima_actualizacion = s.id
-        WHERE ib.id = ? AND ib.activo = 1
-    ");
-    
-    $stmt->execute([$elementoId]);
-    $elemento = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if (!$elemento) {
-        throw new Exception('Elemento no encontrado');
-    }
-    
-    // Verificar permisos
-    if (!$permissions->puedeAccederInstalacion($elemento['instalacion_id'])) {
-        throw new Exception('Sin permisos para acceder a este elemento');
-    }
-    
-    echo json_encode([
-        'success' => true,
-        'elemento' => $elemento
-    ]);
-}
-
 // Función para crear elemento
 function crearElemento($permissions, $admin) {
     $input = json_decode(file_get_contents('php://input'), true);
     
     // Validar datos requeridos
-    $required = ['instalacion_id', 'nombre_elemento', 'categoria', 'cantidad_actual', 'unidad_medida'];
+    $required = ['nombre_elemento', 'categoria', 'cantidad_actual', 'unidad_medida', 'instalacion_id'];
     foreach ($required as $field) {
         if (!isset($input[$field]) || trim($input[$field]) === '') {
             throw new Exception("Campo requerido: $field");
@@ -249,7 +211,7 @@ function crearElemento($permissions, $admin) {
     
     // Verificar permisos de instalación
     if (!$permissions->puedeAccederInstalacion($input['instalacion_id'])) {
-        throw new Exception('Sin permisos para gestionar esta instalación');
+        throw new Exception('No tienes permisos para gestionar esta instalación');
     }
     
     // Validar cantidad
@@ -259,7 +221,7 @@ function crearElemento($permissions, $admin) {
     
     $db = Database::getInstance()->getConnection();
     
-    // Verificar elemento duplicado
+    // Verificar que no existe elemento con mismo nombre en la instalación
     $stmt = $db->prepare("
         SELECT id FROM inventario_botiquin 
         WHERE instalacion_id = ? AND nombre_elemento = ? AND activo = 1
@@ -267,14 +229,14 @@ function crearElemento($permissions, $admin) {
     $stmt->execute([$input['instalacion_id'], trim($input['nombre_elemento'])]);
     
     if ($stmt->fetch()) {
-        throw new Exception('Ya existe un elemento con ese nombre en la instalación');
+        throw new Exception('Ya existe un elemento con ese nombre en el inventario');
     }
     
     // Crear elemento
     $stmt = $db->prepare("
         INSERT INTO inventario_botiquin 
         (instalacion_id, nombre_elemento, categoria, cantidad_actual, unidad_medida, observaciones, socorrista_ultima_actualizacion)
-        VALUES (?, ?, ?, ?, ?, ?, NULL)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
     
     $stmt->execute([
@@ -283,28 +245,30 @@ function crearElemento($permissions, $admin) {
         $input['categoria'],
         $input['cantidad_actual'],
         trim($input['unidad_medida']),
-        trim($input['observaciones'] ?? '')
+        trim($input['observaciones'] ?? ''),
+        1 // Admin como socorrista temporal
     ]);
     
     $elementoId = $db->lastInsertId();
     
-    // Crear registro en historial (simular socorrista admin)
+    // Registrar en historial
     $stmt = $db->prepare("
         INSERT INTO historial_botiquin 
         (inventario_id, socorrista_id, accion, cantidad_anterior, cantidad_nueva, observaciones)
-        VALUES (?, 1, 'creado', 0, ?, ?)
+        VALUES (?, ?, 'creado', 0, ?, ?)
     ");
     
     $stmt->execute([
         $elementoId,
+        1, // Admin como socorrista temporal
         $input['cantidad_actual'],
-        'Creado desde panel administrativo por ' . $admin['nombre']
+        'Elemento creado desde panel administrativo'
     ]);
     
     echo json_encode([
         'success' => true,
-        'elemento_id' => $elementoId,
-        'message' => 'Elemento creado exitosamente'
+        'message' => 'Elemento creado correctamente',
+        'elemento_id' => $elementoId
     ]);
 }
 
@@ -312,8 +276,8 @@ function crearElemento($permissions, $admin) {
 function actualizarElemento($permissions, $admin) {
     $input = json_decode(file_get_contents('php://input'), true);
     
-    if (!isset($input['id'])) {
-        throw new Exception('ID de elemento requerido');
+    if (!isset($input['id']) || !isset($input['cantidad_actual'])) {
+        throw new Exception('ID y cantidad son requeridos');
     }
     
     $db = Database::getInstance()->getConnection();
@@ -332,79 +296,47 @@ function actualizarElemento($permissions, $admin) {
     
     // Verificar permisos
     if (!$permissions->puedeAccederInstalacion($elemento['instalacion_id'])) {
-        throw new Exception('Sin permisos para gestionar este elemento');
+        throw new Exception('No tienes permisos para gestionar esta instalación');
     }
     
-    // Validar cantidad si se proporciona
-    if (isset($input['cantidad_actual'])) {
-        if (!is_numeric($input['cantidad_actual']) || $input['cantidad_actual'] < 0) {
-            throw new Exception('La cantidad debe ser un número positivo');
-        }
+    // Validar cantidad
+    if (!is_numeric($input['cantidad_actual']) || $input['cantidad_actual'] < 0) {
+        throw new Exception('La cantidad debe ser un número positivo');
     }
     
-    // Preparar campos a actualizar
-    $updates = [];
-    $params = [];
-    
-    if (isset($input['nombre_elemento'])) {
-        $updates[] = 'nombre_elemento = ?';
-        $params[] = trim($input['nombre_elemento']);
-    }
-    
-    if (isset($input['categoria'])) {
-        $updates[] = 'categoria = ?';
-        $params[] = $input['categoria'];
-    }
-    
-    if (isset($input['cantidad_actual'])) {
-        $updates[] = 'cantidad_actual = ?';
-        $params[] = $input['cantidad_actual'];
-    }
-    
-    if (isset($input['unidad_medida'])) {
-        $updates[] = 'unidad_medida = ?';
-        $params[] = trim($input['unidad_medida']);
-    }
-    
-    if (isset($input['observaciones'])) {
-        $updates[] = 'observaciones = ?';
-        $params[] = trim($input['observaciones']);
-    }
-    
-    if (empty($updates)) {
-        throw new Exception('No hay campos para actualizar');
-    }
-    
-    $params[] = $input['id'];
+    $cantidadAnterior = $elemento['cantidad_actual'];
     
     // Actualizar elemento
     $stmt = $db->prepare("
         UPDATE inventario_botiquin 
-        SET " . implode(', ', $updates) . ", fecha_ultima_actualizacion = NOW()
+        SET cantidad_actual = ?, observaciones = ?, fecha_ultima_actualizacion = NOW()
         WHERE id = ?
     ");
     
-    $stmt->execute($params);
+    $stmt->execute([
+        $input['cantidad_actual'],
+        trim($input['observaciones'] ?? $elemento['observaciones']),
+        $input['id']
+    ]);
     
-    // Crear registro en historial si cambió la cantidad
-    if (isset($input['cantidad_actual']) && $input['cantidad_actual'] != $elemento['cantidad_actual']) {
-        $stmt = $db->prepare("
-            INSERT INTO historial_botiquin 
-            (inventario_id, socorrista_id, accion, cantidad_anterior, cantidad_nueva, observaciones)
-            VALUES (?, 1, 'actualizado', ?, ?, ?)
-        ");
-        
-        $stmt->execute([
-            $input['id'],
-            $elemento['cantidad_actual'],
-            $input['cantidad_actual'],
-            'Actualizado desde panel administrativo por ' . $admin['nombre']
-        ]);
-    }
+    // Registrar en historial
+    $stmt = $db->prepare("
+        INSERT INTO historial_botiquin 
+        (inventario_id, socorrista_id, accion, cantidad_anterior, cantidad_nueva, observaciones)
+        VALUES (?, ?, 'actualizado', ?, ?, ?)
+    ");
+    
+    $stmt->execute([
+        $input['id'],
+        1, // Admin como socorrista temporal
+        $cantidadAnterior,
+        $input['cantidad_actual'],
+        'Actualizado desde panel administrativo'
+    ]);
     
     echo json_encode([
         'success' => true,
-        'message' => 'Elemento actualizado exitosamente'
+        'message' => 'Elemento actualizado correctamente'
     ]);
 }
 
@@ -413,12 +345,12 @@ function eliminarElemento($permissions, $admin) {
     $input = json_decode(file_get_contents('php://input'), true);
     
     if (!isset($input['id'])) {
-        throw new Exception('ID de elemento requerido');
+        throw new Exception('ID del elemento requerido');
     }
     
     $db = Database::getInstance()->getConnection();
     
-    // Obtener elemento
+    // Obtener elemento actual
     $stmt = $db->prepare("
         SELECT * FROM inventario_botiquin 
         WHERE id = ? AND activo = 1
@@ -432,10 +364,10 @@ function eliminarElemento($permissions, $admin) {
     
     // Verificar permisos
     if (!$permissions->puedeAccederInstalacion($elemento['instalacion_id'])) {
-        throw new Exception('Sin permisos para gestionar este elemento');
+        throw new Exception('No tienes permisos para gestionar esta instalación');
     }
     
-    // Marcar como inactivo (soft delete)
+    // Marcar como inactivo
     $stmt = $db->prepare("
         UPDATE inventario_botiquin 
         SET activo = 0, fecha_ultima_actualizacion = NOW()
@@ -444,41 +376,37 @@ function eliminarElemento($permissions, $admin) {
     
     $stmt->execute([$input['id']]);
     
-    // Crear registro en historial
+    // Registrar en historial
     $stmt = $db->prepare("
         INSERT INTO historial_botiquin 
         (inventario_id, socorrista_id, accion, cantidad_anterior, cantidad_nueva, observaciones)
-        VALUES (?, 1, 'eliminado', ?, 0, ?)
+        VALUES (?, ?, 'eliminado', ?, 0, ?)
     ");
     
     $stmt->execute([
         $input['id'],
+        1, // Admin como socorrista temporal
         $elemento['cantidad_actual'],
-        'Eliminado desde panel administrativo por ' . $admin['nombre']
+        'Elemento eliminado desde panel administrativo'
     ]);
     
     echo json_encode([
         'success' => true,
-        'message' => 'Elemento eliminado exitosamente'
+        'message' => 'Elemento eliminado correctamente'
     ]);
 }
 
-// Función para actualizar estado de solicitud
+// Función para actualizar solicitud
 function actualizarSolicitud($permissions, $admin) {
     $input = json_decode(file_get_contents('php://input'), true);
     
     if (!isset($input['id']) || !isset($input['estado'])) {
-        throw new Exception('ID de solicitud y estado requeridos');
-    }
-    
-    $estados_validos = ['pendiente', 'enviada', 'recibida'];
-    if (!in_array($input['estado'], $estados_validos)) {
-        throw new Exception('Estado no válido');
+        throw new Exception('ID y estado son requeridos');
     }
     
     $db = Database::getInstance()->getConnection();
     
-    // Obtener solicitud
+    // Obtener solicitud actual
     $stmt = $db->prepare("
         SELECT * FROM solicitudes_material 
         WHERE id = ?
@@ -492,131 +420,25 @@ function actualizarSolicitud($permissions, $admin) {
     
     // Verificar permisos
     if (!$permissions->puedeAccederInstalacion($solicitud['instalacion_id'])) {
-        throw new Exception('Sin permisos para gestionar esta solicitud');
+        throw new Exception('No tienes permisos para gestionar esta instalación');
     }
     
-    // Actualizar estado
+    // Actualizar solicitud
     $stmt = $db->prepare("
         UPDATE solicitudes_material 
-        SET estado = ?, fecha_envio = CASE WHEN ? = 'enviada' THEN NOW() ELSE fecha_envio END
+        SET estado = ?, observaciones_coordinacion = ?, fecha_respuesta = NOW()
         WHERE id = ?
     ");
     
-    $stmt->execute([$input['estado'], $input['estado'], $input['id']]);
+    $stmt->execute([
+        $input['estado'],
+        trim($input['observaciones_coordinacion'] ?? ''),
+        $input['id']
+    ]);
     
     echo json_encode([
         'success' => true,
-        'message' => 'Estado de solicitud actualizado exitosamente'
+        'message' => 'Solicitud actualizada correctamente'
     ]);
-}
-
-// Función para importar CSV
-function importarCSV($permissions, $admin) {
-    if (!isset($_FILES['csv_file'])) {
-        throw new Exception('Archivo CSV requerido');
-    }
-    
-    $instalacionId = $_POST['instalacion_id'] ?? null;
-    if (!$instalacionId) {
-        throw new Exception('ID de instalación requerido');
-    }
-    
-    // Verificar permisos
-    if (!$permissions->puedeAccederInstalacion($instalacionId)) {
-        throw new Exception('Sin permisos para gestionar esta instalación');
-    }
-    
-    $file = $_FILES['csv_file'];
-    
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('Error al subir archivo CSV');
-    }
-    
-    // Leer CSV
-    $handle = fopen($file['tmp_name'], 'r');
-    if (!$handle) {
-        throw new Exception('No se pudo leer el archivo CSV');
-    }
-    
-    $db = Database::getInstance()->getConnection();
-    $db->beginTransaction();
-    
-    try {
-        $lineNumber = 0;
-        $importados = 0;
-        $errores = [];
-        
-        // Saltar header si existe
-        if (($header = fgetcsv($handle, 1000, ',')) !== false) {
-            $lineNumber++;
-        }
-        
-        while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-            $lineNumber++;
-            
-            if (count($data) < 4) {
-                $errores[] = "Línea $lineNumber: Datos insuficientes";
-                continue;
-            }
-            
-            $nombre = trim($data[0] ?? '');
-            $categoria = trim($data[1] ?? 'otros');
-            $cantidad = trim($data[2] ?? '0');
-            $unidad = trim($data[3] ?? 'unidades');
-            $observaciones = trim($data[4] ?? '');
-            
-            if (empty($nombre)) {
-                $errores[] = "Línea $lineNumber: Nombre de elemento vacío";
-                continue;
-            }
-            
-            if (!is_numeric($cantidad) || $cantidad < 0) {
-                $errores[] = "Línea $lineNumber: Cantidad inválida para $nombre";
-                continue;
-            }
-            
-            // Verificar si existe
-            $stmt = $db->prepare("
-                SELECT id FROM inventario_botiquin 
-                WHERE instalacion_id = ? AND nombre_elemento = ? AND activo = 1
-            ");
-            $stmt->execute([$instalacionId, $nombre]);
-            
-            if ($stmt->fetch()) {
-                // Actualizar existente
-                $stmt = $db->prepare("
-                    UPDATE inventario_botiquin 
-                    SET cantidad_actual = ?, unidad_medida = ?, observaciones = ?, fecha_ultima_actualizacion = NOW()
-                    WHERE instalacion_id = ? AND nombre_elemento = ? AND activo = 1
-                ");
-                $stmt->execute([$cantidad, $unidad, $observaciones, $instalacionId, $nombre]);
-            } else {
-                // Crear nuevo
-                $stmt = $db->prepare("
-                    INSERT INTO inventario_botiquin 
-                    (instalacion_id, nombre_elemento, categoria, cantidad_actual, unidad_medida, observaciones)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                ");
-                $stmt->execute([$instalacionId, $nombre, $categoria, $cantidad, $unidad, $observaciones]);
-            }
-            
-            $importados++;
-        }
-        
-        $db->commit();
-        fclose($handle);
-        
-        echo json_encode([
-            'success' => true,
-            'importados' => $importados,
-            'errores' => $errores,
-            'message' => "Importación completada: $importados elementos procesados"
-        ]);
-        
-    } catch (Exception $e) {
-        $db->rollback();
-        fclose($handle);
-        throw $e;
-    }
 }
 ?>

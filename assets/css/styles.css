@@ -3249,3 +3249,304 @@ img[src*="logo"] {
         font-size: 11px;
     }
 }
+
+/* =================================
+   ESTILOS ESPECÍFICOS ADMIN BOTIQUÍN
+   ================================= */
+
+/* Container específico para botiquín admin */
+.admin-botiquin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-md);
+}
+
+/* Pestañas de navegación admin */
+.admin-tabs {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-lg);
+    border-bottom: 2px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    color: var(--text-light);
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+    font-weight: var(--font-weight-medium);
+}
+
+.tab-button:hover {
+    color: var(--primary-color);
+    background: rgba(211, 62, 34, 0.05);
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+/* Secciones admin */
+.admin-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.admin-section.active {
+    display: block;
+}
+
+/* Header admin específico para botiquín */
+.admin-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.admin-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.admin-nav h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.admin-user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+/* Filtros específicos para admin */
+.admin-filters {
+    background: var(--bg-gray);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-lg);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    align-items: end;
+}
+
+.filter-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+/* Stats grid ajustado */
+.admin-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.stat-card.warning {
+    border-left: 4px solid var(--warning-color);
+}
+
+.stat-card.alert {
+    border-left: 4px solid var(--error-color);
+}
+
+/* Estados de inventario */
+.instalacion-inventario {
+    margin-bottom: var(--space-xl);
+}
+
+.instalacion-inventario h3 {
+    margin: 0 0 var(--space-md) 0;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--border-light);
+    color: var(--text-color);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* Badges específicos para solicitudes */
+.badge-pendiente {
+    background: var(--warning-bg);
+    color: var(--warning-color);
+}
+
+.badge-enviada {
+    background: var(--success-bg);
+    color: var(--success-color);
+}
+
+.badge-recibida {
+    background: var(--info-bg);
+    color: var(--info-color);
+}
+
+/* Estados de cantidad */
+.cantidad.bajo-minimos {
+    color: var(--error-color);
+    font-weight: var(--font-weight-semibold);
+}
+
+.admin-table tr.warning {
+    background: rgba(255, 193, 7, 0.1);
+}
+
+/* Mensajes de la aplicación */
+.message {
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideIn 0.3s ease-out;
+}
+
+.message-success {
+    background: var(--success-bg);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.message-error {
+    background: var(--error-bg);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+.message button {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.message button:hover {
+    opacity: 1;
+}
+
+/* Estados vacíos y carga */
+.loading {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.no-results {
+    text-align: center;
+    padding: var(--space-xxl);
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.error {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--error-color);
+    font-size: 1.1rem;
+}
+
+/* Detalles de solicitud en modal */
+.solicitud-info {
+    margin-bottom: var(--space-lg);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    background: var(--bg-gray);
+    border-radius: var(--radius-sm);
+}
+
+.elementos-solicitados {
+    margin: var(--space-md) 0;
+}
+
+.elemento-solicitado {
+    padding: var(--space-sm);
+    background: var(--bg-gray);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.mensaje-adicional,
+.observaciones-coordinacion {
+    padding: var(--space-md);
+    background: var(--bg-gray);
+    border-radius: var(--radius-sm);
+    margin: var(--space-md) 0;
+    font-style: italic;
+    color: var(--text-light);
+}
+
+/* Botón de peligro */
+.btn-danger {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Responsive específico para admin botiquín */
+@media (max-width: 768px) {
+    .admin-botiquin-container {
+        padding: var(--space-sm);
+    }
+    
+    .admin-header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .admin-nav {
+        justify-content: center;
+    }
+    
+    .admin-user-info {
+        justify-content: center;
+    }
+    
+    .admin-filters {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-actions {
+        justify-content: center;
+    }
+    
+    .admin-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tab-button {
+        padding: var(--space-sm) var(--space-md);
+        font-size: var(--font-size-sm);
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

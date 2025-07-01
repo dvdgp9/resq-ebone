@@ -1,5 +1,4 @@
 <?php
-// Vista de Gestión de Botiquín Administrativo
 require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
 $adminAuth = new AdminAuthService();
@@ -19,390 +18,337 @@ $permissions = $adminAuth->getPermissionsService();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Botiquín - Admin ResQ</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= assetVersion('/assets/css/styles.css') ?>">
 </head>
-<body class="dashboard-page">
-    <header class="header admin-header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
-            </div>
-            <div class="user-info">
-                <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                <span class="admin-badge"><?= $adminAuth->getDescripcionRol() ?></span>
-                <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
-            </div>
-        </div>
-    </header>
-    
-    <div class="container admin-container">
-        <!-- Breadcrumb y Título -->
-        <div class="admin-breadcrumb">
-            <a href="/admin/dashboard">🏠 Dashboard</a>
-            <span>></span>
-            <span>🏥 Gestión de Botiquín</span>
-        </div>
-        
-        <div class="admin-page-header">
-            <h1>🏥 Gestión de Botiquín</h1>
-            <p>Administra inventarios de botiquín y solicitudes de material</p>
-        </div>
-        
-        <!-- Mensajes -->
-        <div id="message-container"></div>
-        
-        <!-- Navegación de Secciones -->
-        <div class="admin-tabs">
-            <button class="tab-button active" onclick="showSection('dashboard')" id="tab-dashboard">
-                📊 Dashboard
-            </button>
-            <button class="tab-button" onclick="showSection('inventario')" id="tab-inventario">
-                📦 Inventario
-            </button>
-            <button class="tab-button" onclick="showSection('solicitudes')" id="tab-solicitudes">
-                📋 Solicitudes
-            </button>
-            <button class="tab-button" onclick="showSection('importar')" id="tab-importar">
-                📄 Importar CSV
-            </button>
-        </div>
-        
-        <!-- Sección Dashboard -->
-        <div id="section-dashboard" class="admin-section active">
-            <div class="admin-stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🏢</div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="total-instalaciones">-</div>
-                        <div class="stat-label">Instalaciones</div>
+<body>
+    <div class="container">
+        <main class="admin-botiquin-container">
+            <!-- Header Admin -->
+            <header class="admin-header">
+                <div class="admin-header-content">
+                    <div class="admin-nav">
+                        <a href="/admin/dashboard" class="btn btn-secondary btn-small">← Dashboard</a>
+                        <h1>🏥 Gestión de Botiquín</h1>
+                    </div>
+                    <div class="admin-user-info">
+                        <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
+                        <span class="admin-badge"><?= $adminAuth->getDescripcionRol() ?></span>
+                        <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📦</div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="total-elementos">-</div>
-                        <div class="stat-label">Elementos</div>
-                    </div>
-                </div>
-                <div class="stat-card warning">
-                    <div class="stat-icon">⚠️</div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="elementos-bajo-minimos">-</div>
-                        <div class="stat-label">Bajo Mínimos</div>
-                    </div>
-                </div>
-                <div class="stat-card alert">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="solicitudes-pendientes">-</div>
-                        <div class="stat-label">Solicitudes Pendientes</div>
-                    </div>
-                </div>
+            </header>
+
+            <!-- Mensajes -->
+            <div id="message-container"></div>
+            
+            <!-- Navegación de pestañas -->
+            <div class="admin-tabs">
+                <button class="tab-button active" onclick="showSection('dashboard')" id="tab-dashboard">
+                    📊 Dashboard
+                </button>
+                <button class="tab-button" onclick="showSection('inventario')" id="tab-inventario">
+                    📦 Inventario
+                </button>
+                <button class="tab-button" onclick="showSection('solicitudes')" id="tab-solicitudes">
+                    📋 Solicitudes
+                </button>
             </div>
             
-            <!-- Resumen por Instalación -->
-            <div class="admin-table-container">
-                <div class="admin-table-header">
-                    <h2>🏢 Resumen por Instalación</h2>
-                    <div class="table-actions">
+            <!-- Sección Dashboard -->
+            <div id="section-dashboard" class="admin-section active">
+                <div class="admin-stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🏢</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="total-instalaciones">-</div>
+                            <div class="stat-label">Instalaciones</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="total-elementos">-</div>
+                            <div class="stat-label">Elementos</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="elementos-bajo-minimos">-</div>
+                            <div class="stat-label">Bajo Mínimos</div>
+                        </div>
+                    </div>
+                    <div class="stat-card alert">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="solicitudes-pendientes">-</div>
+                            <div class="stat-label">Solicitudes Pendientes</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resumen por Instalación -->
+                <div class="admin-table-container">
+                    <div class="admin-table-header">
+                        <h2>🏢 Resumen por Instalación</h2>
                         <button class="btn btn-secondary btn-small" onclick="loadDashboard()">
                             🔄 Actualizar
                         </button>
                     </div>
-                </div>
-                
-                <div id="dashboard-loading" class="loading-spinner">
-                    🔄 Cargando dashboard...
-                </div>
-                
-                <div id="instalaciones-resumen" class="admin-table" style="display: none;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Instalación</th>
-                                <th>Coordinador</th>
-                                <th>Total Elementos</th>
-                                <th>Bajo Mínimos</th>
-                                <th>Solicitudes</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="instalaciones-tbody">
-                            <!-- Datos se cargan via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección Inventario -->
-        <div id="section-inventario" class="admin-section">
-            <!-- Filtros -->
-            <div class="admin-filters">
-                <div class="filter-group">
-                    <label for="filtro-instalacion">Instalación:</label>
-                    <select id="filtro-instalacion" class="form-input">
-                        <option value="">Todas las instalaciones</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filtro-categoria">Categoría:</label>
-                    <select id="filtro-categoria" class="form-input">
-                        <option value="todos">Todas las categorías</option>
-                        <option value="medicamentos">Medicamentos</option>
-                        <option value="material_curacion">Material de Curación</option>
-                        <option value="instrumental">Instrumental</option>
-                        <option value="otros">Otros</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="busqueda-elemento">Buscar:</label>
-                    <input type="text" id="busqueda-elemento" class="form-input" placeholder="Nombre del elemento...">
-                </div>
-                <div class="filter-actions">
-                    <button class="btn btn-primary" onclick="openCreateElementModal()">
-                        ➕ Nuevo Elemento
-                    </button>
-                    <button class="btn btn-secondary" onclick="loadInventario()">
-                        🔍 Buscar
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Tabla de Inventario -->
-            <div class="admin-table-container">
-                <div id="inventario-loading" class="loading-spinner" style="display: none;">
-                    🔄 Cargando inventario...
-                </div>
-                
-                <div id="inventario-content">
-                    <!-- El contenido se genera dinámicamente -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección Solicitudes -->
-        <div id="section-solicitudes" class="admin-section">
-            <!-- Filtros Solicitudes -->
-            <div class="admin-filters">
-                <div class="filter-group">
-                    <label for="filtro-solicitud-instalacion">Instalación:</label>
-                    <select id="filtro-solicitud-instalacion" class="form-input">
-                        <option value="">Todas las instalaciones</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filtro-estado">Estado:</label>
-                    <select id="filtro-estado" class="form-input">
-                        <option value="todos">Todos los estados</option>
-                        <option value="pendiente">Pendientes</option>
-                        <option value="enviada">Enviadas</option>
-                        <option value="recibida">Recibidas</option>
-                    </select>
-                </div>
-                <div class="filter-actions">
-                    <button class="btn btn-secondary" onclick="loadSolicitudes()">
-                        🔍 Buscar
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Lista de Solicitudes -->
-            <div class="admin-table-container">
-                <div id="solicitudes-loading" class="loading-spinner" style="display: none;">
-                    🔄 Cargando solicitudes...
-                </div>
-                
-                <div id="solicitudes-content">
-                    <!-- El contenido se genera dinámicamente -->
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección Importar CSV -->
-        <div id="section-importar" class="admin-section">
-            <div class="import-container">
-                <div class="import-header">
-                    <h2>📄 Importar Inventario desde CSV</h2>
-                    <p>Sube un archivo CSV para importar o actualizar elementos del botiquín</p>
-                </div>
-                
-                <div class="import-instructions">
-                    <h3>📋 Formato del archivo CSV:</h3>
-                    <div class="csv-format">
-                        <code>nombre_elemento,categoria,cantidad,unidad_medida,observaciones</code>
+                    
+                    <div id="dashboard-loading" class="loading">
+                        🔄 Cargando dashboard...
                     </div>
-                    <ul class="instructions-list">
-                        <li><strong>nombre_elemento:</strong> Nombre del producto (requerido)</li>
-                        <li><strong>categoria:</strong> medicamentos, material_curacion, instrumental, otros</li>
-                        <li><strong>cantidad:</strong> Cantidad numérica (requerido)</li>
-                        <li><strong>unidad_medida:</strong> unidades, cajas, frascos, etc.</li>
-                        <li><strong>observaciones:</strong> Información adicional (opcional)</li>
-                    </ul>
+                    
+                    <div id="instalaciones-resumen" style="display: none;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Instalación</th>
+                                    <th>Coordinador</th>
+                                    <th>Total Elementos</th>
+                                    <th>Bajo Mínimos</th>
+                                    <th>Solicitudes</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="instalaciones-tbody">
+                                <!-- Datos se cargan via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <form id="import-form" class="import-form">
-                    <div class="form-group">
-                        <label for="import-instalacion">Instalación de destino *</label>
-                        <select id="import-instalacion" name="instalacion_id" class="form-input" required>
-                            <option value="">Selecciona una instalación</option>
+            </div>
+            
+            <!-- Sección Inventario -->
+            <div id="section-inventario" class="admin-section">
+                <!-- Filtros -->
+                <div class="admin-filters">
+                    <div class="filter-group">
+                        <label for="filtro-instalacion">Instalación:</label>
+                        <select id="filtro-instalacion" class="form-input">
+                            <option value="">Todas las instalaciones</option>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="csv-file">Archivo CSV *</label>
-                        <input type="file" id="csv-file" name="csv_file" accept=".csv" class="form-input" required>
-                        <div class="form-help">Archivos CSV únicamente (máximo 5MB)</div>
+                    <div class="filter-group">
+                        <label for="filtro-categoria">Categoría:</label>
+                        <select id="filtro-categoria" class="form-input">
+                            <option value="todos">Todas las categorías</option>
+                            <option value="medicamentos">Medicamentos</option>
+                            <option value="material_curacion">Material de Curación</option>
+                            <option value="instrumental">Instrumental</option>
+                            <option value="otros">Otros</option>
+                        </select>
                     </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            📤 Importar Archivo
+                    <div class="filter-group">
+                        <label for="busqueda-elemento">Buscar:</label>
+                        <input type="text" id="busqueda-elemento" class="form-input" placeholder="Nombre del elemento...">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" onclick="openCreateElementModal()">
+                            ➕ Nuevo Elemento
+                        </button>
+                        <button class="btn btn-secondary" onclick="loadInventario()">
+                            🔍 Buscar
                         </button>
                     </div>
-                </form>
-                
-                <div id="import-results" class="import-results" style="display: none;">
-                    <!-- Resultados de importación -->
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal Crear/Editar Elemento -->
-    <div id="elemento-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="elemento-modal-title">➕ Nuevo Elemento</h2>
-                <button class="modal-close" onclick="closeElementModal()">&times;</button>
+                
+                <!-- Tabla de Inventario -->
+                <div class="admin-table-container">
+                    <div id="inventario-loading" class="loading" style="display: none;">
+                        🔄 Cargando inventario...
+                    </div>
+                    
+                    <div id="inventario-content">
+                        <!-- El contenido se genera dinámicamente -->
+                    </div>
+                </div>
             </div>
             
-            <form id="elemento-form" class="modal-form">
-                <input type="hidden" id="elemento-id" name="id">
+            <!-- Sección Solicitudes -->
+            <div id="section-solicitudes" class="admin-section">
+                <!-- Filtros Solicitudes -->
+                <div class="admin-filters">
+                    <div class="filter-group">
+                        <label for="filtro-solicitud-instalacion">Instalación:</label>
+                        <select id="filtro-solicitud-instalacion" class="form-input">
+                            <option value="">Todas las instalaciones</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filtro-estado">Estado:</label>
+                        <select id="filtro-estado" class="form-input">
+                            <option value="todos">Todos los estados</option>
+                            <option value="pendiente">Pendientes</option>
+                            <option value="enviada">Enviadas</option>
+                            <option value="recibida">Recibidas</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-secondary" onclick="loadSolicitudes()">
+                            🔍 Buscar
+                        </button>
+                    </div>
+                </div>
                 
-                <div id="elemento-modal-message"></div>
+                <!-- Tabla de Solicitudes -->
+                <div class="admin-table-container">
+                    <div id="solicitudes-loading" class="loading" style="display: none;">
+                        🔄 Cargando solicitudes...
+                    </div>
+                    
+                    <div id="solicitudes-content">
+                        <!-- El contenido se genera dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para crear/editar elemento -->
+    <div id="modal-elemento" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-elemento-title">📦 Nuevo Elemento</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-elemento')">&times;</button>
+            </div>
+            
+            <form id="form-elemento">
+                <input type="hidden" id="elemento-id">
                 
                 <div class="form-group">
-                    <label for="elemento-instalacion">Instalación *</label>
-                    <select id="elemento-instalacion" name="instalacion_id" class="form-input" required>
-                        <option value="">Selecciona una instalación</option>
+                    <label for="elemento-instalacion">🏢 Instalación *</label>
+                    <select id="elemento-instalacion" class="form-input" required>
+                        <option value="">Seleccionar instalación</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="elemento-nombre">Nombre del elemento *</label>
-                    <input type="text" id="elemento-nombre" name="nombre_elemento" class="form-input" required
-                           placeholder="Ej: Aspirinas 500mg">
-                </div>
-                
-                <div class="form-group">
-                    <label for="elemento-categoria">Categoría *</label>
-                    <select id="elemento-categoria" name="categoria" class="form-input" required>
-                        <option value="">Selecciona una categoría</option>
-                        <option value="medicamentos">Medicamentos</option>
-                        <option value="material_curacion">Material de Curación</option>
-                        <option value="instrumental">Instrumental</option>
-                        <option value="otros">Otros</option>
-                    </select>
+                    <label for="elemento-nombre">📦 Nombre del elemento *</label>
+                    <input type="text" id="elemento-nombre" class="form-input" required 
+                           placeholder="Ej: Aspirinas 500mg, Vendas elásticas...">
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="elemento-cantidad">Cantidad actual *</label>
-                        <input type="number" id="elemento-cantidad" name="cantidad_actual" class="form-input" 
-                               required min="0" placeholder="0">
+                        <label for="elemento-categoria">📋 Categoría *</label>
+                        <select id="elemento-categoria" class="form-input" required>
+                            <option value="">Seleccionar categoría</option>
+                            <option value="medicamentos">Medicamentos</option>
+                            <option value="material_curacion">Material de Curación</option>
+                            <option value="instrumental">Instrumental</option>
+                            <option value="otros">Otros</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="elemento-unidad">Unidad de medida *</label>
-                        <input type="text" id="elemento-unidad" name="unidad_medida" class="form-input" 
-                               required placeholder="unidades">
+                        <label for="elemento-unidad">📏 Unidad de medida *</label>
+                        <input type="text" id="elemento-unidad" class="form-input" required 
+                               placeholder="unidades, cajas, ml, etc.">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="elemento-observaciones">Observaciones</label>
-                    <textarea id="elemento-observaciones" name="observaciones" class="form-input" rows="2"
-                              placeholder="Información adicional sobre el elemento"></textarea>
+                    <label for="elemento-cantidad">🔢 Cantidad actual *</label>
+                    <input type="number" id="elemento-cantidad" class="form-input" required min="0" step="1">
                 </div>
                 
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeElementModal()">
-                        ❌ Cancelar
+                <div class="form-group">
+                    <label for="elemento-observaciones">💭 Observaciones</label>
+                    <textarea id="elemento-observaciones" class="form-input" rows="3" 
+                              placeholder="Información adicional sobre el elemento..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-elemento')">
+                        ✖️ Cancelar
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <span id="elemento-save-text">💾 Guardar</span>
+                        💾 Guardar
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Modal Ver Solicitud -->
-    <div id="solicitud-modal" class="modal">
-        <div class="modal-content modal-large">
+
+    <!-- Modal para gestionar solicitud -->
+    <div id="modal-solicitud" class="modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2 id="solicitud-modal-title">📋 Detalle de Solicitud</h2>
-                <button class="modal-close" onclick="closeSolicitudModal()">&times;</button>
+                <h2 class="modal-title">📋 Gestionar Solicitud</h2>
+                <button class="modal-close" onclick="cerrarModal('modal-solicitud')">&times;</button>
             </div>
             
-            <div class="modal-body">
-                <div id="solicitud-content">
-                    <!-- Contenido se genera dinámicamente -->
+            <div id="solicitud-details">
+                <!-- Los detalles se cargan dinámicamente -->
+            </div>
+            
+            <form id="form-solicitud">
+                <input type="hidden" id="solicitud-id">
+                
+                <div class="form-group">
+                    <label for="solicitud-estado">🏷️ Estado *</label>
+                    <select id="solicitud-estado" class="form-input" required>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="enviada">Enviada</option>
+                        <option value="recibida">Recibida</option>
+                    </select>
                 </div>
                 
-                <div class="solicitud-actions">
-                    <button class="btn btn-warning" onclick="cambiarEstadoSolicitud('enviada')">
-                        📤 Marcar como Enviada
+                <div class="form-group">
+                    <label for="solicitud-observaciones">💭 Observaciones de coordinación</label>
+                    <textarea id="solicitud-observaciones" class="form-input" rows="3" 
+                              placeholder="Información adicional de la coordinación..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-solicitud')">
+                        ✖️ Cancelar
                     </button>
-                    <button class="btn btn-success" onclick="cambiarEstadoSolicitud('recibida')">
-                        ✅ Marcar como Recibida
-                    </button>
-                    <button class="btn btn-secondary" onclick="cambiarEstadoSolicitud('pendiente')">
-                        ⏳ Marcar como Pendiente
+                    <button type="submit" class="btn btn-primary">
+                        💾 Actualizar
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-    
+
     <script>
         // Variables globales
         let currentSection = 'dashboard';
         let instalacionesData = [];
-        let currentSolicitudId = null;
-        
+        let dashboardData = null;
+
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {
             loadInstalaciones();
             loadDashboard();
-            setupEventListeners();
+            configurarEventos();
         });
-        
+
         // Configurar eventos
-        function setupEventListeners() {
-            // Formulario de elemento
-            document.getElementById('elemento-form').addEventListener('submit', saveElemento);
-            
-            // Formulario de importación
-            document.getElementById('import-form').addEventListener('submit', importarCSV);
-            
-            // Filtros de inventario
-            document.getElementById('filtro-instalacion').addEventListener('change', loadInventario);
-            document.getElementById('filtro-categoria').addEventListener('change', loadInventario);
-            document.getElementById('busqueda-elemento').addEventListener('input', debounce(loadInventario, 500));
-            
-            // Filtros de solicitudes
-            document.getElementById('filtro-solicitud-instalacion').addEventListener('change', loadSolicitudes);
-            document.getElementById('filtro-estado').addEventListener('change', loadSolicitudes);
+        function configurarEventos() {
+            // Formularios
+            document.getElementById('form-elemento').addEventListener('submit', guardarElemento);
+            document.getElementById('form-solicitud').addEventListener('submit', actualizarSolicitud);
+
+            // Cerrar modales al hacer clic fuera
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        cerrarModal(this.id);
+                    }
+                });
+            });
         }
-        
-        // Cambiar sección activa
+
+        // Funciónes de navegación
         function showSection(section) {
             // Ocultar todas las secciones
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-button').forEach(t => t.classList.remove('active'));
             
-            // Mostrar sección seleccionada
+            // Mostrar sección actual
             document.getElementById('section-' + section).classList.add('active');
             document.getElementById('tab-' + section).classList.add('active');
             
@@ -419,39 +365,46 @@ $permissions = $adminAuth->getPermissionsService();
                 case 'solicitudes':
                     loadSolicitudes();
                     break;
-                case 'importar':
-                    loadInstalacionesSelect();
-                    break;
             }
         }
-        
+
+        // API calls
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error de servidor');
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Error en API:', error);
+                mostrarError(error.message);
+                throw error;
+            }
+        }
+
         // Cargar instalaciones
         async function loadInstalaciones() {
             try {
-                const response = await fetch('/controllers/admin/botiquin.php?action=instalaciones');
-                const data = await response.json();
+                const data = await apiCall('/admin/api/botiquin?action=instalaciones');
+                instalacionesData = data.instalaciones;
                 
-                if (data.success) {
-                    instalacionesData = data.instalaciones;
-                    populateInstalacionesSelects();
-                }
-            } catch (error) {
-                showMessage('Error cargando instalaciones: ' + error.message, 'error');
-            }
-        }
-        
-        // Poblar selects de instalaciones
-        function populateInstalacionesSelects() {
-            const selects = [
-                'filtro-instalacion',
-                'filtro-solicitud-instalacion', 
-                'import-instalacion',
-                'elemento-instalacion'
-            ];
-            
-            selects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                if (select) {
+                // Llenar selects
+                const selects = ['filtro-instalacion', 'filtro-solicitud-instalacion', 'elemento-instalacion'];
+                selects.forEach(selectId => {
+                    const select = document.getElementById(selectId);
+                    const currentValue = select.value;
+                    
                     // Limpiar opciones existentes (excepto la primera)
                     while (select.children.length > 1) {
                         select.removeChild(select.lastChild);
@@ -464,62 +417,69 @@ $permissions = $adminAuth->getPermissionsService();
                         option.textContent = instalacion.nombre;
                         select.appendChild(option);
                     });
-                }
-            });
+                    
+                    // Restaurar valor si existe
+                    if (currentValue) {
+                        select.value = currentValue;
+                    }
+                });
+            } catch (error) {
+                console.error('Error cargando instalaciones:', error);
+            }
         }
-        
+
         // Cargar dashboard
         async function loadDashboard() {
-            if (currentSection !== 'dashboard') return;
-            
             document.getElementById('dashboard-loading').style.display = 'block';
             document.getElementById('instalaciones-resumen').style.display = 'none';
             
             try {
-                const response = await fetch('/controllers/admin/botiquin.php?action=dashboard');
-                const data = await response.json();
+                const data = await apiCall('/admin/api/botiquin?action=dashboard');
+                dashboardData = data;
                 
-                if (data.success) {
-                    // Actualizar estadísticas
-                    document.getElementById('total-instalaciones').textContent = data.stats.total_instalaciones;
-                    document.getElementById('total-elementos').textContent = data.stats.total_elementos;
-                    document.getElementById('elementos-bajo-minimos').textContent = data.stats.elementos_bajo_minimos;
-                    document.getElementById('solicitudes-pendientes').textContent = data.stats.solicitudes_pendientes;
-                    
-                    // Poblar tabla de instalaciones
-                    const tbody = document.getElementById('instalaciones-tbody');
-                    tbody.innerHTML = '';
-                    
-                    data.instalaciones.forEach(instalacion => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${instalacion.nombre}</strong></td>
-                            <td>${instalacion.coordinador_nombre}</td>
-                            <td><span class="badge">${instalacion.total_elementos}</span></td>
-                            <td><span class="badge ${instalacion.elementos_bajo_minimos > 0 ? 'badge-warning' : ''}">${instalacion.elementos_bajo_minimos}</span></td>
-                            <td><span class="badge ${instalacion.solicitudes_pendientes > 0 ? 'badge-alert' : ''}">${instalacion.solicitudes_pendientes}</span></td>
-                            <td>
-                                <button class="btn btn-secondary btn-small" onclick="verInventarioInstalacion(${instalacion.id})">
-                                    👀 Ver Inventario
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    
-                    document.getElementById('instalaciones-resumen').style.display = 'block';
-                }
-            } catch (error) {
-                showMessage('Error cargando dashboard: ' + error.message, 'error');
-            } finally {
+                // Actualizar estadísticas
+                document.getElementById('total-instalaciones').textContent = data.stats.total_instalaciones;
+                document.getElementById('total-elementos').textContent = data.stats.total_elementos;
+                document.getElementById('elementos-bajo-minimos').textContent = data.stats.elementos_bajo_minimos;
+                document.getElementById('solicitudes-pendientes').textContent = data.stats.solicitudes_pendientes;
+                
+                // Actualizar tabla de instalaciones
+                const tbody = document.getElementById('instalaciones-tbody');
+                tbody.innerHTML = '';
+                
+                data.instalaciones.forEach(instalacion => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${instalacion.nombre}</td>
+                        <td>${instalacion.coordinador_nombre}</td>
+                        <td>${instalacion.total_elementos}</td>
+                        <td class="${instalacion.elementos_bajo_minimos > 0 ? 'warning' : ''}">
+                            ${instalacion.elementos_bajo_minimos}
+                        </td>
+                        <td class="${instalacion.solicitudes_pendientes > 0 ? 'alert' : ''}">
+                            ${instalacion.solicitudes_pendientes}
+                        </td>
+                        <td>
+                            <button class="btn btn-small btn-secondary" 
+                                    onclick="verInstalacion(${instalacion.id})">
+                                👁️ Ver
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                
                 document.getElementById('dashboard-loading').style.display = 'none';
+                document.getElementById('instalaciones-resumen').style.display = 'block';
+                
+            } catch (error) {
+                document.getElementById('dashboard-loading').innerHTML = 
+                    '<div class="error">❌ Error cargando dashboard</div>';
             }
         }
-        
+
         // Cargar inventario
         async function loadInventario() {
-            if (currentSection !== 'inventario') return;
-            
             document.getElementById('inventario-loading').style.display = 'block';
             
             const params = new URLSearchParams({
@@ -530,88 +490,79 @@ $permissions = $adminAuth->getPermissionsService();
             });
             
             try {
-                const response = await fetch('/controllers/admin/botiquin.php?' + params);
-                const data = await response.json();
+                const data = await apiCall('/admin/api/botiquin?' + params);
                 
-                if (data.success) {
-                    renderInventario(data.inventario);
+                const container = document.getElementById('inventario-content');
+                container.innerHTML = '';
+                
+                if (Object.keys(data.inventario).length === 0) {
+                    container.innerHTML = '<div class="no-results">📭 No se encontraron elementos</div>';
+                } else {
+                    // Crear tabla para cada instalación
+                    Object.entries(data.inventario).forEach(([instalacionNombre, elementos]) => {
+                        const instalacionDiv = document.createElement('div');
+                        instalacionDiv.className = 'instalacion-inventario';
+                        instalacionDiv.innerHTML = `
+                            <h3>🏢 ${instalacionNombre}</h3>
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Elemento</th>
+                                        <th>Categoría</th>
+                                        <th>Cantidad</th>
+                                        <th>Unidad</th>
+                                        <th>Última Actualización</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${elementos.map(elemento => `
+                                        <tr class="${elemento.cantidad_actual <= 5 ? 'warning' : ''}">
+                                            <td>
+                                                <strong>${elemento.nombre_elemento}</strong>
+                                                ${elemento.observaciones ? '<br><small>' + elemento.observaciones + '</small>' : ''}
+                                            </td>
+                                            <td>${formatCategoria(elemento.categoria)}</td>
+                                            <td>
+                                                <span class="cantidad ${elemento.cantidad_actual <= 5 ? 'bajo-minimos' : ''}">
+                                                    ${elemento.cantidad_actual}
+                                                </span>
+                                            </td>
+                                            <td>${elemento.unidad_medida}</td>
+                                            <td>
+                                                ${formatFecha(elemento.fecha_ultima_actualizacion)}
+                                                ${elemento.ultima_actualizacion_por ? '<br><small>por ' + elemento.ultima_actualizacion_por + '</small>' : ''}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-small btn-secondary" 
+                                                        onclick="editarElemento(${elemento.id})">
+                                                    ✏️ Editar
+                                                </button>
+                                                <button class="btn btn-small btn-danger" 
+                                                        onclick="eliminarElemento(${elemento.id})">
+                                                    🗑️ Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                        container.appendChild(instalacionDiv);
+                    });
                 }
+                
+                document.getElementById('inventario-loading').style.display = 'none';
+                
             } catch (error) {
-                showMessage('Error cargando inventario: ' + error.message, 'error');
-            } finally {
+                document.getElementById('inventario-content').innerHTML = 
+                    '<div class="error">❌ Error cargando inventario</div>';
                 document.getElementById('inventario-loading').style.display = 'none';
             }
         }
-        
-        // Renderizar inventario
-        function renderInventario(inventario) {
-            const container = document.getElementById('inventario-content');
-            container.innerHTML = '';
-            
-            if (Object.keys(inventario).length === 0) {
-                container.innerHTML = `
-                    <div class="no-data">
-                        <div class="no-data-icon">📦</div>
-                        <h3>No se encontraron elementos</h3>
-                        <p>No hay elementos que coincidan con los filtros aplicados</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Agrupar por instalación
-            Object.keys(inventario).forEach(instalacionNombre => {
-                const elementos = inventario[instalacionNombre];
-                
-                const instalacionDiv = document.createElement('div');
-                instalacionDiv.className = 'inventario-instalacion';
-                instalacionDiv.innerHTML = `
-                    <h3>🏢 ${instalacionNombre}</h3>
-                    <div class="inventario-tabla">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Elemento</th>
-                                    <th>Categoría</th>
-                                    <th>Cantidad</th>
-                                    <th>Unidad</th>
-                                    <th>Estado</th>
-                                    <th>Última Actualización</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${elementos.map(elemento => `
-                                    <tr>
-                                        <td><strong>${elemento.nombre_elemento}</strong></td>
-                                        <td><span class="badge badge-categoria">${formatCategoria(elemento.categoria)}</span></td>
-                                        <td><span class="cantidad ${elemento.cantidad_actual <= 5 ? 'cantidad-baja' : ''}">${elemento.cantidad_actual}</span></td>
-                                        <td>${elemento.unidad_medida}</td>
-                                        <td><span class="badge ${elemento.cantidad_actual <= 5 ? 'badge-warning' : 'badge-success'}">${elemento.cantidad_actual <= 5 ? 'Bajo mínimos' : 'Normal'}</span></td>
-                                        <td>${formatDate(elemento.fecha_ultima_actualizacion)}<br><small>${elemento.ultima_actualizacion_por || 'Sistema'}</small></td>
-                                        <td>
-                                            <button class="btn btn-secondary btn-small" onclick="editElemento(${elemento.id})">
-                                                ✏️ Editar
-                                            </button>
-                                            <button class="btn btn-danger btn-small" onclick="deleteElemento(${elemento.id}, '${elemento.nombre_elemento}')">
-                                                🗑️ Eliminar
-                                            </button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-                
-                container.appendChild(instalacionDiv);
-            });
-        }
-        
+
         // Cargar solicitudes
         async function loadSolicitudes() {
-            if (currentSection !== 'solicitudes') return;
-            
             document.getElementById('solicitudes-loading').style.display = 'block';
             
             const params = new URLSearchParams({
@@ -621,277 +572,256 @@ $permissions = $adminAuth->getPermissionsService();
             });
             
             try {
-                const response = await fetch('/controllers/admin/botiquin.php?' + params);
-                const data = await response.json();
+                const data = await apiCall('/admin/api/botiquin?' + params);
                 
-                if (data.success) {
-                    renderSolicitudes(data.solicitudes);
+                const container = document.getElementById('solicitudes-content');
+                
+                if (data.solicitudes.length === 0) {
+                    container.innerHTML = '<div class="no-results">📭 No se encontraron solicitudes</div>';
+                } else {
+                    container.innerHTML = `
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Instalación</th>
+                                    <th>Socorrista</th>
+                                    <th>Elementos</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.solicitudes.map(solicitud => `
+                                    <tr>
+                                        <td>${formatFecha(solicitud.fecha_solicitud)}</td>
+                                        <td>${solicitud.instalacion_nombre}</td>
+                                        <td>${solicitud.socorrista_nombre}</td>
+                                        <td>
+                                            <small>${solicitud.elementos_solicitados.length} elemento(s)</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-${solicitud.estado}">
+                                                ${formatEstado(solicitud.estado)}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-small btn-primary" 
+                                                    onclick="gestionarSolicitud(${solicitud.id})">
+                                                📋 Gestionar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    `;
                 }
+                
+                document.getElementById('solicitudes-loading').style.display = 'none';
+                
             } catch (error) {
-                showMessage('Error cargando solicitudes: ' + error.message, 'error');
-            } finally {
+                document.getElementById('solicitudes-content').innerHTML = 
+                    '<div class="error">❌ Error cargando solicitudes</div>';
                 document.getElementById('solicitudes-loading').style.display = 'none';
             }
         }
-        
-        // Renderizar solicitudes
-        function renderSolicitudes(solicitudes) {
-            const container = document.getElementById('solicitudes-content');
-            container.innerHTML = '';
-            
-            if (solicitudes.length === 0) {
-                container.innerHTML = `
-                    <div class="no-data">
-                        <div class="no-data-icon">📋</div>
-                        <h3>No se encontraron solicitudes</h3>
-                        <p>No hay solicitudes que coincidan con los filtros aplicados</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const table = document.createElement('table');
-            table.className = 'admin-table';
-            table.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Instalación</th>
-                        <th>Socorrista</th>
-                        <th>Elementos</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${solicitudes.map(solicitud => `
-                        <tr>
-                            <td>${formatDate(solicitud.fecha_solicitud)}</td>
-                            <td>${solicitud.instalacion_nombre}</td>
-                            <td>${solicitud.socorrista_nombre}</td>
-                            <td>${solicitud.elementos_solicitados.length} elemento${solicitud.elementos_solicitados.length !== 1 ? 's' : ''}</td>
-                            <td><span class="badge badge-${solicitud.estado}">${formatEstado(solicitud.estado)}</span></td>
-                            <td>
-                                <button class="btn btn-secondary btn-small" onclick="verSolicitud(${solicitud.id})">
-                                    👀 Ver Detalle
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            `;
-            
-            container.appendChild(table);
-        }
-        
-        // Abrir modal crear elemento
+
+        // Funciones de modal
         function openCreateElementModal() {
-            document.getElementById('elemento-modal-title').textContent = '➕ Nuevo Elemento';
-            document.getElementById('elemento-save-text').textContent = '💾 Crear';
-            document.getElementById('elemento-form').reset();
+            document.getElementById('modal-elemento-title').textContent = '📦 Nuevo Elemento';
             document.getElementById('elemento-id').value = '';
-            document.getElementById('elemento-modal').style.display = 'flex';
+            document.getElementById('form-elemento').reset();
+            document.getElementById('modal-elemento').style.display = 'flex';
         }
-        
-        // Editar elemento
-        async function editElemento(elementoId) {
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Funciones CRUD
+        async function guardarElemento(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: document.getElementById('elemento-id').value,
+                instalacion_id: document.getElementById('elemento-instalacion').value,
+                nombre_elemento: document.getElementById('elemento-nombre').value,
+                categoria: document.getElementById('elemento-categoria').value,
+                unidad_medida: document.getElementById('elemento-unidad').value,
+                cantidad_actual: parseInt(document.getElementById('elemento-cantidad').value),
+                observaciones: document.getElementById('elemento-observaciones').value
+            };
+            
             try {
-                const response = await fetch(`/controllers/admin/botiquin.php?action=elemento&elemento_id=${elementoId}`);
-                const data = await response.json();
+                const action = formData.id ? 'actualizar_elemento' : 'crear_elemento';
+                const data = await apiCall('/admin/api/botiquin?action=' + action, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
                 
-                if (data.success) {
-                    const elemento = data.elemento;
-                    
-                    document.getElementById('elemento-modal-title').textContent = '✏️ Editar Elemento';
-                    document.getElementById('elemento-save-text').textContent = '💾 Actualizar';
-                    
+                mostrarExito(data.message);
+                cerrarModal('modal-elemento');
+                
+                if (currentSection === 'inventario') {
+                    loadInventario();
+                }
+                if (currentSection === 'dashboard') {
+                    loadDashboard();
+                }
+                
+            } catch (error) {
+                // Error ya mostrado en apiCall
+            }
+        }
+
+        async function editarElemento(id) {
+            // Buscar elemento en los datos cargados
+            // Para simplificar, recargar desde servidor
+            try {
+                const data = await apiCall('/admin/api/botiquin?action=inventario');
+                let elemento = null;
+                
+                Object.values(data.inventario).forEach(elementos => {
+                    const found = elementos.find(e => e.id == id);
+                    if (found) elemento = found;
+                });
+                
+                if (elemento) {
+                    document.getElementById('modal-elemento-title').textContent = '✏️ Editar Elemento';
                     document.getElementById('elemento-id').value = elemento.id;
                     document.getElementById('elemento-instalacion').value = elemento.instalacion_id;
                     document.getElementById('elemento-nombre').value = elemento.nombre_elemento;
                     document.getElementById('elemento-categoria').value = elemento.categoria;
-                    document.getElementById('elemento-cantidad').value = elemento.cantidad_actual;
                     document.getElementById('elemento-unidad').value = elemento.unidad_medida;
+                    document.getElementById('elemento-cantidad').value = elemento.cantidad_actual;
                     document.getElementById('elemento-observaciones').value = elemento.observaciones || '';
                     
-                    document.getElementById('elemento-modal').style.display = 'flex';
+                    document.getElementById('modal-elemento').style.display = 'flex';
                 }
+                
             } catch (error) {
-                showMessage('Error cargando elemento: ' + error.message, 'error');
+                mostrarError('Error cargando elemento para editar');
             }
         }
-        
-        // Guardar elemento
-        async function saveElemento(event) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const formData = new FormData(form);
-            const elementoId = document.getElementById('elemento-id').value;
-            
-            const data = {
-                id: elementoId || undefined,
-                instalacion_id: formData.get('instalacion_id'),
-                nombre_elemento: formData.get('nombre_elemento'),
-                categoria: formData.get('categoria'),
-                cantidad_actual: parseInt(formData.get('cantidad_actual')),
-                unidad_medida: formData.get('unidad_medida'),
-                observaciones: formData.get('observaciones')
-            };
-            
-            const action = elementoId ? 'actualizar_elemento' : 'crear_elemento';
-            
-            try {
-                const response = await fetch(`/controllers/admin/botiquin.php?action=${action}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                    closeElementModal();
-                    if (currentSection === 'inventario') loadInventario();
-                    if (currentSection === 'dashboard') loadDashboard();
-                } else {
-                    showMessage(result.error, 'error');
-                }
-            } catch (error) {
-                showMessage('Error guardando elemento: ' + error.message, 'error');
-            }
-        }
-        
-        // Eliminar elemento
-        async function deleteElemento(elementoId, nombre) {
-            if (!confirm(`¿Estás seguro de que quieres eliminar "${nombre}"?`)) return;
-            
-            try {
-                const response = await fetch('/controllers/admin/botiquin.php?action=eliminar_elemento', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: elementoId })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                    if (currentSection === 'inventario') loadInventario();
-                    if (currentSection === 'dashboard') loadDashboard();
-                } else {
-                    showMessage(result.error, 'error');
-                }
-            } catch (error) {
-                showMessage('Error eliminando elemento: ' + error.message, 'error');
-            }
-        }
-        
-        // Ver solicitud
-        async function verSolicitud(solicitudId) {
-            // Implementar modal de solicitud
-            currentSolicitudId = solicitudId;
-            // TODO: Implementar carga de datos de solicitud
-            document.getElementById('solicitud-modal').style.display = 'flex';
-        }
-        
-        // Cambiar estado de solicitud
-        async function cambiarEstadoSolicitud(nuevoEstado) {
-            if (!currentSolicitudId) return;
-            
-            try {
-                const response = await fetch('/controllers/admin/botiquin.php?action=actualizar_solicitud', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        id: currentSolicitudId,
-                        estado: nuevoEstado 
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage(result.message, 'success');
-                    closeSolicitudModal();
-                    loadSolicitudes();
-                } else {
-                    showMessage(result.error, 'error');
-                }
-            } catch (error) {
-                showMessage('Error actualizando solicitud: ' + error.message, 'error');
-            }
-        }
-        
-        // Importar CSV
-        async function importarCSV(event) {
-            event.preventDefault();
-            
-            const form = event.target;
-            const formData = new FormData(form);
-            
-            if (!formData.get('csv_file') || !formData.get('instalacion_id')) {
-                showMessage('Selecciona un archivo CSV y una instalación', 'error');
+
+        async function eliminarElemento(id) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este elemento?')) {
                 return;
             }
             
             try {
-                const response = await fetch('/controllers/admin/botiquin.php?action=importar_csv', {
+                const data = await apiCall('/admin/api/botiquin?action=eliminar_elemento', {
                     method: 'POST',
-                    body: formData
+                    body: JSON.stringify({ id: id })
                 });
                 
-                const result = await response.json();
+                mostrarExito(data.message);
                 
-                if (result.success) {
-                    showMessage(`Importación exitosa: ${result.importados} elementos procesados`, 'success');
-                    
-                    // Mostrar errores si los hay
-                    if (result.errores && result.errores.length > 0) {
-                        const erroresDiv = document.getElementById('import-results');
-                        erroresDiv.innerHTML = `
-                            <h4>⚠️ Errores durante la importación:</h4>
-                            <ul>${result.errores.map(error => `<li>${error}</li>`).join('')}</ul>
-                        `;
-                        erroresDiv.style.display = 'block';
-                    }
-                    
-                    form.reset();
-                    if (currentSection === 'inventario') loadInventario();
-                    if (currentSection === 'dashboard') loadDashboard();
-                } else {
-                    showMessage(result.error, 'error');
+                if (currentSection === 'inventario') {
+                    loadInventario();
                 }
+                if (currentSection === 'dashboard') {
+                    loadDashboard();
+                }
+                
             } catch (error) {
-                showMessage('Error importando CSV: ' + error.message, 'error');
+                // Error ya mostrado en apiCall
             }
         }
-        
-        // Ver inventario de instalación específica
-        function verInventarioInstalacion(instalacionId) {
+
+        async function gestionarSolicitud(id) {
+            try {
+                // Obtener detalles de la solicitud
+                const data = await apiCall('/admin/api/botiquin?action=solicitudes');
+                const solicitud = data.solicitudes.find(s => s.id == id);
+                
+                if (solicitud) {
+                    // Mostrar detalles de la solicitud
+                    const detailsContainer = document.getElementById('solicitud-details');
+                    detailsContainer.innerHTML = `
+                        <div class="solicitud-info">
+                            <h3>📋 Detalles de la Solicitud</h3>
+                            <div class="info-grid">
+                                <div><strong>Fecha:</strong> ${formatFecha(solicitud.fecha_solicitud)}</div>
+                                <div><strong>Instalación:</strong> ${solicitud.instalacion_nombre}</div>
+                                <div><strong>Socorrista:</strong> ${solicitud.socorrista_nombre}</div>
+                                <div><strong>Estado actual:</strong> <span class="badge badge-${solicitud.estado}">${formatEstado(solicitud.estado)}</span></div>
+                            </div>
+                            
+                            <h4>📦 Elementos Solicitados:</h4>
+                            <div class="elementos-solicitados">
+                                ${solicitud.elementos_solicitados.map(elemento => `
+                                    <div class="elemento-solicitado">
+                                        <strong>${elemento.nombre}</strong> - 
+                                        Cantidad: ${elemento.cantidad} 
+                                        ${elemento.observaciones ? '<br><small>' + elemento.observaciones + '</small>' : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            ${solicitud.mensaje_adicional ? `
+                                <h4>💬 Mensaje del Socorrista:</h4>
+                                <div class="mensaje-adicional">${solicitud.mensaje_adicional}</div>
+                            ` : ''}
+                            
+                            ${solicitud.observaciones_coordinacion ? `
+                                <h4>📝 Observaciones de Coordinación:</h4>
+                                <div class="observaciones-coordinacion">${solicitud.observaciones_coordinacion}</div>
+                            ` : ''}
+                        </div>
+                    `;
+                    
+                    // Llenar formulario
+                    document.getElementById('solicitud-id').value = solicitud.id;
+                    document.getElementById('solicitud-estado').value = solicitud.estado;
+                    document.getElementById('solicitud-observaciones').value = solicitud.observaciones_coordinacion || '';
+                    
+                    document.getElementById('modal-solicitud').style.display = 'flex';
+                }
+                
+            } catch (error) {
+                mostrarError('Error cargando detalles de la solicitud');
+            }
+        }
+
+        async function actualizarSolicitud(e) {
+            e.preventDefault();
+            
+            const formData = {
+                id: document.getElementById('solicitud-id').value,
+                estado: document.getElementById('solicitud-estado').value,
+                observaciones_coordinacion: document.getElementById('solicitud-observaciones').value
+            };
+            
+            try {
+                const data = await apiCall('/admin/api/botiquin?action=actualizar_solicitud', {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+                
+                mostrarExito(data.message);
+                cerrarModal('modal-solicitud');
+                
+                if (currentSection === 'solicitudes') {
+                    loadSolicitudes();
+                }
+                if (currentSection === 'dashboard') {
+                    loadDashboard();
+                }
+                
+            } catch (error) {
+                // Error ya mostrado en apiCall
+            }
+        }
+
+        // Funciones de utilidad
+        function verInstalacion(instalacionId) {
+            // Cambiar a pestaña inventario y filtrar por instalación
             document.getElementById('filtro-instalacion').value = instalacionId;
             showSection('inventario');
         }
-        
-        // Cargar instalaciones para selects
-        function loadInstalacionesSelect() {
-            if (instalacionesData.length === 0) {
-                loadInstalaciones();
-            }
-        }
-        
-        // Cerrar modales
-        function closeElementModal() {
-            document.getElementById('elemento-modal').style.display = 'none';
-            document.getElementById('elemento-modal-message').innerHTML = '';
-        }
-        
-        function closeSolicitudModal() {
-            document.getElementById('solicitud-modal').style.display = 'none';
-            currentSolicitudId = null;
-        }
-        
-        // Funciones de utilidad
+
         function formatCategoria(categoria) {
             const categorias = {
                 'medicamentos': 'Medicamentos',
@@ -901,7 +831,7 @@ $permissions = $adminAuth->getPermissionsService();
             };
             return categorias[categoria] || categoria;
         }
-        
+
         function formatEstado(estado) {
             const estados = {
                 'pendiente': 'Pendiente',
@@ -910,47 +840,44 @@ $permissions = $adminAuth->getPermissionsService();
             };
             return estados[estado] || estado;
         }
-        
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-ES') + ' ' + date.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
+
+        function formatFecha(fecha) {
+            return new Date(fecha).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
-        
-        function showMessage(message, type) {
+
+        // Funciones de mensaje
+        function mostrarExito(mensaje) {
+            mostrarMensaje(mensaje, 'success');
+        }
+
+        function mostrarError(mensaje) {
+            mostrarMensaje(mensaje, 'error');
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
             const container = document.getElementById('message-container');
             const messageDiv = document.createElement('div');
-            messageDiv.className = `message message-${type}`;
+            messageDiv.className = `message message-${tipo}`;
             messageDiv.innerHTML = `
-                ${message}
-                <button onclick="this.parentElement.remove()" class="message-close">&times;</button>
+                <span>${tipo === 'success' ? '✅' : '❌'} ${mensaje}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
             `;
+            
             container.appendChild(messageDiv);
             
+            // Auto-remover después de 5 segundos
             setTimeout(() => {
                 if (messageDiv.parentElement) {
                     messageDiv.remove();
                 }
             }, 5000);
         }
-        
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-        
-        // Cerrar modales al hacer clic fuera
-        window.addEventListener('click', function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        });
     </script>
 </body>
 </html>
