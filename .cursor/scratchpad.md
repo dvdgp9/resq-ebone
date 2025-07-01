@@ -184,20 +184,43 @@
 
 ## Executor's Feedback or Assistance Requests
 
-### 🎉 **PROYECTO COMPLETADO AL 100% - ÉXITO TOTAL**
+### 🎯 **IMPLEMENTANDO SIMPLIFICACIÓN UI/UX - EN PROGRESO**
 
 **📅 Fecha:** 2025-01-12
 
-**🚀 MISIÓN COMPLETADA:**
-El sistema administrativo del botiquín ResQ ha sido **completamente implementado** con todas las funcionalidades solicitadas y listo para producción.
+**🔄 TAREA ACTUAL: SIMPLIFICACIÓN DE INTERFAZ ADMIN BOTIQUÍN**
 
-**✅ LOGROS FINALES:**
+**CONTEXTO:**
+Usuario solicitó simplificación basada en análisis del Planner que identificó:
+- Dashboard + Inventario redundantes → Integrar en vista única
+- Solicitudes con gestión de estados innecesaria → Solo lectura
+- Workflow real: Setup anual vs gestión diaria
 
-**FASE 1 - Sistema de Permisos (100% ✅):**
-1. ✅ Base de datos actualizada con tabla intermedia `admin_coordinadores`
-2. ✅ AdminPermissionsService completo con todas las funciones
-3. ✅ AdminAuthService integrado con nuevos roles
-4. ✅ Sistema de testing funcional (corregido error SQL)
+**✅ PROGRESO DE SIMPLIFICACIÓN:**
+
+**CAMBIOS IMPLEMENTADOS:**
+1. ✅ **Navegación**: Eliminado tab "Dashboard", renombrado "Inventario" → "Gestión de Inventario"
+2. ✅ **Estadísticas integradas**: Movidas a header del inventario (formato inline compacto)
+3. ✅ **Sección Dashboard**: Eliminada completamente (HTML + JavaScript)
+4. ✅ **Sección Solicitudes**: Simplificada a solo lectura
+   - ❌ Eliminado filtro de estados
+   - ❌ Eliminado modal de gestión
+   - ❌ Eliminadas columnas Estado y Acciones
+   - ✅ Añadidas columnas Elementos Detallados y Mensaje
+5. ✅ **JavaScript**: 
+   - Actualizada inicialización (inventario por defecto)
+   - Eliminadas funciones: `loadDashboard`, `gestionarSolicitud`, `actualizarSolicitud`, `formatEstado`
+   - Añadida función: `loadEstadisticas`
+   - Limpiadas referencias a dashboard
+6. ✅ **CSS**: Añadidos estilos para estadísticas integradas
+
+**RESULTADO ACTUAL:**
+- **2 pestañas** en lugar de 3: "Gestión de Inventario" + "Solicitudes"
+- **Vista unificada** con estadísticas integradas en inventario
+- **Solicitudes simplificadas** (solo información, sin gestión)
+
+**⏳ PRÓXIMO PASO:**
+Testear la implementación con el usuario para confirmar que la simplificación cumple las expectativas del workflow real.
 5. ✅ Documentación completa actualizada
 
 **FASE 2 - Botiquín Administrativo (100% ✅):**

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v2'; // Added permission management and botiquin for admins
+const CACHE_NAME = 'resq-v2.1'; // Mejora botiquin admin
 const urlsToCache = [
   '/assets/css/styles.css',
   '/assets/images/logo.png',
