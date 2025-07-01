@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**✅ ESTADO ACTUAL: ELIMINACIÓN "PARTES DE ACCIDENTE" COMPLETADA**
+**✅ ESTADO ACTUAL: CORRECCIÓN CODIFICACIÓN CSV COMPLETADA**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -111,21 +111,31 @@
 - **Limpieza de código**: Eliminar funciones obsoletas y referencias DOM inexistentes
 - **Design system**: Mantener consistencia visual con componentes universales
 - **Implementación incremental**: Pasos pequeños con confirmación mejoran control de calidad
+- **Codificación UTF-8 en CSV**: Eliminar BOM y mb_convert_encoding 'auto' previene corrupción de caracteres especiales (ñ, acentos)
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: ✅ **TAREA COMPLETADA - "PARTES DE ACCIDENTE" ELIMINADO**
+**Estado**: ✅ **TAREA COMPLETADA - PROBLEMA CODIFICACIÓN CSV CORREGIDO**
 
 **ACCIONES REALIZADAS**:
+
+**Eliminación "Partes de Accidente"**:
 - ✅ **Controlador admin**: Eliminada función `exportPartesAccidente()` y referencia en switch
 - ✅ **Vista admin**: Eliminada sección completa de "Partes de Accidente" en informes.php
 - ✅ **Servicios de email**: Eliminadas referencias a 'parte_accidente' en EmailService y SimpleEmailService
 - ✅ **Controlador completo**: Eliminado archivo `controllers/parte_accidente.php` (ya no se usa)
 - ✅ **Documentación**: Actualizada database_structure.md con nota de que parte_accidente ya no se usa
 
+**Corrección Codificación CSV**:
+- ✅ **Problema identificado**: Caracteres corruptos como "Ã¯Ã ", "InstalacÃµn", "MarÃ-a GarcÃ-a" en exportación
+- ✅ **BOM UTF-8 eliminado**: Removido BOM que causaba corrupción de caracteres
+- ✅ **mb_convert_encoding eliminado**: Removido código que detectaba mal la codificación
+- ✅ **Headers mejorados**: Añadidos headers de cache para mejor compatibilidad
+- ✅ **Encerramiento específico**: Añadidas comillas dobles para mejor manejo de campos
+
 **RESULTADO**:
 - 🧹 **Sistema limpio**: Panel de informes ahora solo muestra Control de Flujo e Incidencias
-- 📋 **Funcionalidad intacta**: Todas las demás funciones del panel admin siguen funcionando
+- 📋 **CSV corregido**: Exportación ahora mantiene correctamente caracteres especiales (ñ, acentos, etc.)
 - 🗂️ **Base de datos preservada**: Enum no modificado para preservar datos existentes (si los hay)
 
 **PRÓXIMOS PASOS**:
