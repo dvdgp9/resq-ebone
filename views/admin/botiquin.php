@@ -75,14 +75,7 @@ $permissions = $adminAuth->getPermissionsService();
                         <label for="busqueda-elemento">Buscar:</label>
                         <input type="text" id="busqueda-elemento" class="form-input" placeholder="Nombre del elemento...">
                     </div>
-                    <div class="filter-actions">
-                        <button class="btn btn-primary" onclick="openCreateElementModal()">
-                            ➕ Nuevo Elemento
-                        </button>
-                        <button class="btn btn-secondary" onclick="loadInventario()">
-                            🔍 Buscar
-                        </button>
-                    </div>
+
                 </div>
                 
                 <!-- Tabla de Inventario -->
@@ -107,11 +100,7 @@ $permissions = $adminAuth->getPermissionsService();
                             <option value="">Todas las instalaciones</option>
                         </select>
                     </div>
-                    <div class="filter-actions">
-                        <button class="btn btn-secondary" onclick="loadSolicitudes()">
-                            🔍 Buscar
-                        </button>
-                    </div>
+
                 </div>
                 
                 <!-- Tabla de Solicitudes (Solo Lectura) -->
@@ -202,6 +191,26 @@ $permissions = $adminAuth->getPermissionsService();
         function configurarEventos() {
             // Formularios
             document.getElementById('form-elemento').addEventListener('submit', guardarElemento);
+
+            // Filtrado automático al cambiar instalación (inventario)
+            document.getElementById('filtro-instalacion').addEventListener('change', function() {
+                loadInventario();
+                loadEstadisticas();
+            });
+
+            // Filtrado automático al cambiar instalación (solicitudes)
+            document.getElementById('filtro-solicitud-instalacion').addEventListener('change', function() {
+                loadSolicitudes();
+            });
+
+            // Filtrado automático al cambiar búsqueda (con pequeño delay)
+            let searchTimeout;
+            document.getElementById('busqueda-elemento').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    loadInventario();
+                }, 300); // 300ms de delay para evitar demasiadas llamadas
+            });
 
             // Cerrar modales al hacer clic fuera
             document.querySelectorAll('.modal').forEach(modal => {
