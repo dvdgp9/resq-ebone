@@ -221,6 +221,46 @@ Usuario solicitó simplificación basada en análisis del Planner que identific�
 
 **⏳ PRÓXIMO PASO:**
 Testear la implementación con el usuario para confirmar que la simplificación cumple las expectativas del workflow real.
+
+---
+
+### 🔄 **REFINAMIENTO UX - MEJORAS EN GESTIÓN DE INVENTARIO**
+
+**📅 SEGUNDA ITERACIÓN:** 2025-01-12
+
+**💡 FEEDBACK DEL USUARIO:**
+- Botón "Añadir elemento" integrado en cada tabla de instalación
+- Mostrar instalaciones aunque no tengan elementos
+- Contexto automático de instalación 
+- Simplificar formulario: quitar categoría y reordenar campos
+
+**✅ CAMBIOS IMPLEMENTADOS:**
+
+1. **🏗️ Estructura mejorada:**
+   - ✅ Todas las instalaciones se muestran siempre (con o sin elementos)
+   - ✅ Botón "Añadir Elemento" integrado en header de cada instalación
+   - ✅ Estado vacío elegante: "📦 No hay elementos registrados"
+
+2. **📝 Formulario simplificado:**
+   - ❌ Campo "Instalación" eliminado (contexto automático)
+   - ❌ Campo "Categoría" eliminado (usa "general" por defecto)
+   - ✅ Reordenado: Cantidad → Unidad de medida
+   - ✅ Contexto visual: Muestra instalación seleccionada
+
+3. **🎨 Mejoras visuales:**
+   - ✅ Header instalación con flexbox (nombre + botón)
+   - ✅ Contexto de instalación en modal (fondo azul claro)
+   - ✅ Estado vacío estilizado
+   - ✅ Responsive: botón full-width en móvil
+
+4. **⚙️ JavaScript actualizado:**
+   - ✅ `openCreateElementModal(id, nombre)` con contexto
+   - ✅ `guardarElemento()` usa categoría "general" por defecto
+   - ✅ `editarElemento()` muestra contexto de instalación
+   - ✅ `loadInstalaciones()` no llena campo inexistente
+
+**🎯 RESULTADO:**
+**UX más intuitiva y contextual - Cada instalación tiene su flujo independiente**
 5. ✅ Documentación completa actualizada
 
 **FASE 2 - Botiquín Administrativo (100% ✅):**

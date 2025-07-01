@@ -138,12 +138,13 @@ $permissions = $adminAuth->getPermissionsService();
             
             <form id="form-elemento">
                 <input type="hidden" id="elemento-id">
+                <input type="hidden" id="elemento-instalacion">
                 
+                <!-- Mostrar instalación seleccionada -->
                 <div class="form-group">
-                    <label for="elemento-instalacion">🏢 Instalación *</label>
-                    <select id="elemento-instalacion" class="form-input" required>
-                        <option value="">Seleccionar instalación</option>
-                    </select>
+                    <div class="instalacion-context">
+                        🏢 <strong>Instalación:</strong> <span id="instalacion-seleccionada">-</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -154,25 +155,14 @@ $permissions = $adminAuth->getPermissionsService();
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="elemento-categoria">📋 Categoría *</label>
-                        <select id="elemento-categoria" class="form-input" required>
-                            <option value="">Seleccionar categoría</option>
-                            <option value="medicamentos">Medicamentos</option>
-                            <option value="material_curacion">Material de Curación</option>
-                            <option value="instrumental">Instrumental</option>
-                            <option value="otros">Otros</option>
-                        </select>
+                        <label for="elemento-cantidad">🔢 Cantidad actual *</label>
+                        <input type="number" id="elemento-cantidad" class="form-input" required min="0" step="1">
                     </div>
                     <div class="form-group">
                         <label for="elemento-unidad">📏 Unidad de medida *</label>
                         <input type="text" id="elemento-unidad" class="form-input" required 
                                placeholder="unidades, cajas, ml, etc.">
                     </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="elemento-cantidad">🔢 Cantidad actual *</label>
-                    <input type="number" id="elemento-cantidad" class="form-input" required min="0" step="1">
                 </div>
                 
                 <div class="form-group">
@@ -278,8 +268,8 @@ $permissions = $adminAuth->getPermissionsService();
                 const data = await apiCall('/admin/api/botiquin?action=instalaciones');
                 instalacionesData = data.instalaciones;
                 
-                // Llenar selects
-                const selects = ['filtro-instalacion', 'filtro-solicitud-instalacion', 'elemento-instalacion'];
+                // Llenar selects (solo filtros)
+                const selects = ['filtro-instalacion', 'filtro-solicitud-instalacion'];
                 selects.forEach(selectId => {
                     const select = document.getElementById(selectId);
                     const currentValue = select.value;
@@ -337,24 +327,37 @@ $permissions = $adminAuth->getPermissionsService();
             
             try {
                 const data = await apiCall('/admin/api/botiquin?' + params);
-                
                 const container = document.getElementById('inventario-content');
                 container.innerHTML = '';
                 
-                if (Object.keys(data.inventario).length === 0) {
-                    container.innerHTML = '<div class="no-results">📭 No se encontraron elementos</div>';
+                // Obtener instalaciones a mostrar
+                const instalacionesAMostrar = getInstalacionesAMostrar();
+                
+                if (instalacionesAMostrar.length === 0) {
+                    container.innerHTML = '<div class="no-results">📭 No se encontraron instalaciones</div>';
                 } else {
-                    // Crear tabla para cada instalación
-                    Object.entries(data.inventario).forEach(([instalacionNombre, elementos]) => {
+                    // Crear tabla para cada instalación (incluso si no tiene elementos)
+                    instalacionesAMostrar.forEach(instalacion => {
+                        const elementos = data.inventario[instalacion.nombre] || [];
                         const instalacionDiv = document.createElement('div');
                         instalacionDiv.className = 'instalacion-inventario';
-                        instalacionDiv.innerHTML = `
-                            <h3>🏢 ${instalacionNombre}</h3>
+                        
+                        // Header con botón de añadir
+                        const headerHTML = `
+                            <div class="instalacion-header">
+                                <h3>🏢 ${instalacion.nombre}</h3>
+                                <button class="btn btn-primary btn-small" onclick="openCreateElementModal(${instalacion.id}, '${instalacion.nombre}')">
+                                    ➕ Añadir Elemento
+                                </button>
+                            </div>
+                        `;
+                        
+                        // Tabla con elementos o mensaje vacío
+                        const tablaHTML = elementos.length > 0 ? `
                             <table class="admin-table">
                                 <thead>
                                     <tr>
                                         <th>Elemento</th>
-                                        <th>Categoría</th>
                                         <th>Cantidad</th>
                                         <th>Unidad</th>
                                         <th>Última Actualización</th>
@@ -368,7 +371,6 @@ $permissions = $adminAuth->getPermissionsService();
                                                 <strong>${elemento.nombre_elemento}</strong>
                                                 ${elemento.observaciones ? '<br><small>' + elemento.observaciones + '</small>' : ''}
                                             </td>
-                                            <td>${formatCategoria(elemento.categoria)}</td>
                                             <td>
                                                 <span class="cantidad ${elemento.cantidad_actual <= 5 ? 'bajo-minimos' : ''}">
                                                     ${elemento.cantidad_actual}
@@ -393,7 +395,13 @@ $permissions = $adminAuth->getPermissionsService();
                                     `).join('')}
                                 </tbody>
                             </table>
+                        ` : `
+                            <div class="empty-state">
+                                📦 No hay elementos registrados en esta instalación
+                            </div>
                         `;
+                        
+                        instalacionDiv.innerHTML = headerHTML + tablaHTML;
                         container.appendChild(instalacionDiv);
                     });
                 }
@@ -404,6 +412,19 @@ $permissions = $adminAuth->getPermissionsService();
                 document.getElementById('inventario-content').innerHTML = 
                     '<div class="error">❌ Error cargando inventario</div>';
                 document.getElementById('inventario-loading').style.display = 'none';
+            }
+        }
+        
+        // Función auxiliar para obtener instalaciones a mostrar
+        function getInstalacionesAMostrar() {
+            const filtroInstalacion = document.getElementById('filtro-instalacion').value;
+            
+            if (filtroInstalacion) {
+                // Si hay filtro, mostrar solo esa instalación
+                return instalacionesData.filter(inst => inst.id == filtroInstalacion);
+            } else {
+                // Si no hay filtro, mostrar todas las instalaciones disponibles
+                return instalacionesData;
             }
         }
 
@@ -469,10 +490,20 @@ $permissions = $adminAuth->getPermissionsService();
         }
 
         // Funciones de modal
-        function openCreateElementModal() {
+        function openCreateElementModal(instalacionId = null, instalacionNombre = null) {
             document.getElementById('modal-elemento-title').textContent = '📦 Nuevo Elemento';
             document.getElementById('elemento-id').value = '';
             document.getElementById('form-elemento').reset();
+            
+            // Configurar contexto de instalación
+            if (instalacionId && instalacionNombre) {
+                document.getElementById('elemento-instalacion').value = instalacionId;
+                document.getElementById('instalacion-seleccionada').textContent = instalacionNombre;
+            } else {
+                document.getElementById('elemento-instalacion').value = '';
+                document.getElementById('instalacion-seleccionada').textContent = '-';
+            }
+            
             document.getElementById('modal-elemento').style.display = 'flex';
         }
 
@@ -488,7 +519,7 @@ $permissions = $adminAuth->getPermissionsService();
                 id: document.getElementById('elemento-id').value,
                 instalacion_id: document.getElementById('elemento-instalacion').value,
                 nombre_elemento: document.getElementById('elemento-nombre').value,
-                categoria: document.getElementById('elemento-categoria').value,
+                categoria: 'general', // Categoría fija por defecto
                 unidad_medida: document.getElementById('elemento-unidad').value,
                 cantidad_actual: parseInt(document.getElementById('elemento-cantidad').value),
                 observaciones: document.getElementById('elemento-observaciones').value
@@ -527,11 +558,15 @@ $permissions = $adminAuth->getPermissionsService();
                 });
                 
                 if (elemento) {
+                    // Buscar nombre de la instalación
+                    const instalacion = instalacionesData.find(inst => inst.id == elemento.instalacion_id);
+                    const instalacionNombre = instalacion ? instalacion.nombre : 'Instalación no encontrada';
+                    
                     document.getElementById('modal-elemento-title').textContent = '✏️ Editar Elemento';
                     document.getElementById('elemento-id').value = elemento.id;
                     document.getElementById('elemento-instalacion').value = elemento.instalacion_id;
+                    document.getElementById('instalacion-seleccionada').textContent = instalacionNombre;
                     document.getElementById('elemento-nombre').value = elemento.nombre_elemento;
-                    document.getElementById('elemento-categoria').value = elemento.categoria;
                     document.getElementById('elemento-unidad').value = elemento.unidad_medida;
                     document.getElementById('elemento-cantidad').value = elemento.cantidad_actual;
                     document.getElementById('elemento-observaciones').value = elemento.observaciones || '';
