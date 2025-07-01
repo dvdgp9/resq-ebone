@@ -56,7 +56,7 @@ CREATE TABLE socorristas (
 CREATE TABLE formularios (
     id INT PRIMARY KEY AUTO_INCREMENT,
     socorrista_id INT NOT NULL,
-    tipo_formulario ENUM('control_flujo', 'incidencias', 'parte_accidente') NOT NULL,
+    tipo_formulario ENUM('control_flujo', 'incidencias', 'parte_accidente') NOT NULL, -- NOTA: 'parte_accidente' YA NO SE USA (Enero 2025)
     datos_json JSON NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notificacion_enviada BOOLEAN DEFAULT FALSE,

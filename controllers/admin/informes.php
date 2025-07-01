@@ -33,9 +33,6 @@ try {
         case 'export_incidencias':
             exportIncidencias($db);
             break;
-        case 'export_partes_accidente':
-            exportPartesAccidente($db);
-            break;
         default:
             http_response_code(400);
             echo json_encode(['error' => 'Acción no válida']);
@@ -290,94 +287,7 @@ function exportIncidencias($db) {
     generateCSV($csvData, 'incidencias_' . date('Y-m-d'));
 }
 
-function exportPartesAccidente($db) {
-    $filters = [
-        'fecha_inicio' => $_GET['fecha_inicio'] ?? null,
-        'fecha_fin' => $_GET['fecha_fin'] ?? null,
-        'instalacion_id' => $_GET['instalacion_id'] ?? null,
-        'socorrista_id' => $_GET['socorrista_id'] ?? null
-    ];
-    
-    // Obtener datos_json
-    $sql = "SELECT f.*, i.nombre as instalacion_nombre, s.nombre as socorrista_nombre 
-            FROM formularios f 
-            LEFT JOIN socorristas s ON f.socorrista_id = s.id 
-            LEFT JOIN instalaciones i ON s.instalacion_id = i.id 
-            WHERE f.tipo_formulario = 'parte_accidente'";
-    
-    $params = [];
-    
-    if ($filters['fecha_inicio']) {
-        $sql .= " AND DATE(f.fecha_creacion) >= ?";
-        $params[] = $filters['fecha_inicio'];
-    }
-    
-    if ($filters['fecha_fin']) {
-        $sql .= " AND DATE(f.fecha_creacion) <= ?";
-        $params[] = $filters['fecha_fin'];
-    }
-    
-    if ($filters['instalacion_id']) {
-        $sql .= " AND s.instalacion_id = ?";
-        $params[] = $filters['instalacion_id'];
-    }
-    
-    if ($filters['socorrista_id']) {
-        $sql .= " AND f.socorrista_id = ?";
-        $params[] = $filters['socorrista_id'];
-    }
-    
-    $sql .= " ORDER BY f.fecha_creacion DESC";
-    
-    $stmt = $db->prepare($sql);
-    $stmt->execute($params);
-    $registros = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Preparar datos_json para CSV
-    $csvData = [];
-    $csvData[] = [
-        'Fecha',
-        'Hora',
-        'Instalación',
-        'Socorrista',
-        'Nombre Accidentado',
-        'DNI/NIE',
-        'Edad',
-        'Teléfono',
-        'Tipo Lesión',
-        'Zona Corporal',
-        'Descripción',
-        'Primeros Auxilios',
-        'Derivación',
-        'Observaciones'
-    ];
-    
-    foreach ($registros as $registro) {
-        $datos_json = json_decode($registro['datos_json'], true);
-        if (!$datos_json) continue;
-        
-        $fecha = new DateTime($registro['fecha_creacion']);
-        
-        $csvData[] = [
-            $fecha->format('d/m/Y'),
-            $fecha->format('H:i'),
-            $registro['instalacion_nombre'] ?? 'N/A',
-            $registro['socorrista_nombre'] ?? 'N/A',
-            $datos_json['nombre_accidentado'] ?? '',
-            $datos_json['dni_nie'] ?? '',
-            $datos_json['edad'] ?? '',
-            $datos_json['telefono'] ?? '',
-            $datos_json['tipo_lesion'] ?? '',
-            $datos_json['zona_corporal'] ?? '',
-            $datos_json['descripcion'] ?? '',
-            $datos_json['primeros_auxilios'] ?? '',
-            $datos_json['derivacion'] ?? '',
-            $datos_json['observaciones'] ?? ''
-        ];
-    }
-    
-    generateCSV($csvData, 'partes_accidente_' . date('Y-m-d'));
-}
+
 
 function generateCSV($data, $filename) {
     header('Content-Type: text/csv; charset=utf-8');

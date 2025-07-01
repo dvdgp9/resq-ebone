@@ -146,24 +146,7 @@ $socorristas = $adminService->getSocorristas();
                     </div>
                 </div>
                 
-                <!-- Partes de Accidente -->
-                <div class="export-card">
-                    <div class="export-card-header">
-                        <div class="export-icon">🚨</div>
-                        <h3>Partes de Accidente</h3>
-                    </div>
-                    <div class="export-card-content">
-                        <p>Exporta partes de accidente con información detallada de los afectados.</p>
-                        <div class="export-fields">
-                            <strong>Campos incluidos:</strong> Fecha, Hora, Instalación, Socorrista, Datos del Accidentado, Tipo de Lesión, Primeros Auxilios, Derivación
-                        </div>
-                    </div>
-                    <div class="export-card-actions">
-                        <button class="btn btn-primary" onclick="exportarDatosV3('partes_accidente')">
-                            🚨 Exportar Partes de Accidente
-                        </button>
-                    </div>
-                </div>
+
             </div>
         </div>
         

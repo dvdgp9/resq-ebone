@@ -112,7 +112,6 @@ class EmailService {
         $nombres = [
             'control_flujo' => 'Control de Flujo de Personas',
             'incidencias' => 'Reporte de Incidencia',
-            'parte_accidente' => 'Parte de Accidente',
             'solicitud_botiquin' => 'Solicitud de Material para Botiquín'
         ];
         
