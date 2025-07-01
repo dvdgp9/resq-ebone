@@ -3257,9 +3257,8 @@ img[src*="logo"] {
 
 /* Container específico para botiquín admin */
 .admin-botiquin-container {
-    width: 100%;
-    max-width: none;
-    margin: 0;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: var(--space-md);
 }
 
@@ -3802,33 +3801,31 @@ img[src*="logo"] {
     opacity: 0.5;
 }
 
-/* ===== TABLAS ANCHO COMPLETO BOTIQUÍN ADMIN ===== */
+/* ===== TABLAS ANCHO COMPLETO DENTRO DE SECCIONES ===== */
 
-/* Contenedores de instalación ocupan todo el ancho */
-.instalacion-inventario {
-    width: 100%;
-    margin-bottom: var(--space-xl);
-}
-
-/* Secciones admin ocupan todo el ancho */
+/* Secciones admin */
 .admin-section {
-    width: 100%;
     display: none;
     animation: fadeIn 0.3s ease-in;
 }
 
 .admin-section.active {
     display: block;
-    width: 100%;
 }
 
-/* Contenido de inventario y solicitudes */
+/* Contenedores de instalación ocupan todo el ancho disponible dentro de su sección */
+.instalacion-inventario {
+    width: 100%;
+    margin-bottom: var(--space-xl);
+}
+
+/* Contenido de inventario y solicitudes ocupan todo el ancho de su contenedor */
 #inventario-content,
 #solicitudes-content {
     width: 100%;
 }
 
-/* Todas las tablas dentro del botiquín admin a ancho completo */
+/* Todas las tablas dentro del botiquín admin ocupan todo el ancho de su contenedor */
 .admin-botiquin-container .admin-table,
 .admin-botiquin-container .admin-table-container,
 .admin-botiquin-container table {
@@ -3836,9 +3833,8 @@ img[src*="logo"] {
     max-width: none !important;
 }
 
-/* Responsive: mantener ancho completo en móviles */
+/* Responsive: mantener las tablas internas a ancho completo */
 @media (max-width: 768px) {
-    .admin-botiquin-container,
     .admin-section,
     .admin-table-container,
     .instalacion-inventario,

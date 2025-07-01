@@ -244,13 +244,16 @@ Usuario pidió análisis de diseño de socorristas vs admin, y aplicar mejores e
 
 ### 🔧 **ÚLTIMA MEJORA APLICADA:**
 
-**📐 EXPANSIÓN DE TABLAS A ANCHO COMPLETO:**
-- ✅ Contenedor principal sin restricciones (`max-width: none`)
-- ✅ Contenedor HTML padre adaptado (`width: 100%, padding: 0`)
-- ✅ Contenedores de tabla con `width: 100%` forzado
-- ✅ Reglas CSS específicas con `!important` para garantizar ancho completo
-- ✅ Responsive optimizado para mantener ancho completo en móviles
-- ✅ Todas las instalaciones y solicitudes usan ahora todo el espacio disponible
+**📐 EXPANSIÓN OPTIMIZADA DE TABLAS:**
+- ✅ **Página centrada** mantenida (`max-width: 1200px, margin: 0 auto`)
+- ✅ **Márgenes laterales** preservados para mejor legibilidad
+- ✅ **Tablas internas** expandidas al 100% de su contenedor disponible
+- ✅ **Contenedores de instalación** ocupan todo el ancho de su sección
+- ✅ **Balance perfecto**: Página centrada + tablas maximizadas dentro de su espacio
+- ✅ **Responsive** mantenido para todas las resoluciones
+
+**🎯 RESULTADO:** 
+**Página con márgenes elegantes pero tablas que aprovechan al máximo el espacio disponible dentro de cada sección.**
 
 **CAMBIOS IMPLEMENTADOS:**
 1. ✅ **Navegación**: Eliminado tab "Dashboard", renombrado "Inventario" → "Gestión de Inventario"

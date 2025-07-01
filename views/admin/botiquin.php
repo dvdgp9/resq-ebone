@@ -21,7 +21,7 @@ $permissions = $adminAuth->getPermissionsService();
     <link rel="stylesheet" href="<?= assetVersion('/assets/css/styles.css') ?>">
 </head>
 <body>
-    <div class="container" style="max-width: none; width: 100%; padding: 0;">
+    <div class="container">
         <main class="admin-botiquin-container">
             <!-- Header Admin -->
             <header class="admin-header">
