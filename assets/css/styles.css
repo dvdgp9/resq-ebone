@@ -3618,3 +3618,186 @@ img[src*="logo"] {
     color: var(--primary-color);
     font-size: 0.95rem;
 }
+
+/* ===== MEJORAS ADMIN INSPIRADAS EN SOCORRISTAS ===== */
+
+/* Controles modernos de filtros para admin */
+.admin-filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Búsqueda moderna para admin */
+.admin-search-box {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.admin-search-box input {
+    width: 100%;
+    padding: 12px 45px 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.admin-search-box input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+    transform: scale(1.02);
+}
+
+.admin-search-box input:hover {
+    border-color: var(--primary-color);
+}
+
+.admin-search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 18px;
+    pointer-events: none;
+}
+
+/* Filtros mejorados para admin */
+.admin-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 180px;
+}
+
+.admin-filter-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0;
+}
+
+.admin-filter-select {
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    cursor: pointer;
+}
+
+.admin-filter-select:focus,
+.admin-filter-select:hover {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* Botones admin mejorados */
+.admin-btn-enhanced {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.admin-btn-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.admin-btn-enhanced:active {
+    transform: translateY(0);
+}
+
+.admin-btn-enhanced.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.admin-btn-enhanced.btn-primary:hover {
+    background: #1565c0;
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.admin-btn-enhanced.btn-secondary {
+    background: #f5f5f5;
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+}
+
+.admin-btn-enhanced.btn-secondary:hover {
+    background: white;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+}
+
+.admin-btn-enhanced.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.admin-btn-enhanced.btn-danger:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Responsive para filtros admin */
+@media (max-width: 768px) {
+    .admin-filters {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .admin-search-box {
+        min-width: unset;
+    }
+    
+    .admin-filter-group {
+        min-width: unset;
+    }
+}
+
+/* Estados de loading y feedback visual mejorados */
+.admin-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    animation: pulse 2s infinite;
+}
+
+.admin-empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-muted);
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed var(--border-color);
+}
+
+.admin-empty-state .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}

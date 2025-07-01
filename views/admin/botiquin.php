@@ -62,25 +62,24 @@ $permissions = $adminAuth->getPermissionsService();
                     </div>
                 </div>
                 
-                <!-- Filtros -->
+                <!-- Filtros Mejorados -->
                 <div class="admin-filters">
-                    <div class="filter-group">
-                        <label for="filtro-instalacion">Instalación:</label>
-                        <select id="filtro-instalacion" class="form-input">
+                    <div class="admin-filter-group">
+                        <label for="filtro-instalacion">🏢 Instalación</label>
+                        <select id="filtro-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>
                     </div>
 
-                    <div class="filter-group">
-                        <label for="busqueda-elemento">Buscar:</label>
-                        <input type="text" id="busqueda-elemento" class="form-input" placeholder="Nombre del elemento...">
+                    <div class="admin-search-box">
+                        <input type="text" id="busqueda-elemento" placeholder="Buscar elementos del inventario...">
+                        <span class="admin-search-icon">🔍</span>
                     </div>
-
                 </div>
                 
                 <!-- Tabla de Inventario -->
                 <div class="admin-table-container">
-                    <div id="inventario-loading" class="loading" style="display: none;">
+                    <div id="inventario-loading" class="admin-loading" style="display: none;">
                         🔄 Cargando inventario...
                     </div>
                     
@@ -92,20 +91,19 @@ $permissions = $adminAuth->getPermissionsService();
             
             <!-- Sección Solicitudes (Solo lectura) -->
             <div id="section-solicitudes" class="admin-section">
-                <!-- Filtros Solicitudes -->
+                <!-- Filtros Solicitudes Mejorados -->
                 <div class="admin-filters">
-                    <div class="filter-group">
-                        <label for="filtro-solicitud-instalacion">Instalación:</label>
-                        <select id="filtro-solicitud-instalacion" class="form-input">
+                    <div class="admin-filter-group">
+                        <label for="filtro-solicitud-instalacion">🏢 Instalación</label>
+                        <select id="filtro-solicitud-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>
                     </div>
-
                 </div>
                 
                 <!-- Tabla de Solicitudes (Solo Lectura) -->
                 <div class="admin-table-container">
-                    <div id="solicitudes-loading" class="loading" style="display: none;">
+                    <div id="solicitudes-loading" class="admin-loading" style="display: none;">
                         🔄 Cargando solicitudes...
                     </div>
                     
@@ -161,10 +159,10 @@ $permissions = $adminAuth->getPermissionsService();
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-elemento')">
+                    <button type="button" class="admin-btn-enhanced btn-secondary" onclick="cerrarModal('modal-elemento')">
                         ✖️ Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="admin-btn-enhanced btn-primary">
                         💾 Guardar
                     </button>
                 </div>
@@ -343,7 +341,13 @@ $permissions = $adminAuth->getPermissionsService();
                 const instalacionesAMostrar = getInstalacionesAMostrar();
                 
                 if (instalacionesAMostrar.length === 0) {
-                    container.innerHTML = '<div class="no-results">📭 No se encontraron instalaciones</div>';
+                    container.innerHTML = `
+                        <div class="admin-empty-state">
+                            <div class="empty-icon">🏢</div>
+                            <p>No se encontraron instalaciones</p>
+                            <small>Ajusta los filtros para ver más resultados</small>
+                        </div>
+                    `;
                 } else {
                     // Crear tabla para cada instalación (incluso si no tiene elementos)
                     instalacionesAMostrar.forEach(instalacion => {
@@ -355,7 +359,7 @@ $permissions = $adminAuth->getPermissionsService();
                         const headerHTML = `
                             <div class="instalacion-header">
                                 <h3>🏢 ${instalacion.nombre}</h3>
-                                <button class="btn btn-primary btn-small" onclick="openCreateElementModal(${instalacion.id}, '${instalacion.nombre}')">
+                                <button class="admin-btn-enhanced btn-primary btn-small" onclick="openCreateElementModal(${instalacion.id}, '${instalacion.nombre}')">
                                     ➕ Añadir Elemento
                                 </button>
                             </div>
@@ -391,11 +395,11 @@ $permissions = $adminAuth->getPermissionsService();
                                                 ${elemento.ultima_actualizacion_por ? '<br><small>por ' + elemento.ultima_actualizacion_por + '</small>' : ''}
                                             </td>
                                             <td>
-                                                <button class="btn btn-small btn-secondary" 
+                                                <button class="admin-btn-enhanced btn-secondary btn-small" 
                                                         onclick="editarElemento(${elemento.id})">
                                                     ✏️ Editar
                                                 </button>
-                                                <button class="btn btn-small btn-danger" 
+                                                <button class="admin-btn-enhanced btn-danger btn-small" 
                                                         onclick="eliminarElemento(${elemento.id})">
                                                     🗑️ Eliminar
                                                 </button>
@@ -405,8 +409,10 @@ $permissions = $adminAuth->getPermissionsService();
                                 </tbody>
                             </table>
                         ` : `
-                            <div class="empty-state">
-                                📦 No hay elementos registrados en esta instalación
+                            <div class="admin-empty-state">
+                                <div class="empty-icon">📦</div>
+                                <p>No hay elementos registrados</p>
+                                <small>Añade elementos usando el botón superior</small>
                             </div>
                         `;
                         
@@ -452,7 +458,13 @@ $permissions = $adminAuth->getPermissionsService();
                 const container = document.getElementById('solicitudes-content');
                 
                 if (data.solicitudes.length === 0) {
-                    container.innerHTML = '<div class="no-results">📭 No se encontraron solicitudes</div>';
+                    container.innerHTML = `
+                        <div class="admin-empty-state">
+                            <div class="empty-icon">📭</div>
+                            <p>No se encontraron solicitudes</p>
+                            <small>Las solicitudes aparecerán aquí cuando los socorristas las envíen</small>
+                        </div>
+                    `;
                 } else {
                     container.innerHTML = `
                         <table class="admin-table">
