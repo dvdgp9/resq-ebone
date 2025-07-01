@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**✅ ESTADO ACTUAL: CORRECCIÓN CODIFICACIÓN CSV COMPLETADA**
+**⚡ ESTADO ACTUAL: INVESTIGANDO CONSULTAS SQL EXPORTACIÓN**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -115,28 +115,78 @@
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: ✅ **TAREA COMPLETADA - PROBLEMA CODIFICACIÓN CSV CORREGIDO**
+**Estado**: 🔍 **MODO PLANNER - ANÁLISIS PROBLEMA CODIFICACIÓN CSV**
 
-**ACCIONES REALIZADAS**:
+## Key Challenges and Analysis
 
-**Eliminación "Partes de Accidente"**:
-- ✅ **Controlador admin**: Eliminada función `exportPartesAccidente()` y referencia en switch
-- ✅ **Vista admin**: Eliminada sección completa de "Partes de Accidente" en informes.php
-- ✅ **Servicios de email**: Eliminadas referencias a 'parte_accidente' en EmailService y SimpleEmailService
-- ✅ **Controlador completo**: Eliminado archivo `controllers/parte_accidente.php` (ya no se usa)
-- ✅ **Documentación**: Actualizada database_structure.md con nota de que parte_accidente ya no se usa
+### 🚨 **PROBLEMA PERSISTENTE IDENTIFICADO**
+A pesar de las correcciones realizadas en `generateCSV()`, el problema de codificación persiste:
+- **Síntomas actuales**: "MarÃ-a GarcÃ-a" en lugar de "María García", "PVÃ©rez" en lugar de "Pérez"
+- **Conclusión**: El problema NO está en la función de generación CSV, sino en una etapa anterior
 
-**Corrección Codificación CSV**:
-- ✅ **Problema identificado**: Caracteres corruptos como "Ã¯Ã ", "InstalacÃµn", "MarÃ-a GarcÃ-a" en exportación
-- ✅ **BOM UTF-8 eliminado**: Removido BOM que causaba corrupción de caracteres
-- ✅ **mb_convert_encoding eliminado**: Removido código que detectaba mal la codificación
-- ✅ **Headers mejorados**: Añadidos headers de cache para mejor compatibilidad
-- ✅ **Encerramiento específico**: Añadidas comillas dobles para mejor manejo de campos
+### 🔍 **ANÁLISIS DE POSIBLES CAUSAS RAÍZ**
 
-**RESULTADO**:
-- 🧹 **Sistema limpio**: Panel de informes ahora solo muestra Control de Flujo e Incidencias
-- 📋 **CSV corregido**: Exportación ahora mantiene correctamente caracteres especiales (ñ, acentos, etc.)
-- 🗂️ **Base de datos preservada**: Enum no modificado para preservar datos existentes (si los hay)
+**1. CODIFICACIÓN EN BASE DE DATOS** 
+- ❓ **Hipótesis alta**: Los datos ya están corruptos en la BD desde el momento de inserción
+- ❓ **Verificación necesaria**: Consultar directamente la BD para ver si los nombres están mal almacenados
+- ❓ **Posible causa**: Conexión PDO sin charset UTF-8 configurado
 
-**PRÓXIMOS PASOS**:
-- Listo para siguientes mejoras del panel de administración según tus necesidades 
+**2. CODIFICACIÓN EN CONSULTAS SQL**
+- ❓ **Hipótesis media**: La consulta SQL no está configurada para UTF-8
+- ❓ **Verificación necesaria**: Revisar configuración PDO en Database.php
+- ❓ **Solución potencial**: Añadir `SET NAMES utf8mb4` en conexión
+
+**3. CODIFICACIÓN EN INSERCIÓN DE DATOS**
+- ❓ **Hipótesis media**: Los formularios de creación de socorristas/coordinadores no manejan UTF-8
+- ❓ **Verificación necesaria**: Revisar controladores de creación de usuarios
+- ❓ **Solución potencial**: Validar que los formularios usen `accept-charset="UTF-8"`
+
+**4. CONFIGURACIÓN DE SERVIDOR/PHP**
+- ❓ **Hipótesis baja**: Configuración PHP no manejando UTF-8 correctamente
+- ❓ **Verificación necesaria**: Revisar php.ini y configuración de servidor
+- ❓ **Solución potencial**: `ini_set('default_charset', 'UTF-8')`
+
+### 📋 **PLAN DE INVESTIGACIÓN PROPUESTO**
+
+**FASE 1: DIAGNÓSTICO DE ORIGEN DE DATOS**
+1. Consultar directamente la BD para verificar si los datos están corruptos en origen
+2. Revisar configuración de conexión PDO en `config/database.php` o clase Database
+3. Verificar headers de los formularios de creación de usuarios
+
+**FASE 2: CORRECCIÓN SEGÚN DIAGNÓSTICO**
+- Si problema en BD: Corregir configuración PDO y considerar migración de datos
+- Si problema en inserción: Corregir formularios y procesos de inserción
+- Si problema persiste: Investigar configuración PHP/servidor
+
+**FASE 3: VALIDACIÓN**
+- Crear usuario de prueba con caracteres especiales
+- Verificar almacenamiento correcto en BD
+- Probar exportación CSV completa
+
+## High-level Task Breakdown
+
+### 🎯 **TAREAS PRIORIZADAS**
+
+**Tarea 1: Diagnóstico Base de Datos**
+- [ ] Consultar tabla `socorristas` directamente para verificar codificación de nombres
+- [ ] Revisar configuración PDO en clase Database
+- [ ] Verificar collation de tablas de BD
+- **Criterio de éxito**: Identificar si el problema está en almacenamiento o recuperación
+
+**Tarea 2: Revisar Proceso de Inserción**  
+- [ ] Examinar formularios de creación de coordinadores/socorristas
+- [ ] Verificar headers y charset de formularios HTML
+- [ ] Revisar controladores de procesamiento de formularios
+- **Criterio de éxito**: Confirmar que inserción maneja UTF-8 correctamente
+
+**Tarea 3: Implementar Corrección**
+- [ ] Aplicar corrección según diagnóstico (PDO config, formularios, o ambos)
+- [ ] Crear script de migración de datos si es necesario
+- [ ] Validar corrección con datos de prueba
+- **Criterio de éxito**: Nuevos datos se almacenan y exportan correctamente
+
+**Tarea 4: Validación Final**
+- [ ] Probar exportación CSV con datos corregidos
+- [ ] Verificar que no hay regresiones en otras funcionalidades
+- [ ] Documentar solución en lessons aprendidas
+- **Criterio de éxito**: CSV exporta nombres con acentos correctamente 

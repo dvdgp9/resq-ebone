@@ -43,6 +43,9 @@ try {
 }
 
 function exportControlFlujo($db) {
+    // Asegurar codificación UTF-8 en la conexión para esta consulta específica
+    $db->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+    
     $filters = [
         'fecha_inicio' => $_GET['fecha_inicio'] ?? null,
         'fecha_fin' => $_GET['fecha_fin'] ?? null,
@@ -209,6 +212,9 @@ function exportControlFlujo($db) {
 }
 
 function exportIncidencias($db) {
+    // Asegurar codificación UTF-8 en la conexión para esta consulta específica
+    $db->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+    
     $filters = [
         'fecha_inicio' => $_GET['fecha_inicio'] ?? null,
         'fecha_fin' => $_GET['fecha_fin'] ?? null,
