@@ -81,6 +81,15 @@ $stats = $adminService->getEstadisticas();
                     <div class="stat-label">Este mes</div>
                 </div>
             </div>
+            
+            <div class="stat-card alert">
+                <div class="stat-icon">🏥</div>
+                <div class="stat-content">
+                    <h3>Botiquín</h3>
+                    <div class="stat-number"><?= $stats['solicitudes_pendientes'] ?? 0 ?></div>
+                    <div class="stat-label">Sol. Pendientes</div>
+                </div>
+            </div>
         </div>
         
         <!-- Navegación Principal -->
@@ -110,6 +119,13 @@ $stats = $adminService->getEstadisticas();
                 <div class="nav-card-icon">📊</div>
                 <h3>Informes y Exportación</h3>
                 <p>Exportar formularios a Excel con filtros personalizados</p>
+                <div class="nav-card-arrow">→</div>
+            </a>
+            
+            <a href="/admin/botiquin" class="admin-nav-card">
+                <div class="nav-card-icon">🏥</div>
+                <h3>Gestión de Botiquín</h3>
+                <p>Administrar inventarios y solicitudes de material</p>
                 <div class="nav-card-arrow">→</div>
             </a>
         </div>

@@ -2,6 +2,8 @@
 // Servicio de Autenticación para Panel Admin de ResQ
 // Sistema de login para administradores (superadmin + futuros coordinadores)
 
+require_once __DIR__ . '/AdminPermissionsService.php';
+
 class AdminAuthService {
     
     /**
@@ -55,7 +57,7 @@ class AdminAuthService {
                 $_SESSION['admin_session_id'] = $sessionId;
                 $_SESSION['admin_login_time'] = time();
                 
-                logMessage("Login admin exitoso para {$admin['nombre']} (Email: {$email})", 'INFO');
+                logMessage("Login admin exitoso para {$admin['nombre']} (Email: {$email}) - Tipo: {$admin['tipo']}", 'INFO');
                 return $admin;
             }
             
@@ -115,7 +117,26 @@ class AdminAuthService {
     public function esSuperAdmin() {
         return $this->estaAutenticadoAdmin() && 
                isset($_SESSION['admin_tipo']) && 
-               $_SESSION['admin_tipo'] === 'superadmin';
+               $_SESSION['admin_tipo'] === 'superadmin' &&
+               $_SESSION['admin_coordinador_id'] === null;
+    }
+    
+    /**
+     * Verifica si el admin actual es admin regular
+     */
+    public function esAdmin() {
+        return $this->estaAutenticadoAdmin() && 
+               isset($_SESSION['admin_tipo']) && 
+               $_SESSION['admin_tipo'] === 'admin';
+    }
+    
+    /**
+     * Verifica si el admin actual es coordinador
+     */
+    public function esCoordinador() {
+        return $this->estaAutenticadoAdmin() && 
+               isset($_SESSION['admin_tipo']) && 
+               $_SESSION['admin_tipo'] === 'coordinador';
     }
     
     /**
@@ -134,6 +155,64 @@ class AdminAuthService {
             'coordinador_id' => $_SESSION['admin_coordinador_id'],
             'login_time' => $_SESSION['admin_login_time']
         ];
+    }
+    
+    /**
+     * Obtiene una instancia de AdminPermissionsService para el admin actual
+     */
+    public function getPermissionsService() {
+        $admin = $this->getAdminActual();
+        if (!$admin) {
+            return null;
+        }
+        
+        return new AdminPermissionsService($admin);
+    }
+    
+    /**
+     * Verificar si el admin actual puede acceder a un coordinador específico
+     */
+    public function puedeAccederCoordinador($coordinadorId) {
+        $permissions = $this->getPermissionsService();
+        return $permissions ? $permissions->puedeAccederCoordinador($coordinadorId) : false;
+    }
+    
+    /**
+     * Verificar si el admin actual puede acceder a una instalación específica
+     */
+    public function puedeAccederInstalacion($instalacionId) {
+        $permissions = $this->getPermissionsService();
+        return $permissions ? $permissions->puedeAccederInstalacion($instalacionId) : false;
+    }
+    
+    /**
+     * Verificar si el admin actual puede acceder a un socorrista específico
+     */
+    public function puedeAccederSocorrista($socorristaId) {
+        $permissions = $this->getPermissionsService();
+        return $permissions ? $permissions->puedeAccederSocorrista($socorristaId) : false;
+    }
+    
+    /**
+     * Obtener descripción del rol del admin actual
+     */
+    public function getDescripcionRol() {
+        if ($this->esSuperAdmin()) {
+            return 'Superadministrador';
+        } elseif ($this->esAdmin()) {
+            return 'Administrador';
+        } elseif ($this->esCoordinador()) {
+            return 'Coordinador';
+        }
+        return 'Rol desconocido';
+    }
+    
+    /**
+     * Obtener resumen de permisos del admin actual (para debugging)
+     */
+    public function getResumenPermisos() {
+        $permissions = $this->getPermissionsService();
+        return $permissions ? $permissions->getResumenPermisos() : null;
     }
     
     /**

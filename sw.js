@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v1.5.3'; // Fix: Exportación informes
+const CACHE_NAME = 'resq-v2'; // Added permission management and botiquin for admins
 const urlsToCache = [
   '/assets/css/styles.css',
   '/assets/images/logo.png',
