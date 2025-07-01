@@ -112,6 +112,13 @@ $stats = $adminService->getEstadisticas();
                 <p>Exportar formularios a Excel con filtros personalizados</p>
                 <div class="nav-card-arrow">→</div>
             </a>
+            
+            <a href="/admin/botiquin" class="admin-nav-card">
+                <div class="nav-card-icon">🏥</div>
+                <h3>Gestión de Botiquín</h3>
+                <p>Administrar inventarios de botiquín y solicitudes de material</p>
+                <div class="nav-card-arrow">→</div>
+            </a>
         </div>
         
         <!-- Accesos Rápidos -->
@@ -126,6 +133,9 @@ $stats = $adminService->getEstadisticas();
                 </button>
                 <button class="btn btn-primary" onclick="window.location.href='/admin/socorristas?action=create'">
                     🚑 Nuevo Socorrista
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='/admin/botiquin'">
+                    🏥 Gestión Botiquín
                 </button>
                 <button class="btn btn-secondary" onclick="window.location.href='/'">
                     🚨 Ir a Panel Socorristas
