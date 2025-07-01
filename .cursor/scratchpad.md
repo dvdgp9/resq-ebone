@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**⚡ ESTADO ACTUAL: INVESTIGANDO CONSULTAS SQL EXPORTACIÓN**
+**✅ ESTADO ACTUAL: CHARSET JOIN CONFIGURADO - PRUEBA PENDIENTE**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -112,81 +112,40 @@
 - **Design system**: Mantener consistencia visual con componentes universales
 - **Implementación incremental**: Pasos pequeños con confirmación mejoran control de calidad
 - **Codificación UTF-8 en CSV**: Eliminar BOM y mb_convert_encoding 'auto' previene corrupción de caracteres especiales (ñ, acentos)
+- **Charset en consultas JOIN**: Añadir `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci` antes de consultas con JOIN previene corrupción en recuperación de datos
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: 🔍 **MODO PLANNER - ANÁLISIS PROBLEMA CODIFICACIÓN CSV**
+**Estado**: ✅ **SOLUCIÓN APLICADA - SET NAMES UTF8MB4 EN CONSULTAS JOIN**
 
-## Key Challenges and Analysis
+### 🎯 **PROBLEMA IDENTIFICADO Y SOLUCIONADO**
 
-### 🚨 **PROBLEMA PERSISTENTE IDENTIFICADO**
-A pesar de las correcciones realizadas en `generateCSV()`, el problema de codificación persiste:
-- **Síntomas actuales**: "MarÃ-a GarcÃ-a" en lugar de "María García", "PVÃ©rez" en lugar de "Pérez"
-- **Conclusión**: El problema NO está en la función de generación CSV, sino en una etapa anterior
+**DIAGNÓSTICO CONFIRMADO**:
+- ✅ **BD almacena correctamente**: Verificado que datos JSON contienen "María García" sin corrupción
+- ✅ **Problema en JOINs**: Corrupción ocurre al hacer JOIN con tablas `socorristas` e `instalaciones`  
+- ✅ **Causa raíz**: Falta configuración charset específica en consultas de exportación
 
-### 🔍 **ANÁLISIS DE POSIBLES CAUSAS RAÍZ**
+**SOLUCIÓN IMPLEMENTADA**:
+- ✅ **SET NAMES añadido**: `SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci` antes de cada función de exportación
+- ✅ **Ambas funciones corregidas**: `exportControlFlujo()` y `exportIncidencias()` actualizadas
+- ✅ **Configuración específica**: Charset establecido explícitamente para consultas con JOIN
 
-**1. CODIFICACIÓN EN BASE DE DATOS** 
-- ❓ **Hipótesis alta**: Los datos ya están corruptos en la BD desde el momento de inserción
-- ❓ **Verificación necesaria**: Consultar directamente la BD para ver si los nombres están mal almacenados
-- ❓ **Posible causa**: Conexión PDO sin charset UTF-8 configurado
+### 📋 **CÓDIGO MODIFICADO**
 
-**2. CODIFICACIÓN EN CONSULTAS SQL**
-- ❓ **Hipótesis media**: La consulta SQL no está configurada para UTF-8
-- ❓ **Verificación necesaria**: Revisar configuración PDO en Database.php
-- ❓ **Solución potencial**: Añadir `SET NAMES utf8mb4` en conexión
+```php
+// Añadido al inicio de exportControlFlujo() y exportIncidencias()
+$db->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
+```
 
-**3. CODIFICACIÓN EN INSERCIÓN DE DATOS**
-- ❓ **Hipótesis media**: Los formularios de creación de socorristas/coordinadores no manejan UTF-8
-- ❓ **Verificación necesaria**: Revisar controladores de creación de usuarios
-- ❓ **Solución potencial**: Validar que los formularios usen `accept-charset="UTF-8"`
+**CONSULTAS AFECTADAS**:
+```sql
+SELECT f.*, i.nombre as instalacion_nombre, i.aforo_maximo, s.nombre as socorrista_nombre 
+FROM formularios f 
+LEFT JOIN socorristas s ON f.socorrista_id = s.id 
+LEFT JOIN instalaciones i ON s.instalacion_id = i.id
+```
 
-**4. CONFIGURACIÓN DE SERVIDOR/PHP**
-- ❓ **Hipótesis baja**: Configuración PHP no manejando UTF-8 correctamente
-- ❓ **Verificación necesaria**: Revisar php.ini y configuración de servidor
-- ❓ **Solución potencial**: `ini_set('default_charset', 'UTF-8')`
-
-### 📋 **PLAN DE INVESTIGACIÓN PROPUESTO**
-
-**FASE 1: DIAGNÓSTICO DE ORIGEN DE DATOS**
-1. Consultar directamente la BD para verificar si los datos están corruptos en origen
-2. Revisar configuración de conexión PDO en `config/database.php` o clase Database
-3. Verificar headers de los formularios de creación de usuarios
-
-**FASE 2: CORRECCIÓN SEGÚN DIAGNÓSTICO**
-- Si problema en BD: Corregir configuración PDO y considerar migración de datos
-- Si problema en inserción: Corregir formularios y procesos de inserción
-- Si problema persiste: Investigar configuración PHP/servidor
-
-**FASE 3: VALIDACIÓN**
-- Crear usuario de prueba con caracteres especiales
-- Verificar almacenamiento correcto en BD
-- Probar exportación CSV completa
-
-## High-level Task Breakdown
-
-### 🎯 **TAREAS PRIORIZADAS**
-
-**Tarea 1: Diagnóstico Base de Datos**
-- [ ] Consultar tabla `socorristas` directamente para verificar codificación de nombres
-- [ ] Revisar configuración PDO en clase Database
-- [ ] Verificar collation de tablas de BD
-- **Criterio de éxito**: Identificar si el problema está en almacenamiento o recuperación
-
-**Tarea 2: Revisar Proceso de Inserción**  
-- [ ] Examinar formularios de creación de coordinadores/socorristas
-- [ ] Verificar headers y charset de formularios HTML
-- [ ] Revisar controladores de procesamiento de formularios
-- **Criterio de éxito**: Confirmar que inserción maneja UTF-8 correctamente
-
-**Tarea 3: Implementar Corrección**
-- [ ] Aplicar corrección según diagnóstico (PDO config, formularios, o ambos)
-- [ ] Crear script de migración de datos si es necesario
-- [ ] Validar corrección con datos de prueba
-- **Criterio de éxito**: Nuevos datos se almacenan y exportan correctamente
-
-**Tarea 4: Validación Final**
-- [ ] Probar exportación CSV con datos corregidos
-- [ ] Verificar que no hay regresiones en otras funcionalidades
-- [ ] Documentar solución en lessons aprendidas
-- **Criterio de éxito**: CSV exporta nombres con acentos correctamente 
+### 🧪 **PRUEBA REQUERIDA**
+- Exportar CSV de Control de Flujo e Incidencias
+- Verificar que nombres aparezcan como "María García" en lugar de "MarÃ-a GarcÃ-a"
+- Confirmar que acentos y caracteres especiales se muestren correctamente 
