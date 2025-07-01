@@ -65,7 +65,7 @@
 
 ## Current Status / Progress Tracking
 
-**✅ ESTADO ACTUAL: BOM UTF-8 AÑADIDO PARA EXCEL - PRUEBA PENDIENTE**
+**🔄 ESTADO ACTUAL: BOM NO FUNCIONÓ - PROBANDO CODIFICACIÓN WINDOWS-1252**
 
 ### 🎯 **FUNCIONALIDADES ACTIVAS**:
 
@@ -117,37 +117,36 @@
 
 ## Executor's Feedback or Assistance Requests
 
-**Estado**: ✅ **SOLUCIÓN EXCEL ESPECÍFICA IMPLEMENTADA - BOM UTF-8 AÑADIDO**
+**Estado**: 🔄 **NUEVA ESTRATEGIA - CONVERSIÓN A WINDOWS-1252**
 
-### 🎯 **PROBLEMA REAL IDENTIFICADO**
+### 🎯 **PROBLEMA PERSISTENTE CON EXCEL**
 
-**DIAGNÓSTICO FINAL CORRECTO**:
-- ✅ **CSV está bien generado**: Confirmado - Preview Mac muestra "María García Pérez" correctamente
-- ✅ **Excel interpreta mal UTF-8**: El problema es que Excel no detecta UTF-8 sin BOM
-- ✅ **Causa raíz**: Excel necesita BOM (Byte Order Mark) para interpretar UTF-8 correctamente
+**DIAGNÓSTICO ACTUALIZADO**:
+- ✅ **Preview funciona**: Confirma que datos están bien en UTF-8
+- ❌ **BOM UTF-8 falló**: Excel sigue sin interpretar correctamente UTF-8 con BOM
+- 🎯 **Nueva estrategia**: Convertir a Windows-1252 (codificación nativa de Excel)
 
-**SOLUCIÓN IMPLEMENTADA**:
-- ✅ **BOM UTF-8 añadido**: `\xEF\xBB\xBF` específico para Excel al inicio del archivo
-- ✅ **Headers optimizados**: `Content-Type: application/csv` para mejor compatibilidad Excel
-- ✅ **SET NAMES mantenido**: Consultas SQL siguen con charset correcto
-- ✅ **Separador europeo**: `;` para Excel en español
+**NUEVA SOLUCIÓN IMPLEMENTADA**:
+- 🔄 **Conversión explícita**: `mb_convert_encoding()` de UTF-8 a Windows-1252
+- 🔄 **Headers actualizados**: `charset=Windows-1252` en Content-Type
+- ❌ **BOM eliminado**: No necesario para Windows-1252
+- ✅ **SET NAMES mantenido**: Consultas SQL siguen correctas
 
-### 📋 **CÓDIGO MODIFICADO PARA EXCEL**
+### 📋 **CÓDIGO WINDOWS-1252 PARA EXCEL**
 
 ```php
 function generateCSV($data, $filename) {
-    // Headers específicos para Excel
-    header('Content-Type: application/csv; charset=UTF-8');
+    // Headers para Excel con Windows-1252
+    header('Content-Type: application/csv; charset=Windows-1252');
     
-    // BOM UTF-8 ESPECÍFICO PARA EXCEL
-    fwrite($output, "\xEF\xBB\xBF");
-    
-    // Datos con separador europeo
-    fputcsv($output, $excelRow, ';', '"');
+    // Conversión UTF-8 → Windows-1252
+    $excelRow = array_map(function($field) {
+        return mb_convert_encoding(trim($field), 'Windows-1252', 'UTF-8');
+    }, $row);
 }
 ```
 
 ### 🧪 **PRUEBA REQUERIDA**
-- Exportar CSV y abrir en Excel
-- Verificar que Excel muestre "María García Pérez" correctamente
-- Confirmar que tanto Preview como Excel muestran acentos bien 
+- Exportar CSV y abrir en Excel  
+- Verificar "María García Pérez" en Excel
+- Comprobar que Preview sigue funcionando correctamente 

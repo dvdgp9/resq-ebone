@@ -296,8 +296,8 @@ function exportIncidencias($db) {
 
 
 function generateCSV($data, $filename) {
-    // Headers específicos para compatibilidad Excel con UTF-8
-    header('Content-Type: application/csv; charset=UTF-8');
+    // Headers específicos para Excel con codificación Windows-1252
+    header('Content-Type: application/csv; charset=Windows-1252');
     header('Content-Disposition: attachment; filename="' . $filename . '.csv"');
     header('Pragma: no-cache');
     header('Expires: 0');
@@ -306,16 +306,13 @@ function generateCSV($data, $filename) {
     // Abrir output stream
     $output = fopen('php://output', 'w');
     
-    // BOM UTF-8 ESPECÍFICO PARA EXCEL - necesario para que Excel detecte UTF-8 correctamente
-    fwrite($output, "\xEF\xBB\xBF");
-    
-    // Escribir datos CSV con codificación optimizada para Excel
+    // Escribir datos CSV con conversión a Windows-1252 para Excel
     foreach ($data as $row) {
-        // Preparar cada campo para Excel
+        // Convertir cada campo de UTF-8 a Windows-1252 (codificación nativa de Excel)
         $excelRow = array_map(function($field) {
             if (is_string($field)) {
-                // Mantener caracteres UTF-8 exactamente como están, solo limpiar espacios
-                return trim($field);
+                // Convertir UTF-8 a Windows-1252 para compatibilidad total con Excel
+                return mb_convert_encoding(trim($field), 'Windows-1252', 'UTF-8');
             }
             return $field;
         }, $row);
