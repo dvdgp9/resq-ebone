@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v1.4'; // Tweak: Rediseño app y añadir mi cuenta
+const CACHE_NAME = 'resq-v1.5'; // Tweak: Rediseño app y añadir mi cuenta
 const urlsToCache = [
   '/assets/css/styles.css',
   '/assets/images/logo.png',
