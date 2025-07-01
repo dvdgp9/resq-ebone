@@ -65,7 +65,6 @@ $permissions = $adminAuth->getPermissionsService();
                 <!-- Filtros Mejorados -->
                 <div class="admin-filters">
                     <div class="admin-filter-group">
-                        <label for="filtro-instalacion">🏢</label>
                         <select id="filtro-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>
@@ -94,7 +93,6 @@ $permissions = $adminAuth->getPermissionsService();
                 <!-- Filtros Solicitudes Mejorados -->
                 <div class="admin-filters">
                     <div class="admin-filter-group">
-                        <label for="filtro-solicitud-instalacion">🏢</label>
                         <select id="filtro-solicitud-instalacion" class="admin-filter-select">
                             <option value="">Todas las instalaciones</option>
                         </select>

@@ -255,6 +255,20 @@ Usuario pidió análisis de diseño de socorristas vs admin, y aplicar mejores e
 **🎯 RESULTADO:** 
 **Página con márgenes elegantes pero tablas que aprovechan al máximo el espacio disponible dentro de cada sección.**
 
+### 🔧 **REFINAMIENTO ADICIONAL:**
+
+**🏢 SELECTORES SIMPLIFICADOS:**
+- ✅ **Eliminado emoji** 🏢 de selectores de instalación
+- ✅ **Layout limpio** sin labels innecesarios
+- ✅ **Alineación mejorada** (`align-items: center`)
+- ✅ **Responsive actualizado** sin reglas obsoletas de labels
+- ✅ **Interfaz más minimalista** y profesional
+
+**📐 NUEVA ESTRUCTURA DE FILTROS:**
+```
+[Selector Instalación] [Campo Búsqueda 🔍]
+```
+
 **CAMBIOS IMPLEMENTADOS:**
 1. ✅ **Navegación**: Eliminado tab "Dashboard", renombrado "Inventario" → "Gestión de Inventario"
 2. ✅ **Estadísticas integradas**: Movidas a header del inventario (formato inline compacto)

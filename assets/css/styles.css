@@ -3618,7 +3618,7 @@ img[src*="logo"] {
     margin-bottom: 25px;
     margin-top: 20px;
     flex-wrap: wrap;
-    align-items: end;
+    align-items: center;
     justify-content: flex-start;
 }
 
@@ -3668,6 +3668,7 @@ img[src*="logo"] {
     min-width: 180px;
 }
 
+/* Labels opcionales para filtros */
 .admin-filter-group label {
     font-size: 1.2rem;
     font-weight: 600;
@@ -3768,11 +3769,6 @@ img[src*="logo"] {
         min-width: unset;
         order: 1;
     }
-    
-    .admin-filter-group label {
-        text-align: left;
-        font-size: 1rem;
-    }
 }
 
 /* Estados de loading y feedback visual mejorados */
@@ -3816,6 +3812,7 @@ img[src*="logo"] {
 /* Contenedores de instalación ocupan todo el ancho disponible dentro de su sección */
 .instalacion-inventario {
     width: 100%;
+    padding: 20px;
     margin-bottom: var(--space-xl);
 }
 
