@@ -42,21 +42,15 @@ $stats = $adminService->getEstadisticas();
         <div class="admin-welcome">
             <h1>🎛️ Panel de Administración</h1>
             <p>Bienvenido, <?= htmlspecialchars($admin['nombre']) ?>. Gestiona coordinadores, instalaciones y socorristas desde aquí.</p>
+            <!-- DEBUG TEMPORAL -->
+            <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                <strong>🔧 DEBUG:</strong> Tipo actual = "<?= $admin['tipo'] ?>" | 
+                Es Superadmin = <?= $admin['tipo'] === 'superadmin' ? 'SÍ' : 'NO' ?>
+            </div>
         </div>
         
         <!-- Cards de Estadísticas -->
         <div class="stats-grid">
-            <?php if ($admin['tipo'] === 'superadmin'): ?>
-            <div class="stat-card">
-                <div class="stat-icon">🔐</div>
-                <div class="stat-content">
-                    <h3>Administradores</h3>
-                    <div class="stat-number" id="stat-administradores">-</div>
-                    <div class="stat-label">Activos</div>
-                </div>
-            </div>
-            <?php endif; ?>
-            
             <div class="stat-card">
                 <div class="stat-icon">👥</div>
                 <div class="stat-content">
