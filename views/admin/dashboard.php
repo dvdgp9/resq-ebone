@@ -131,7 +131,7 @@ $stats = $adminService->getEstadisticas();
         
         <?php if ($admin['tipo'] === 'superadmin'): ?>
         <!-- Gestión de Administradores (Solo Superadmin) -->
-        <div class="admin-section">
+        <div class="admin-section" style="background: red; padding: 20px; margin: 20px 0; border: 3px solid blue; color: white; font-weight: bold; min-height: 200px;"    >
             <div class="section-header">
                 <h2>🔐 Gestión de Administradores</h2>
                 <button class="btn btn-primary" onclick="abrirModalAdministrador()">
