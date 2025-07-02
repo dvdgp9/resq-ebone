@@ -121,6 +121,14 @@ $stats = $adminService->getEstadisticas();
             </a>
         </div>
         
+        <!-- DEBUG: Verificar tipo de admin -->
+        <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+            <strong>🔧 DEBUG ADMIN:</strong> 
+            Tipo = "<?= htmlspecialchars($admin['tipo']) ?>" | 
+            Es igual a 'superadmin' = <?= $admin['tipo'] === 'superadmin' ? 'SÍ' : 'NO' ?> |
+            Condición cumplida = <?= ($admin['tipo'] === 'superadmin') ? 'SÍ - DEBERÍA APARECER' : 'NO - POR ESO NO APARECE' ?>
+        </div>
+        
         <?php if ($admin['tipo'] === 'superadmin'): ?>
         <!-- Gestión de Administradores (Solo Superadmin) -->
         <div class="admin-section">
