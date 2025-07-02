@@ -210,41 +210,36 @@ if ($admin['tipo'] !== 'superadmin') {
         showLoading();
         
         try {
-            // Por ahora datos de ejemplo - aquí iría la llamada API
-            setTimeout(() => {
-                administradores = [
-                    {
-                        id: 1,
-                        nombre: '<?= htmlspecialchars($admin['nombre']) ?>',
-                        email: '<?= htmlspecialchars($admin['email']) ?>',
-                        tipo: '<?= $admin['tipo'] ?>',
-                        activo: 1,
-                        total_coordinadores: 3,
-                        ultima_conexion: 'Ahora'
-                    }
-                ];
-                
+            const response = await fetch('/admin/api/administradores');
+            const data = await response.json();
+            
+            if (data.success) {
+                administradores = data.administradores;
                 renderTable();
-                hideLoading();
-            }, 1000);
+            } else {
+                showMessage('Error al cargar administradores: ' + data.error, 'error');
+            }
             
         } catch (error) {
             console.error('Error loading administradores:', error);
             showMessage('Error al cargar administradores', 'error');
-            hideLoading();
         }
+        
+        hideLoading();
     }
 
     // Cargar coordinadores
     async function loadCoordinadores() {
         try {
-            // Por ahora datos de ejemplo - aquí iría la llamada API
-            coordinadores = [
-                { id: 1, nombre: 'Coordinador 1', email: 'coord1@ebone.es' },
-                { id: 2, nombre: 'Coordinador 2', email: 'coord2@ebone.es' }
-            ];
+            const response = await fetch('/admin/api/coordinadores');
+            const data = await response.json();
             
-            updateCoordinadoresList();
+            if (data.success) {
+                coordinadores = data.coordinadores;
+                updateCoordinadoresList();
+            } else {
+                console.error('Error loading coordinadores:', data.error);
+            }
         } catch (error) {
             console.error('Error loading coordinadores:', error);
         }
@@ -420,13 +415,33 @@ if ($admin['tipo'] !== 'superadmin') {
         
         data.coordinadores = coordinadoresSeleccionados;
         
+        const saveButton = document.getElementById('save-text');
+        const originalText = saveButton.textContent;
+        saveButton.textContent = '⏳ Guardando...';
+        
         try {
-            // Aquí iría la llamada API
-            showMessage(editingId ? 'Administrador actualizado correctamente' : 'Administrador creado correctamente', 'success');
-            closeModal();
-            loadAdministradores();
+            const response = await fetch('/admin/api/administradores', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage(result.message, 'success');
+                closeModal();
+                loadAdministradores();
+            } else {
+                showMessage(result.error, 'error');
+            }
         } catch (error) {
+            console.error('Error:', error);
             showMessage('Error al guardar administrador', 'error');
+        } finally {
+            saveButton.textContent = originalText;
         }
     });
 
@@ -434,14 +449,50 @@ if ($admin['tipo'] !== 'superadmin') {
     document.getElementById('confirm-action').addEventListener('click', async function() {
         if (!currentAction) return;
         
+        const originalText = this.textContent;
+        this.textContent = '⏳ Procesando...';
+        this.disabled = true;
+        
         try {
-            // Aquí iría la llamada API
-            const action = currentAction.type === 'activate' ? 'activado' : 'desactivado';
-            showMessage(`Administrador ${action} correctamente`, 'success');
-            closeConfirmModal();
-            loadAdministradores();
+            let response;
+            
+            if (currentAction.type === 'deactivate') {
+                response = await fetch('/admin/api/administradores', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: currentAction.id })
+                });
+            } else {
+                // Para activar, usamos POST con activo: true
+                response = await fetch('/admin/api/administradores', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        id: currentAction.id,
+                        activo: true 
+                    })
+                });
+            }
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showMessage(result.message, 'success');
+                closeConfirmModal();
+                loadAdministradores();
+            } else {
+                showMessage(result.error, 'error');
+            }
         } catch (error) {
+            console.error('Error:', error);
             showMessage('Error al realizar la acción', 'error');
+        } finally {
+            this.textContent = originalText;
+            this.disabled = false;
         }
     });
 

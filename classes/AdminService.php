@@ -611,5 +611,227 @@ class AdminService {
             return [];
         }
     }
+    
+    /**
+     * Obtiene todos los administradores del sistema
+     */
+    public function getAdministradores() {
+        try {
+            $db = Database::getInstance()->getConnection();
+            $stmt = $db->prepare("
+                SELECT a.id, a.nombre, a.email, a.tipo, a.activo,
+                       a.fecha_creacion, a.ultima_conexion,
+                       COUNT(ac.coordinador_id) as total_coordinadores,
+                       GROUP_CONCAT(c.nombre) as coordinadores_asignados
+                FROM admins a
+                LEFT JOIN admin_coordinadores ac ON a.id = ac.admin_id
+                LEFT JOIN coordinadores c ON ac.coordinador_id = c.id
+                GROUP BY a.id
+                ORDER BY a.tipo DESC, a.nombre ASC
+            ");
+            
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            logMessage("Error obteniendo administradores: " . $e->getMessage(), 'ERROR');
+            return [];
+        }
+    }
+    
+    /**
+     * Crea un nuevo administrador
+     */
+    public function crearAdministrador($datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Validar datos requeridos
+            $required = ['nombre', 'email', 'password', 'tipo'];
+            foreach ($required as $field) {
+                if (empty($datos[$field])) {
+                    throw new Exception("Campo requerido: $field");
+                }
+            }
+            
+            // Validar email único
+            $stmt = $db->prepare("SELECT id FROM admins WHERE email = ?");
+            $stmt->execute([$datos['email']]);
+            if ($stmt->fetch()) {
+                throw new Exception("El email ya está en uso");
+            }
+            
+            // Hash del password
+            $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
+            
+            $db->beginTransaction();
+            
+            // Insertar administrador
+            $stmt = $db->prepare("
+                INSERT INTO admins (nombre, email, password, tipo, activo)
+                VALUES (?, ?, ?, ?, 1)
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['email'],
+                $passwordHash,
+                $datos['tipo']
+            ]);
+            
+            $adminId = $db->lastInsertId();
+            
+            // Si es admin (no superadmin), asignar coordinadores
+            if ($datos['tipo'] === 'admin' && !empty($datos['coordinadores'])) {
+                foreach ($datos['coordinadores'] as $coordinadorId) {
+                    $stmt = $db->prepare("
+                        INSERT INTO admin_coordinadores (admin_id, coordinador_id)
+                        VALUES (?, ?)
+                    ");
+                    $stmt->execute([$adminId, $coordinadorId]);
+                }
+            }
+            
+            $db->commit();
+            
+            logMessage("Administrador creado: ID {$adminId}, {$datos['nombre']} ({$datos['tipo']})", 'INFO');
+            
+            return $adminId;
+            
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            logMessage("Error creando administrador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Actualiza un administrador existente
+     */
+    public function actualizarAdministrador($id, $datos) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que el administrador existe
+            $stmt = $db->prepare("SELECT id, tipo FROM admins WHERE id = ?");
+            $stmt->execute([$id]);
+            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$admin) {
+                throw new Exception("Administrador no encontrado");
+            }
+            
+            // Validar email único (excluyendo el admin actual)
+            if (!empty($datos['email'])) {
+                $stmt = $db->prepare("SELECT id FROM admins WHERE email = ? AND id != ?");
+                $stmt->execute([$datos['email'], $id]);
+                if ($stmt->fetch()) {
+                    throw new Exception("El email ya está en uso");
+                }
+            }
+            
+            $db->beginTransaction();
+            
+            // Preparar query de actualización
+            $updateFields = [];
+            $updateValues = [];
+            
+            if (!empty($datos['nombre'])) {
+                $updateFields[] = "nombre = ?";
+                $updateValues[] = $datos['nombre'];
+            }
+            
+            if (!empty($datos['email'])) {
+                $updateFields[] = "email = ?";
+                $updateValues[] = $datos['email'];
+            }
+            
+            if (!empty($datos['password'])) {
+                $updateFields[] = "password = ?";
+                $updateValues[] = password_hash($datos['password'], PASSWORD_DEFAULT);
+            }
+            
+            if (!empty($datos['tipo'])) {
+                $updateFields[] = "tipo = ?";
+                $updateValues[] = $datos['tipo'];
+            }
+            
+            if (isset($datos['activo'])) {
+                $updateFields[] = "activo = ?";
+                $updateValues[] = $datos['activo'] ? 1 : 0;
+            }
+            
+            if (!empty($updateFields)) {
+                $updateValues[] = $id;
+                $stmt = $db->prepare("
+                    UPDATE admins 
+                    SET " . implode(', ', $updateFields) . "
+                    WHERE id = ?
+                ");
+                $stmt->execute($updateValues);
+            }
+            
+            // Actualizar coordinadores asignados si es admin
+            if (isset($datos['coordinadores']) && ($datos['tipo'] === 'admin' || $admin['tipo'] === 'admin')) {
+                // Eliminar asignaciones existentes
+                $stmt = $db->prepare("DELETE FROM admin_coordinadores WHERE admin_id = ?");
+                $stmt->execute([$id]);
+                
+                // Insertar nuevas asignaciones
+                if (!empty($datos['coordinadores'])) {
+                    foreach ($datos['coordinadores'] as $coordinadorId) {
+                        $stmt = $db->prepare("
+                            INSERT INTO admin_coordinadores (admin_id, coordinador_id)
+                            VALUES (?, ?)
+                        ");
+                        $stmt->execute([$id, $coordinadorId]);
+                    }
+                }
+            }
+            
+            $db->commit();
+            
+            logMessage("Administrador actualizado: ID {$id}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
+            logMessage("Error actualizando administrador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
+    
+    /**
+     * Desactiva un administrador
+     */
+    public function desactivarAdministrador($id) {
+        try {
+            $db = Database::getInstance()->getConnection();
+            
+            // Verificar que el administrador existe
+            $stmt = $db->prepare("SELECT nombre FROM admins WHERE id = ?");
+            $stmt->execute([$id]);
+            $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$admin) {
+                throw new Exception("Administrador no encontrado");
+            }
+            
+            // Desactivar (borrado lógico)
+            $stmt = $db->prepare("UPDATE admins SET activo = 0 WHERE id = ?");
+            $stmt->execute([$id]);
+            
+            logMessage("Administrador desactivado: ID {$id}, {$admin['nombre']}", 'INFO');
+            return true;
+            
+        } catch (Exception $e) {
+            logMessage("Error desactivando administrador: " . $e->getMessage(), 'ERROR');
+            throw $e;
+        }
+    }
 }
 ?> 

@@ -119,6 +119,14 @@ switch ($path) {
         require_once 'controllers/admin/auth.php';
         break;
         
+    case '/admin/administradores':
+        require_once 'views/admin/administradores.php';
+        break;
+        
+    case '/admin/api/administradores':
+        require_once 'controllers/admin/administradores.php';
+        break;
+        
     case '/admin/coordinadores':
         require_once 'views/admin/coordinadores.php';
         break;
