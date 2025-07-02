@@ -192,7 +192,7 @@ class AdminPermissionsService {
         
         $stmt = $this->db->prepare("
             SELECT ib.*, i.nombre as instalacion_nombre, c.nombre as coordinador_nombre,
-                   COALESCE(s.nombre, 'Panel Admin') as ultima_actualizacion_por
+                   s.nombre as ultima_actualizacion_por
             FROM inventario_botiquin ib
             INNER JOIN instalaciones i ON ib.instalacion_id = i.id
             INNER JOIN coordinadores c ON i.coordinador_id = c.id

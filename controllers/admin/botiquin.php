@@ -232,7 +232,7 @@ function crearElemento($permissions, $admin) {
         $input['cantidad_actual'],
         trim($input['unidad_medida']),
         trim($input['observaciones'] ?? ''),
-        NULL // Admin - no usar socorrista temporal
+        1 // Admin como socorrista temporal
     ]);
     
     $elementoId = $db->lastInsertId();
@@ -246,9 +246,9 @@ function crearElemento($permissions, $admin) {
     
     $stmt->execute([
         $elementoId,
-        NULL, // Admin - no usar socorrista temporal
+        1, // Admin como socorrista temporal
         $input['cantidad_actual'],
-        'Elemento creado desde panel administrativo por ' . $admin['nombre']
+        'Elemento creado desde panel administrativo'
     ]);
     
     echo json_encode([
@@ -295,14 +295,13 @@ function actualizarElemento($permissions, $admin) {
     // Actualizar elemento
     $stmt = $db->prepare("
         UPDATE inventario_botiquin 
-        SET cantidad_actual = ?, observaciones = ?, fecha_ultima_actualizacion = NOW(), socorrista_ultima_actualizacion = ?
+        SET cantidad_actual = ?, observaciones = ?, fecha_ultima_actualizacion = NOW()
         WHERE id = ?
     ");
     
     $stmt->execute([
         $input['cantidad_actual'],
         trim($input['observaciones'] ?? $elemento['observaciones']),
-        NULL, // Admin - no usar socorrista temporal
         $input['id']
     ]);
     
@@ -315,10 +314,10 @@ function actualizarElemento($permissions, $admin) {
     
     $stmt->execute([
         $input['id'],
-        NULL, // Admin - no usar socorrista temporal
+        1, // Admin como socorrista temporal
         $cantidadAnterior,
         $input['cantidad_actual'],
-        'Actualizado desde panel administrativo por ' . $admin['nombre']
+        'Actualizado desde panel administrativo'
     ]);
     
     echo json_encode([
@@ -357,11 +356,11 @@ function eliminarElemento($permissions, $admin) {
     // Marcar como inactivo
     $stmt = $db->prepare("
         UPDATE inventario_botiquin 
-        SET activo = 0, fecha_ultima_actualizacion = NOW(), socorrista_ultima_actualizacion = ?
+        SET activo = 0, fecha_ultima_actualizacion = NOW()
         WHERE id = ?
     ");
     
-    $stmt->execute([NULL, $input['id']]);
+    $stmt->execute([$input['id']]);
     
     // Registrar en historial
     $stmt = $db->prepare("
@@ -372,9 +371,9 @@ function eliminarElemento($permissions, $admin) {
     
     $stmt->execute([
         $input['id'],
-        NULL, // Admin - no usar socorrista temporal
+        1, // Admin como socorrista temporal
         $elemento['cantidad_actual'],
-        'Elemento eliminado desde panel administrativo por ' . $admin['nombre']
+        'Elemento eliminado desde panel administrativo'
     ]);
     
     echo json_encode([

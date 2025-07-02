@@ -674,38 +674,4 @@ Usuario pidió eliminar la funcionalidad que resalta en amarillo los elementos d
 **🎯 RESULTADO:**
 Las tablas de inventario del botiquín en admin ya no resaltan en amarillo los elementos con cantidad baja. Todos los elementos se muestran con el mismo estilo uniforme.
 
-**✅ LISTO PARA TESTING**
-
-### 🔧 **BUG AUTORÍA BOTIQUÍN CORREGIDO - ✅ COMPLETADO**
-
-**📅 Fecha:** 2025-01-12
-
-**🎯 PROBLEMA IDENTIFICADO Y SOLUCIONADO:**
-
-**CONTEXTO:**
-Usuario reportó que al crear elementos del botiquín como superadmin "David Guti", aparecía como "por María García Pérez" en las tablas.
-
-**🔍 CAUSA RAÍZ:**
-- El controlador admin/botiquin.php usaba `socorrista_ultima_actualizacion = 1` (ID hardcodeado)
-- La consulta hacía LEFT JOIN con socorristas para obtener el nombre
-- ID=1 correspondía a "María García Pérez" (primer socorrista registrado)
-
-**✅ SOLUCIÓN IMPLEMENTADA:**
-
-**1. CONTROLADOR ADMIN CORREGIDO:**
-- ✅ Cambiado `socorrista_ultima_actualizacion = 1` por `NULL` en todas las operaciones admin
-- ✅ Mejoradas observaciones en historial: "por [nombre del admin]"
-- ✅ Funciones afectadas: crearElemento(), actualizarElemento(), eliminarElemento()
-
-**2. CONSULTA SQL CORREGIDA:**
-- ✅ Cambiado `s.nombre as ultima_actualizacion_por` por `COALESCE(s.nombre, 'Panel Admin')`
-- ✅ Ahora muestra "Panel Admin" cuando `socorrista_ultima_actualizacion` es NULL
-
-**📁 ARCHIVOS MODIFICADOS:**
-- `controllers/admin/botiquin.php` - Lógica de asignación de autoría
-- `classes/AdminPermissionsService.php` - Consulta SQL con COALESCE
-
-**🎯 RESULTADO:**
-Ahora cuando un admin crea/modifica elementos del botiquín, aparece correctamente como "por Panel Admin" en lugar de mostrar el nombre de un socorrista incorrecto.
-
 **✅ LISTO PARA TESTING** 
