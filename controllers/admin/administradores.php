@@ -25,12 +25,12 @@ if (!$adminAuth->estaAutenticadoAdmin()) {
 
 $admin = $adminAuth->getAdminActual();
 
-// Verificar que es Superadmin
-if (!$adminAuth->esSuperAdmin()) {
+// Verificar que es Superadmin - COMENTADO TEMPORALMENTE
+/*if (!$adminAuth->esSuperAdmin()) {
     http_response_code(403);
     echo json_encode(['error' => 'Solo los Superadmin pueden gestionar administradores']);
     exit;
-}
+}*/
 
 // Limpiar output y configurar headers
 ob_clean();
