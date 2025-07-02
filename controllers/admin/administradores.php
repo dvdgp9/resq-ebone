@@ -6,6 +6,9 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 header('Content-Type: application/json; charset=utf-8');
 
+// INICIAR SESIÓN PHP - ESTO FALTABA
+session_start();
+
 try {
     require_once __DIR__ . '/../../config/app.php';
     echo json_encode(['debug' => 'config/app.php cargado OK']);
