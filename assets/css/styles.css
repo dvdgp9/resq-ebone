@@ -3385,15 +3385,7 @@ img[src*="logo"] {
     color: var(--info-color);
 }
 
-/* Estados de cantidad */
-.cantidad.bajo-minimos {
-    color: var(--error-color);
-    font-weight: var(--font-weight-semibold);
-}
-
-.admin-table tr.warning {
-    background: rgba(255, 193, 7, 0.1);
-}
+/* Estados de cantidad - funcionalidad bajo mínimos eliminada */
 
 /* Mensajes de la aplicación */
 .message {

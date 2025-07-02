@@ -377,13 +377,13 @@ $permissions = $adminAuth->getPermissionsService();
                                 </thead>
                                 <tbody>
                                     ${elementos.map(elemento => `
-                                        <tr class="${elemento.cantidad_actual <= 5 ? 'warning' : ''}">
+                                        <tr>
                                             <td>
                                                 <strong>${elemento.nombre_elemento}</strong>
                                                 ${elemento.observaciones ? '<br><small>' + elemento.observaciones + '</small>' : ''}
                                             </td>
                                             <td>
-                                                <span class="cantidad ${elemento.cantidad_actual <= 5 ? 'bajo-minimos' : ''}">
+                                                <span class="cantidad">
                                                     ${elemento.cantidad_actual}
                                                 </span>
                                             </td>
