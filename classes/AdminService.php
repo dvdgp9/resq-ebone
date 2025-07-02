@@ -668,7 +668,7 @@ class AdminService {
             
             // Insertar administrador
             $stmt = $db->prepare("
-                INSERT INTO admins (nombre, email, password, tipo, activo)
+                INSERT INTO admins (nombre, email, password_hash, tipo, activo)
                 VALUES (?, ?, ?, ?, 1)
             ");
             
@@ -681,8 +681,8 @@ class AdminService {
             
             $adminId = $db->lastInsertId();
             
-            // Si es admin (no superadmin), asignar coordinadores
-            if ($datos['tipo'] === 'admin' && !empty($datos['coordinadores'])) {
+            // Si es coordinador (no superadmin), asignar coordinadores
+            if ($datos['tipo'] === 'coordinador' && !empty($datos['coordinadores'])) {
                 foreach ($datos['coordinadores'] as $coordinadorId) {
                     $stmt = $db->prepare("
                         INSERT INTO admin_coordinadores (admin_id, coordinador_id)
@@ -749,7 +749,7 @@ class AdminService {
             }
             
             if (!empty($datos['password'])) {
-                $updateFields[] = "password = ?";
+                $updateFields[] = "password_hash = ?";
                 $updateValues[] = password_hash($datos['password'], PASSWORD_DEFAULT);
             }
             
@@ -773,8 +773,8 @@ class AdminService {
                 $stmt->execute($updateValues);
             }
             
-            // Actualizar coordinadores asignados si es admin
-            if (isset($datos['coordinadores']) && ($datos['tipo'] === 'admin' || $admin['tipo'] === 'admin')) {
+            // Actualizar coordinadores asignados si es coordinador
+            if (isset($datos['coordinadores']) && ($datos['tipo'] === 'coordinador' || $admin['tipo'] === 'coordinador')) {
                 // Eliminar asignaciones existentes
                 $stmt = $db->prepare("DELETE FROM admin_coordinadores WHERE admin_id = ?");
                 $stmt->execute([$id]);

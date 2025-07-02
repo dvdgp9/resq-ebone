@@ -142,7 +142,7 @@ if ($admin['tipo'] !== 'superadmin') {
                     <label for="tipo">Tipo de Administrador *</label>
                     <select id="tipo" name="tipo" class="form-input" required onchange="toggleCoordinadoresSection()">
                         <option value="">Selecciona tipo</option>
-                        <option value="admin">Admin</option>
+                        <option value="coordinador">Admin</option>
                         <option value="superadmin">Super Admin</option>
                     </select>
                 </div>
@@ -318,6 +318,9 @@ if ($admin['tipo'] !== 'superadmin') {
             cb.checked = false;
         });
         
+        // Limpiar mensajes del modal
+        document.getElementById('modal-message-container').innerHTML = '';
+        
         toggleCoordinadoresSection();
         document.getElementById('administrador-modal').style.display = 'block';
     }
@@ -336,6 +339,9 @@ if ($admin['tipo'] !== 'superadmin') {
         document.getElementById('password').required = false;
         document.getElementById('save-text').textContent = '💾 Actualizar';
         
+        // Limpiar mensajes del modal
+        document.getElementById('modal-message-container').innerHTML = '';
+        
         toggleCoordinadoresSection();
         document.getElementById('administrador-modal').style.display = 'block';
     }
@@ -345,7 +351,7 @@ if ($admin['tipo'] !== 'superadmin') {
         const tipo = document.getElementById('tipo').value;
         const section = document.getElementById('coordinadores-section');
         
-        if (tipo === 'admin') {
+        if (tipo === 'coordinador') {
             section.style.display = 'block';
         } else {
             section.style.display = 'none';
@@ -393,6 +399,7 @@ if ($admin['tipo'] !== 'superadmin') {
     // Cerrar modales
     function closeModal() {
         document.getElementById('administrador-modal').style.display = 'none';
+        document.getElementById('modal-message-container').innerHTML = ''; // Limpiar mensajes del modal
         editingId = null;
     }
 
@@ -435,11 +442,11 @@ if ($admin['tipo'] !== 'superadmin') {
                 closeModal();
                 loadAdministradores();
             } else {
-                showMessage(result.error, 'error');
+                showModalMessage(result.error, 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            showMessage('Error al guardar administrador', 'error');
+            showModalMessage('Error al guardar administrador', 'error');
         } finally {
             saveButton.textContent = originalText;
         }
@@ -496,9 +503,26 @@ if ($admin['tipo'] !== 'superadmin') {
         }
     });
 
-    // Mostrar mensajes
+    // Mostrar mensajes en la página principal
     function showMessage(message, type) {
         const container = document.getElementById('message-container');
+        const className = type === 'error' ? 'alert-danger' : 'alert-success';
+        const icon = type === 'error' ? '❌' : '✅';
+        
+        container.innerHTML = `
+            <div class="alert ${className}">
+                ${icon} ${message}
+            </div>
+        `;
+        
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 5000);
+    }
+
+    // Mostrar mensajes en el modal
+    function showModalMessage(message, type) {
+        const container = document.getElementById('modal-message-container');
         const className = type === 'error' ? 'alert-danger' : 'alert-success';
         const icon = type === 'error' ? '❌' : '✅';
         

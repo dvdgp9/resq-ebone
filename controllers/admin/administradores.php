@@ -61,7 +61,7 @@ try {
                 throw new Exception('Email inválido');
             }
             
-            if (empty($input['tipo']) || !in_array($input['tipo'], ['admin', 'superadmin'])) {
+            if (empty($input['tipo']) || !in_array($input['tipo'], ['coordinador', 'superadmin'])) {
                 throw new Exception('Tipo de administrador inválido');
             }
             
