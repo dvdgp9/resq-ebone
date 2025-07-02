@@ -129,8 +129,8 @@ $stats = $adminService->getEstadisticas();
             Condición cumplida = <?= ($admin['tipo'] === 'superadmin') ? 'SÍ - DEBERÍA APARECER' : 'NO - POR ESO NO APARECE' ?>
         </div>
         
-        <?php if ($admin['tipo'] === 'superadmin'): ?>
-        <!-- Gestión de Administradores (Solo Superadmin) -->
+        <?php // TEMPORAL: Sin restricción para debug ?>
+        <!-- Gestión de Administradores (TEMPORAL: SIN RESTRICCIÓN) -->
         <div class="admin-section" style="background: red; padding: 20px; margin: 20px 0; border: 3px solid blue; color: white; font-weight: bold; min-height: 200px;"    >
             <div class="section-header">
                 <h2>🔐 Gestión de Administradores</h2>
@@ -159,7 +159,7 @@ $stats = $adminService->getEstadisticas();
                 </table>
             </div>
         </div>
-        <?php endif; ?>
+        <?php // endif quitado temporalmente ?>
         
         <!-- Accesos Rápidos -->
         <div class="quick-actions">
@@ -184,7 +184,7 @@ $stats = $adminService->getEstadisticas();
         </div>
     </div>
     
-    <?php if ($admin['tipo'] === 'superadmin'): ?>
+    <?php // TEMPORAL: Modales sin restricción ?>
     <!-- Modales para Gestión de Administradores -->
     
     <!-- Modal Crear/Editar Administrador -->
@@ -578,7 +578,7 @@ $stats = $adminService->getEstadisticas();
         alert('❌ ' + mensaje);
     }
     </script>
-    <?php endif; ?>
+    <?php // endif quitado temporalmente ?>
 
 </body>
 </html> 
