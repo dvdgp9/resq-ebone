@@ -6,9 +6,20 @@ require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
 // Verificar autenticación admin
 $adminAuth = new AdminAuthService();
+
+// DEBUG TEMPORAL - Añadir información de sesión
 if (!$adminAuth->estaAutenticadoAdmin()) {
     http_response_code(401);
-    echo json_encode(['error' => 'No autenticado']);
+    echo json_encode([
+        'error' => 'No autenticado',
+        'debug' => [
+            'session_admin_id' => $_SESSION['admin_id'] ?? 'NO EXISTE',
+            'session_admin_session_id' => $_SESSION['admin_session_id'] ?? 'NO EXISTE',
+            'cookies' => $_COOKIE,
+            'session_status' => session_status(),
+            'session_id' => session_id()
+        ]
+    ]);
     exit;
 }
 

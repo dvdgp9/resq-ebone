@@ -204,11 +204,11 @@ Sistema completo de gestión de administradores integrado en dashboard (solo vis
 - [ ] Comprobar que lista de coordinadores se carga correctamente
 - [ ] Verificar respuesta visual de loading/success/error
 
-**🚨 PROBLEMAS POSIBLES:**
-- Error 500 → Revisar logs PHP
-- JavaScript no funciona → Revisar console del navegador  
-- Permisos denegados → Verificar que eres Superadmin
-- Base de datos → Verificar estructura tablas admins/admin_coordinadores
+**🔧 PROBLEMA SOLUCIONADO:**
+- ❌ **Error "No autenticado"** → Solucionado: añadido `credentials: 'same-origin'` a peticiones AJAX
+- ✅ **Cookies de sesión** → Ahora se envían correctamente en peticiones fetch
+- ✅ **Estadística administradores** → Eliminada como solicitado por usuario
+- ✅ **Debug limpiado** → Interfaz limpia sin líneas temporales
 
 **📞 REPORTAR:**
 - ✅ Si todo funciona: "Testing completo - funciona perfectamente"
