@@ -285,7 +285,6 @@ $stats = $adminService->getEstadisticas();
             if (data.success) {
                 administradores = data.administradores;
                 actualizarTablaAdministradores();
-                actualizarEstadisticaAdministradores();
             } else {
                 mostrarError('Error al cargar administradores: ' + data.error);
             }
@@ -361,11 +360,7 @@ $stats = $adminService->getEstadisticas();
         `).join('');
     }
 
-    // Actualizar estadística de administradores
-    function actualizarEstadisticaAdministradores() {
-        const activos = administradores.filter(admin => admin.activo == 1).length;
-        document.getElementById('stat-administradores').textContent = activos;
-    }
+
 
     // Actualizar lista de coordinadores en modal
     function actualizarListaCoordinadores() {

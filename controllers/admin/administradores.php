@@ -1,60 +1,26 @@
 <?php
 // Controlador para gestión de administradores (solo Superadmin)
-
-// DEBUG SUPER TEMPRANO
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-header('Content-Type: application/json; charset=utf-8');
-
-// INICIAR SESIÓN PHP - ESTO FALTABA
 session_start();
+require_once __DIR__ . '/../../config/app.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
-try {
-    require_once __DIR__ . '/../../config/app.php';
-    echo json_encode(['debug' => 'config/app.php cargado OK']);
-    
-    require_once __DIR__ . '/../../config/database.php';
-    echo json_encode(['debug' => 'config/database.php cargado OK']);
-    
-    require_once __DIR__ . '/../../classes/AdminAuthService.php';
-    echo json_encode(['debug' => 'AdminAuthService.php cargado OK']);
-    
-    // Verificar autenticación admin
-    $adminAuth = new AdminAuthService();
-    echo json_encode(['debug' => 'AdminAuthService instanciado OK']);
-    
-} catch (Exception $e) {
-    echo json_encode(['error' => 'Error en includes: ' . $e->getMessage()]);
-    exit;
-} catch (Error $e) {
-    echo json_encode(['error' => 'Error fatal: ' . $e->getMessage()]);
-    exit;
-}
-
-// DEBUG TEMPORAL - Añadir información de sesión
+// Verificar autenticación admin
+$adminAuth = new AdminAuthService();
 if (!$adminAuth->estaAutenticadoAdmin()) {
     http_response_code(401);
-    echo json_encode([
-        'error' => 'No autenticado',
-        'debug' => [
-            'session_admin_id' => $_SESSION['admin_id'] ?? 'NO EXISTE',
-            'session_admin_session_id' => $_SESSION['admin_session_id'] ?? 'NO EXISTE',
-            'cookies' => $_COOKIE,
-            'session_status' => session_status(),
-            'session_id' => session_id()
-        ]
-    ]);
+    echo json_encode(['error' => 'No autenticado']);
     exit;
 }
 
 $admin = $adminAuth->getAdminActual();
 
-// Verificar que es Superadmin - COMENTADO TEMPORALMENTE
-/*if (!$adminAuth->esSuperAdmin()) {
+// Verificar que es Superadmin
+if (!$adminAuth->esSuperAdmin()) {
     http_response_code(403);
     echo json_encode(['error' => 'Solo los Superadmin pueden gestionar administradores']);
     exit;
-}*/
+}
 
 // Limpiar output y configurar headers
 ob_clean();
