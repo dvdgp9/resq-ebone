@@ -232,7 +232,7 @@ function crearElemento($permissions, $admin) {
         $input['cantidad_actual'],
         trim($input['unidad_medida']),
         trim($input['observaciones'] ?? ''),
-        1 // Admin como socorrista temporal
+        null // Acción administrativa - no asignar socorrista específico
     ]);
     
     $elementoId = $db->lastInsertId();
@@ -246,9 +246,9 @@ function crearElemento($permissions, $admin) {
     
     $stmt->execute([
         $elementoId,
-        1, // Admin como socorrista temporal
+        null, // Acción administrativa - no asignar socorrista específico
         $input['cantidad_actual'],
-        'Elemento creado desde panel administrativo'
+        'Elemento creado desde panel administrativo por ' . $admin['nombre'] . ' (' . $admin['email'] . ')'
     ]);
     
     echo json_encode([
@@ -314,10 +314,10 @@ function actualizarElemento($permissions, $admin) {
     
     $stmt->execute([
         $input['id'],
-        1, // Admin como socorrista temporal
+        null, // Acción administrativa - no asignar socorrista específico
         $cantidadAnterior,
         $input['cantidad_actual'],
-        'Actualizado desde panel administrativo'
+        'Actualizado desde panel administrativo por ' . $admin['nombre'] . ' (' . $admin['email'] . ')'
     ]);
     
     echo json_encode([
@@ -371,9 +371,9 @@ function eliminarElemento($permissions, $admin) {
     
     $stmt->execute([
         $input['id'],
-        1, // Admin como socorrista temporal
+        null, // Acción administrativa - no asignar socorrista específico
         $elemento['cantidad_actual'],
-        'Elemento eliminado desde panel administrativo'
+        'Elemento eliminado desde panel administrativo por ' . $admin['nombre'] . ' (' . $admin['email'] . ')'
     ]);
     
     echo json_encode([

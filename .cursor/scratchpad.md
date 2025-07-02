@@ -48,7 +48,7 @@
 
 ## Project Status Board
 
-### 🎯 **ESTADO ACTUAL: FASE 2 AVANZADA - IMPLEMENTACIONES ENCONTRADAS**
+### 🚨 **ESTADO ACTUAL: BUG CRÍTICO IDENTIFICADO - REQUIERE CORRECCIÓN INMEDIATA**
 
 **📅 ÚLTIMA ACTUALIZACIÓN:** 2025-01-12 
 
@@ -59,41 +59,49 @@
 - [x] **Paso 1D**: Actualizar database_structure.md ✅
 - [x] **Paso 1E**: Testing de permisos (COMPLETADO CON CORRECCIONES) ✅
 
-#### 🚀 **FASE 2: BOTIQUÍN ADMINISTRATIVO - ✅ COMPLETADA AL 100%**
-- [x] **Paso 2A**: Crear controlador admin/botiquin.php ✅ **COMPLETADO**
+#### ✅ **FASE 2: BOTIQUÍN ADMINISTRATIVO - COMPLETADA CON BUG**
+- [x] **Paso 2A**: Crear controlador admin/botiquin.php ✅ **COMPLETADO** ⚠️ **CON BUG**
 - [x] **Paso 2B**: Crear vista admin/botiquin.php ✅ **COMPLETADO**  
 - [x] **Paso 2C**: Integrar en menú admin ✅ **COMPLETADO**
 - [x] **Paso 2D**: Implementar estilos CSS optimizados ✅ **COMPLETADO**
 - [x] **Paso 2E**: Funcionalidades completas (Dashboard/Inventario/Solicitudes/CRUD) ✅ **COMPLETADO**
 - [x] **Paso 2F**: Sistema de permisos integrado ✅ **COMPLETADO**
 
+#### 🚨 **FASE 3: CORRECCIÓN BUG CRÍTICO - EN PROCESO**
+- [🔄] **Tarea 1A**: Modificar BD - permitir NULL en `historial_botiquin.socorrista_id` **→ SQL GENERADO**
+- [ ] **Tarea 1B**: Ejecutar cambio en base de datos con backup **→ PENDIENTE USUARIO**
+- [ ] **Tarea 2A**: Corregir función `crearElemento()` - líneas 233, 250
+- [ ] **Tarea 2B**: Corregir función `actualizarElemento()` - línea ~316
+- [ ] **Tarea 2C**: Corregir función `eliminarElemento()` - línea ~364
+- [ ] **Tarea 3A**: Testing - crear elemento sin asignar a María García
+- [ ] **Tarea 3B**: Testing - actualizar elemento correctamente
+- [ ] **Tarea 3C**: Testing - eliminar elemento correctamente
+
 ### 📊 **PROGRESO GLOBAL:**
 - **Fase 1:** 100% ✅ **COMPLETADA**
-- **Fase 2:** 100% ✅ **COMPLETADA**
-- **Total del Proyecto:** **100%** 🎉🎉🎉
+- **Fase 2:** 100% ✅ **COMPLETADA** (con bug identificado)
+- **Fase 3:** 0% ⚠️ **PENDIENTE** (corrección bug crítico)
+- **Total del Proyecto:** **85%** ⚠️ **BUG BLOQUEANTE**
 
 ---
 
-### 🎉 **PROYECTO COMPLETADO AL 100%**
+### ⚠️ **PROYECTO CON BUG CRÍTICO - REQUIERE CORRECCIÓN INMEDIATA**
 
-**🔍 COMPONENTES IMPLEMENTADOS:**
+**🚨 PROBLEMA IDENTIFICADO:**
+- **Síntoma**: Nuevos productos se asignan automáticamente a "María García Pérez"
+- **Causa**: Valor hardcodeado `1` en FK `socorrista_id` 
+- **Impacto**: Datos incorrectos, auditoría comprometida
+- **Estado**: **BLOQUEANTE** - No debe usarse en producción hasta corrección
+
+**🔍 COMPONENTES IMPLEMENTADOS (FUNCIONALES EXCEPTO BUG):**
 1. **Sistema de permisos robusto** - AdminPermissionsService ✅
-2. **Controlador admin completo** - 622 líneas con API REST ✅
+2. **Controlador admin completo** - 622 líneas con API REST ⚠️ **CON BUG**
 3. **Vista admin completa** - 956 líneas con interfaz responsive ✅  
 4. **Estilos CSS optimizados** - Máxima reutilización + específicos ✅
 5. **Integración completa** - Dashboard, rutas, menús ✅
 
-**✅ FUNCIONALIDADES OPERATIVAS:**
-- **Dashboard** con estadísticas en tiempo real
-- **Gestión de inventario** multi-instalación con filtros
-- **Gestión de solicitudes** con estados y workflow
-- **CRUD completo** de elementos con validaciones
-- **Sistema de permisos** por roles (Superadmin/Admin/Coordinador)
-- **Interfaz responsive** móvil/desktop
-- **API REST** completa con autenticación
-
-**🎯 READY FOR PRODUCTION:**
-**El sistema administrativo del botiquín está completamente implementado y listo para uso en producción.**
+**⚠️ ESTADO ACTUAL:**
+**El sistema está 85% completo pero tiene un bug crítico que impide su uso en producción. Se requiere corrección inmediata antes del despliegue.**
 
 ## Current Status / Progress Tracking
 
@@ -269,6 +277,83 @@ Usuario pidió análisis de diseño de socorristas vs admin, y aplicar mejores e
 [Selector Instalación] [Campo Búsqueda 🔍]
 ```
 
+## High-level Task Breakdown
+
+### 🚨 **PROYECTO URGENTE: CORRECCIÓN BUG ASIGNACIÓN AUTOMÁTICA**
+
+**📅 PRIORIDAD:** CRÍTICA - Bug en producción que afecta integridad de datos
+
+#### **🎯 FASE 1: CORRECCIÓN ESTRUCTURA BASE DE DATOS** 
+- **Objetivo**: Permitir valores NULL en historial para acciones administrativas
+- **Criterio éxito**: Campo `socorrista_id` acepta NULL sin errores
+
+**📋 TAREAS:**
+- [ ] **Tarea 1A**: Crear script SQL para modificar tabla `historial_botiquin`
+  - **Acción**: `ALTER TABLE historial_botiquin MODIFY socorrista_id INT NULL`
+  - **Validación**: Verificar que acepta NULL
+  - **Criterio éxito**: Query ejecuta sin errores
+
+- [ ] **Tarea 1B**: Ejecutar cambio en base de datos
+  - **Ubicación**: Ejecutar via phpMyAdmin o terminal
+  - **Backup**: Hacer backup antes del cambio
+  - **Criterio éxito**: Estructura actualizada correctamente
+
+#### **🎯 FASE 2: CORRECCIÓN CÓDIGO CONTROLADOR**
+- **Objetivo**: Usar NULL para acciones administrativas en lugar de ID hardcodeado
+- **Criterio éxito**: Nuevos productos no se asignan a María García Pérez
+
+**📋 TAREAS:**
+- [ ] **Tarea 2A**: Corregir función `crearElemento()`
+  - **Cambio línea 233**: `1` → `NULL`
+  - **Cambio línea 250**: `1` → `NULL`
+  - **Observaciones**: Actualizar texto a "Elemento creado desde panel administrativo por [admin]"
+  - **Criterio éxito**: Nuevos elementos no muestran socorrista específico
+
+- [ ] **Tarea 2B**: Corregir función `actualizarElemento()`
+  - **Cambio línea ~316**: `1` → `NULL`
+  - **Observaciones**: Actualizar texto a "Actualizado desde panel administrativo por [admin]"
+  - **Criterio éxito**: Actualizaciones no se asignan a María García
+
+- [ ] **Tarea 2C**: Corregir función `eliminarElemento()`
+  - **Cambio línea ~364**: `1` → `NULL`
+  - **Observaciones**: Actualizar texto a "Eliminado desde panel administrativo por [admin]"
+  - **Criterio éxito**: Eliminaciones no se asignan a María García
+
+#### **🎯 FASE 3: TESTING Y VALIDACIÓN**
+- **Objetivo**: Verificar que la corrección funciona correctamente
+- **Criterio éxito**: Todas las acciones administrativas se registran correctamente
+
+**📋 TAREAS:**
+- [ ] **Tarea 3A**: Crear elemento de prueba desde panel admin
+  - **Validación**: Verificar que NO aparece María García como responsable
+  - **Verificar**: Campo `socorrista_ultima_actualizacion` = NULL
+  - **Criterio éxito**: Historial muestra NULL o "Admin" en lugar de socorrista
+
+- [ ] **Tarea 3B**: Actualizar elemento existente desde panel admin
+  - **Validación**: Verificar que actualización no se asigna a María García
+  - **Verificar**: Historial registra acción como administrativa
+  - **Criterio éxito**: Cambio registrado correctamente sin FK incorrecta
+
+- [ ] **Tarea 3C**: Eliminar elemento desde panel admin
+  - **Validación**: Verificar que eliminación no se asigna a María García
+  - **Verificar**: Historial registra eliminación correctamente
+  - **Criterio éxito**: Acción registrada sin contaminar datos de socorristas
+
+#### **🎯 FASE 4: MEJORA OPCIONALES (SI HAY TIEMPO)**
+- **Objetivo**: Mejorar la visualización de acciones administrativas
+- **Criterio éxito**: Historial distingue claramente acciones admin vs socorrista
+
+**📋 TAREAS:**
+- [ ] **Tarea 4A**: Mejorar campo observaciones para incluir nombre del admin
+  - **Ejemplo**: "Creado por Admin: Juan Pérez desde panel administrativo"
+  - **Beneficio**: Mejor trazabilidad
+  - **Criterio éxito**: Se puede identificar qué admin hizo cada acción
+
+- [ ] **Tarea 4B**: Actualizar vistas para mostrar "ADMIN" cuando socorrista_id es NULL
+  - **Ubicación**: Cualquier vista que muestre historial
+  - **Cambio**: Mostrar "ADMIN" en lugar de nombre vacío
+  - **Criterio éxito**: Interfaz clara sobre quién hizo cada acción
+
 **CAMBIOS IMPLEMENTADOS:**
 1. ✅ **Navegación**: Eliminado tab "Dashboard", renombrado "Inventario" → "Gestión de Inventario"
 2. ✅ **Estadísticas integradas**: Movidas a header del inventario (formato inline compacto)
@@ -412,14 +497,42 @@ Testear la implementación con el usuario para confirmar que la simplificación 
 
 ## Background and Motivation
 
-**Nueva Solicitud**: Análisis UI/UX para gestión administrativa de botiquín
+### 🚨 **PROBLEMA CRÍTICO IDENTIFICADO: ASIGNACIÓN AUTOMÁTICA A MARÍA GARCÍA PÉREZ**
 
-### Contexto Identificado:
-- **Socorristas**: Pueden gestionar cantidades del botiquín (crear/actualizar/eliminar elementos)
-- **Coordinadores/Superadmins**: Necesitan poder gestionar tanto cantidades como productos (añadir nuevos productos, eliminar existentes)
-- **Alcance**: Solo en instalaciones asignadas al coordinador
+**📅 Fecha:** 2025-01-12  
+**🔍 Problema:** En el panel admin → Botiquín, cuando se crea un nuevo producto, se asigna automáticamente a "María García Pérez" (primera socorrista creada)
 
-### Arquitectura Actual Botiquín:
+### 🔍 **ANÁLISIS TÉCNICO DEL PROBLEMA:**
+
+**CAUSA RAÍZ IDENTIFICADA:**
+- **Ubicación**: `controllers/admin/botiquin.php` → función `crearElemento()`
+- **Líneas problemáticas**: 233 y 250
+- **Código problemático**:
+```php
+// Línea 233 - Campo socorrista_ultima_actualizacion
+1 // Admin como socorrista temporal
+
+// Línea 250 - Campo socorrista_id en historial  
+1, // Admin como socorrista temporal
+```
+
+**PROBLEMA DE DISEÑO:**
+1. **Campo `socorrista_ultima_actualizacion`** (inventario_botiquin): 
+   - Es FK a tabla `socorristas` 
+   - SÍ permite NULL (`ON DELETE SET NULL`)
+   - ✅ **PUEDE SER NULO**
+
+2. **Campo `socorrista_id`** (historial_botiquin):
+   - Es FK a tabla `socorristas`
+   - NO permite NULL (`NOT NULL`)
+   - ❌ **NO PUEDE SER NULO** → **AQUÍ ESTÁ EL PROBLEMA PRINCIPAL**
+
+**SITUACIÓN ACTUAL:**
+- Valor hardcodeado `1` apunta al **primer socorrista** en BD (María García Pérez)
+- **Funciones afectadas**: `crearElemento()`, `actualizarElemento()`, `eliminarElemento()`
+- **Impacto**: TODOS los cambios administrativos aparecen como hechos por María García Pérez
+
+### 🎯 **ARQUITECTURA ACTUAL BOTIQUÍN:**
 - `inventario_botiquin`: Productos y cantidades por instalación
 - `historial_botiquin`: Trazabilidad de cambios
 - `solicitudes_material`: Solicitudes de socorristas a coordinación
@@ -427,27 +540,55 @@ Testear la implementación con el usuario para confirmar que la simplificación 
 
 ## Key Challenges and Analysis
 
-### 🎨 **ANÁLISIS UI/UX: GESTIÓN ADMINISTRATIVA DE BOTIQUÍN**
+### 🚨 **ANÁLISIS CRÍTICO: PROBLEMA DE ASIGNACIÓN AUTOMÁTICA**
 
-#### **Estado Actual del Sistema:**
-1. **Socorristas**: Interfaz completa de gestión (`/views/formularios/botiquin.php`)
-   - ✅ Crear/editar/eliminar productos
-   - ✅ Gestionar cantidades
-   - ✅ Solicitar material a coordinación
-   - ✅ Ver historial de cambios
+#### **🔍 PROBLEMA IDENTIFICADO:**
+**Cuando un admin crea productos en botiquín → se asignan automáticamente a "María García Pérez"**
 
-2. **Coordinadores**: **SIN INTERFAZ ADMINISTRATIVA**
-   - ❌ No pueden gestionar productos de sus instalaciones
-   - ❌ No pueden añadir nuevos productos
-   - ❌ No pueden eliminar productos obsoletos
-   - ❌ No pueden gestionar solicitudes de material
+#### **📊 IMPACTO DEL PROBLEMA:**
+1. **Datos incorrectos**: Historial muestra socorrista equivocada
+2. **Auditoría comprometida**: No se puede rastrear realmente quién hizo cambios
+3. **Confusión operativa**: María García aparece como responsable de cambios que no hizo
+4. **Integridad del sistema**: FK apunta a datos incorrectos
 
-#### **Necesidades Identificadas para Coordinadores:**
-- **Gestión de Productos**: CRUD completo de productos del botiquín
-- **Gestión de Cantidades**: Igual funcionalidad que socorristas
-- **Gestión de Solicitudes**: Revisar/aprobar/gestionar solicitudes de material
-- **Visión Global**: Ver inventario de todas sus instalaciones asignadas
-- **Restricciones de Acceso**: Solo instalaciones bajo su coordinación
+#### **🛠️ ANÁLISIS DE SOLUCIONES POSIBLES:**
+
+**OPCIÓN 1: MODIFICAR ESTRUCTURA BD (RECOMENDADA)**
+- **Cambio**: Permitir NULL en `historial_botiquin.socorrista_id`
+- **Ventaja**: Solución limpia y correcta
+- **Desventaja**: Requiere cambio en BD
+- **Implementación**: `ALTER TABLE historial_botiquin MODIFY socorrista_id INT NULL`
+- **Código**: Usar `NULL` cuando es admin quien hace la acción
+
+**OPCIÓN 2: CREAR SOCORRISTA ESPECIAL "ADMIN" (NO RECOMENDADA)**
+- **Cambio**: Crear socorrista ficticio "ADMIN SISTEMA"
+- **Ventaja**: No cambio de BD
+- **Desventaja**: Contamina datos reales con datos ficticios
+- **Problema**: Confuso para usuarios finales
+
+**OPCIÓN 3: MAPEAR ADMIN A SOCORRISTA EXISTENTE (NO RECOMENDADA)**
+- **Cambio**: Usar socorrista real relacionado con admin
+- **Ventaja**: No cambio de BD
+- **Desventaja**: Datos siguen siendo incorrectos
+- **Problema**: No siempre hay relación admin-socorrista
+
+#### **🎯 SOLUCIÓN RECOMENDADA: OPCIÓN 1**
+
+**IMPLEMENTACIÓN DETALLADA:**
+1. **Cambio en BD**: Permitir NULL en `socorrista_id` 
+2. **Código en inventario**: Usar NULL en `socorrista_ultima_actualizacion`
+3. **Código en historial**: Usar NULL en `socorrista_id` 
+4. **Observaciones**: Especificar que fue "Acción administrativa" en lugar de socorrista
+
+#### **🔧 FUNCIONES A CORREGIR:**
+- `crearElemento()` → líneas 233, 250
+- `actualizarElemento()` → línea 316 
+- `eliminarElemento()` → línea 364
+
+#### **✅ ESTADO ACTUAL DEL SISTEMA (POST-CORRECCIÓN):**
+1. **Socorristas**: Interfaz completa funcional
+2. **Coordinadores**: Panel admin totalmente implementado (Fase 2 completa)
+3. **Problema**: Solo el bug de asignación automática
 
 ---
 
