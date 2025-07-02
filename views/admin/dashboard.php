@@ -42,11 +42,6 @@ $stats = $adminService->getEstadisticas();
         <div class="admin-welcome">
             <h1>🎛️ Panel de Administración</h1>
             <p>Bienvenido, <?= htmlspecialchars($admin['nombre']) ?>. Gestiona coordinadores, instalaciones y socorristas desde aquí.</p>
-            <!-- DEBUG TEMPORAL -->
-            <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                <strong>🔧 DEBUG:</strong> Tipo actual = "<?= $admin['tipo'] ?>" | 
-                Es Superadmin = <?= $admin['tipo'] === 'superadmin' ? 'SÍ' : 'NO' ?>
-            </div>
         </div>
         
         <!-- Cards de Estadísticas -->
@@ -282,7 +277,9 @@ $stats = $adminService->getEstadisticas();
     // Cargar lista de administradores
     async function cargarAdministradores() {
         try {
-            const response = await fetch('/controllers/admin/administradores.php?action=listar');
+            const response = await fetch('/controllers/admin/administradores.php?action=listar', {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
             
             if (data.success) {
@@ -301,7 +298,9 @@ $stats = $adminService->getEstadisticas();
     // Cargar lista de coordinadores
     async function cargarCoordinadores() {
         try {
-            const response = await fetch('/controllers/admin/administradores.php?action=coordinadores');
+            const response = await fetch('/controllers/admin/administradores.php?action=coordinadores', {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
             
             if (data.success) {
@@ -407,7 +406,9 @@ $stats = $adminService->getEstadisticas();
     // Editar administrador existente
     async function editarAdministrador(adminId) {
         try {
-            const response = await fetch(`/controllers/admin/administradores.php?action=administrador&id=${adminId}`);
+            const response = await fetch(`/controllers/admin/administradores.php?action=administrador&id=${adminId}`, {
+                credentials: 'same-origin'
+            });
             const data = await response.json();
             
             if (data.success) {
@@ -481,6 +482,7 @@ $stats = $adminService->getEstadisticas();
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify(data)
             });
             
@@ -528,6 +530,7 @@ $stats = $adminService->getEstadisticas();
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({ id: adminDesactivando })
             });
             
