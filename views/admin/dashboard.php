@@ -130,6 +130,11 @@ $stats = $adminService->getEstadisticas();
         </div>
         
         <?php // TEMPORAL: Sin restricción para debug ?>
+        
+        <h1 style="background: yellow; color: black; padding: 20px; text-align: center; font-size: 50px;">
+            🔥🔥🔥 LA SECCIÓN ESTÁ AQUÍ 🔥🔥🔥
+        </h1>
+        
         <!-- Gestión de Administradores (TEMPORAL: SIN RESTRICCIÓN) -->
         <div class="admin-section" style="background: red; padding: 20px; margin: 20px 0; border: 3px solid blue; color: white; font-weight: bold; min-height: 200px;">
             <div class="section-header">
