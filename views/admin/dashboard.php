@@ -86,12 +86,12 @@ $stats = $adminService->getEstadisticas();
         <!-- Navegación Principal -->
         <div class="admin-nav-grid">
             <?php if ($admin['tipo'] === 'superadmin'): ?>
-            <div class="admin-nav-card" onclick="abrirModalAdministradores()" style="cursor: pointer;">
+            <a href="/admin/administradores" class="admin-nav-card">
                 <div class="nav-card-icon">🔐</div>
                 <h3>Gestionar Administradores</h3>
                 <p>Crear y administrar usuarios administradores del sistema</p>
-                <div class="nav-card-arrow">⚙️</div>
-            </div>
+                <div class="nav-card-arrow">→</div>
+            </a>
             <?php endif; ?>
             
             <a href="/admin/coordinadores" class="admin-nav-card">
@@ -153,68 +153,7 @@ $stats = $adminService->getEstadisticas();
         </div>
     </div>
     
-    <!-- Modal simple para administradores -->
-    <div id="modal-administradores" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>🔐 Gestión de Administradores</h2>
-                <span class="close" onclick="cerrarModalAdministradores()">&times;</span>
-            </div>
-            
-            <div class="modal-body">
-                <p>Funcionalidad de administradores en desarrollo...</p>
-                <div id="administradores-contenido">
-                    <div class="loading">⏳ Cargando administradores...</div>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button type="button" class="btn btn-primary">➕ Nuevo Administrador</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalAdministradores()">Cerrar</button>
-            </div>
-        </div>
-    </div>
 
-    <script>
-    // Función para abrir modal de administradores
-    function abrirModalAdministradores() {
-        document.getElementById('modal-administradores').style.display = 'block';
-        cargarAdministradores();
-    }
-
-    // Función para cerrar modal de administradores
-    function cerrarModalAdministradores() {
-        document.getElementById('modal-administradores').style.display = 'none';
-    }
-
-    // Función para cargar administradores (básica) 
-    async function cargarAdministradores() {
-        const contenido = document.getElementById('administradores-contenido');
-        
-        try {
-            // Aquí haremos la llamada API cuando el backend esté listo
-            contenido.innerHTML = `
-                <div class="admin-placeholder">
-                    <p>📋 Lista de administradores:</p>
-                    <ul>
-                        <li>• Admin actual: <?= htmlspecialchars($admin['nombre']) ?> (<?= $admin['tipo'] ?>)</li>
-                        <li>• Funcionalidad completa próximamente...</li>
-                    </ul>
-                </div>
-            `;
-        } catch (error) {
-            contenido.innerHTML = '<div class="error">❌ Error al cargar administradores</div>';
-        }
-    }
-
-    // Cerrar modal al hacer clic fuera
-    window.onclick = function(event) {
-        const modal = document.getElementById('modal-administradores');
-        if (event.target === modal) {
-            cerrarModalAdministradores();
-        }
-    }
-    </script>
 
 </body>
 </html> 
