@@ -1,11 +1,32 @@
 <?php
 // Controlador para gestión de administradores (solo Superadmin)
-require_once __DIR__ . '/../../config/app.php';
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
-// Verificar autenticación admin
-$adminAuth = new AdminAuthService();
+// DEBUG SUPER TEMPRANO
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    require_once __DIR__ . '/../../config/app.php';
+    echo json_encode(['debug' => 'config/app.php cargado OK']);
+    
+    require_once __DIR__ . '/../../config/database.php';
+    echo json_encode(['debug' => 'config/database.php cargado OK']);
+    
+    require_once __DIR__ . '/../../classes/AdminAuthService.php';
+    echo json_encode(['debug' => 'AdminAuthService.php cargado OK']);
+    
+    // Verificar autenticación admin
+    $adminAuth = new AdminAuthService();
+    echo json_encode(['debug' => 'AdminAuthService instanciado OK']);
+    
+} catch (Exception $e) {
+    echo json_encode(['error' => 'Error en includes: ' . $e->getMessage()]);
+    exit;
+} catch (Error $e) {
+    echo json_encode(['error' => 'Error fatal: ' . $e->getMessage()]);
+    exit;
+}
 
 // DEBUG TEMPORAL - Añadir información de sesión
 if (!$adminAuth->estaAutenticadoAdmin()) {
