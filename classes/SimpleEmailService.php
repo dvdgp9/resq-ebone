@@ -55,10 +55,10 @@ class SimpleEmailService {
             $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("
                 SELECT c.nombre, c.email, i.nombre as instalacion
-                FROM coordinadores c
+                FROM admins c
                 JOIN instalaciones i ON c.id = i.coordinador_id
                 JOIN socorristas s ON i.id = s.instalacion_id
-                WHERE s.id = ? AND i.activo = 1 AND s.activo = 1
+                WHERE s.id = ? AND i.activo = 1 AND s.activo = 1 AND c.tipo = 'coordinador'
             ");
             
             $stmt->execute([$socorristaId]);

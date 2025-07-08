@@ -26,9 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
         $stmt = $db->prepare("
             SELECT c.nombre as coordinador_nombre
-            FROM coordinadores c 
+            FROM admins c 
             JOIN instalaciones i ON c.id = i.coordinador_id 
-                            WHERE i.id = ? AND i.activo = 1
+            WHERE i.id = ? AND i.activo = 1 AND c.tipo = 'coordinador'
         ");
         
         $stmt->execute([$socorrista['instalacion_id']]);

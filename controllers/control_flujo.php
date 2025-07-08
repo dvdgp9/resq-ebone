@@ -95,9 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Obtener email del coordinador
             $stmt = $db->prepare("
                 SELECT c.email, c.nombre, i.nombre as instalacion_nombre
-                FROM coordinadores c 
+                FROM admins c 
                 JOIN instalaciones i ON c.id = i.coordinador_id 
-                WHERE i.id = ?
+                WHERE i.id = ? AND c.tipo = 'coordinador'
             ");
             $stmt->execute([$socorrista['instalacion_id']]);
             $coordinador = $stmt->fetch(PDO::FETCH_ASSOC);

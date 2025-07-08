@@ -102,6 +102,16 @@
 **Archivo:** `classes/AuthService.php`
 **Cambio:** `JOIN coordinadores c` → `JOIN admins c ON i.coordinador_id = c.id WHERE ... AND c.tipo = 'coordinador'`
 
+### **Issue 3: Referencias a tabla coordinadores** ✅ **RESUELTO**
+**Causa:** 4 archivos adicionales con queries SQL usando tabla `coordinadores` obsoleta
+**Solución:** Actualizado todos los JOINs a tabla `admins` + filtro `c.tipo = 'coordinador'`
+**Archivos actualizados:**
+- `controllers/incidencias.php` - Query para obtener email del coordinador
+- `controllers/control_flujo.php` - Query para obtener email del coordinador  
+- `controllers/coordinador_instalacion.php` - Query para obtener nombre del coordinador
+- `classes/SimpleEmailService.php` - Query para obtener coordinador por socorrista
+**Cambio:** `FROM coordinadores c` → `FROM admins c WHERE ... AND c.tipo = 'coordinador'`
+
 ---
 
 ### 🎯 **READY TO START: FASE 1 - MIGRACIÓN DE DATOS**
@@ -161,3 +171,4 @@
 - **Sistema de permisos**: Diseño simple pero efectivo es mejor que complejo
 - **Documentación de BD**: Analizar estructura antes de cambios críticos
 - **Backup y rollback**: Siempre tener plan de recuperación en migraciones
+- **⚠️ CRITICO - Migración de tablas**: Después de migrar de una tabla a otra, TODOS los JOINs en el codebase deben actualizarse. Revisar especialmente servicios de autenticación que pueden usar tablas obsoletas.
