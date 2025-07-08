@@ -25,8 +25,8 @@ class AuthService {
                        c.nombre as coordinador, c.email as coordinador_email
                 FROM socorristas s
                 JOIN instalaciones i ON s.instalacion_id = i.id
-                JOIN coordinadores c ON i.coordinador_id = c.id
-                WHERE s.dni = ? AND s.activo = 1 AND i.activo = 1
+                JOIN admins c ON i.coordinador_id = c.id
+                WHERE s.dni = ? AND s.activo = 1 AND i.activo = 1 AND c.tipo = 'coordinador'
             ");
             
             $stmt->execute([$dni]);

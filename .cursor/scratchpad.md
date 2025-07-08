@@ -90,6 +90,20 @@
 
 ---
 
+### 🚨 **ISSUES IDENTIFICADOS Y RESUELTOS:**
+
+### **Issue 1: Botiquín - Coordinador no ve instalaciones** ✅ **RESUELTO**
+**Causa:** `AdminPermissionsService` ya estaba actualizado correctamente
+**Solución:** Verificado que usa tabla `admins` correctamente
+
+### **Issue 2: Login de Socorristas - DNI no funciona** ✅ **RESUELTO**
+**Causa:** `AuthService.php` línea 25 - JOIN con tabla `coordinadores` obsoleta
+**Solución:** Actualizado JOIN a tabla `admins` + filtro `c.tipo = 'coordinador'`
+**Archivo:** `classes/AuthService.php`
+**Cambio:** `JOIN coordinadores c` → `JOIN admins c ON i.coordinador_id = c.id WHERE ... AND c.tipo = 'coordinador'`
+
+---
+
 ### 🎯 **READY TO START: FASE 1 - MIGRACIÓN DE DATOS**
 
 **Con la documentación de BD completa y el plan definido, el proyecto está listo para comenzar la implementación del sistema de permisos unificado.**
