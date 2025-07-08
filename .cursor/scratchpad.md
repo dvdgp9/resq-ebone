@@ -70,6 +70,12 @@
 - `views/admin/dashboard.php` - Cards y botones añadidos
 - `assets/css/styles.css` - Estilos para badges de tipos
 - `index.php` - Routing para /admin/administradores y /admin/api/administradores
+- `classes/AdminAuthService.php` - **ARREGLADO** - Query y sesiones actualizadas para nueva estructura
+
+**PROBLEMA RESUELTO:**
+- ✅ **AdminAuthService arreglado** - Query no hacía JOIN con tabla coordinadores antigua
+- ✅ **Variables de sesión actualizadas** - Se usa telefono en lugar de coordinador_id
+- ✅ **Método esSuperAdmin() simplificado** - Ya no depende del coordinador_id obsoleto
 
 **PRÓXIMO PASO:** Implementar sistema de permisos (Fase 3)
 

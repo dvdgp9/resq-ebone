@@ -179,6 +179,10 @@ switch ($path) {
         require_once 'debug_pwa.php';
         break;
         
+    case '/debug-admin':
+        require_once 'debug_admin_auth.php';
+        break;
+        
     default:
         http_response_code(404);
         require_once 'views/404.php';
