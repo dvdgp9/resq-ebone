@@ -17,6 +17,9 @@ if (!$adminAuth->estaAutenticadoAdmin()) {
     exit;
 }
 
+// Inicializar conexión a la base de datos
+$db = Database::getInstance()->getConnection();
+
 $admin = $adminAuth->getAdminActual();
 $method = $_SERVER['REQUEST_METHOD'];
 

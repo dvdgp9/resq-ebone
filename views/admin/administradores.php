@@ -216,7 +216,7 @@ if ($admin['tipo'] !== 'superadmin') {
                 document.getElementById('administradores-table').style.display = 'none';
                 document.getElementById('no-data').style.display = 'none';
 
-                const response = await fetch('/controllers/admin/administradores.php');
+                const response = await fetch('/admin/api/administradores');
                 const data = await response.json();
 
                 if (data.success) {
@@ -364,7 +364,7 @@ if ($admin['tipo'] !== 'superadmin') {
 
             try {
                 const isEditing = editingAdministrador !== null;
-                const url = '/controllers/admin/administradores.php';
+                const url = '/admin/api/administradores';
                 const method = isEditing ? 'PUT' : 'POST';
                 
                 const response = await fetch(url, {
@@ -396,7 +396,7 @@ if ($admin['tipo'] !== 'superadmin') {
 
             try {
                 if (pendingAction.type === 'delete') {
-                    const response = await fetch('/controllers/admin/administradores.php', {
+                    const response = await fetch('/admin/api/administradores', {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json'
