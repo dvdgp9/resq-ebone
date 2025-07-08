@@ -23,11 +23,10 @@ class AdminAuthService {
             // Buscar administrador en la base de datos
             $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("
-                SELECT a.id, a.email, a.password_hash, a.nombre, a.tipo, a.coordinador_id,
-                       c.nombre as coordinador_nombre
-                FROM admins a
-                LEFT JOIN coordinadores c ON a.coordinador_id = c.id
-                WHERE a.email = ? AND a.activo = 1
+                SELECT id, email, password_hash, nombre, tipo, telefono, activo,
+                       fecha_creacion, fecha_actualizacion
+                FROM admins
+                WHERE email = ? AND activo = 1
             ");
             
             $stmt->execute([$email]);
@@ -53,7 +52,7 @@ class AdminAuthService {
                 $_SESSION['admin_email'] = $admin['email'];
                 $_SESSION['admin_nombre'] = $admin['nombre'];
                 $_SESSION['admin_tipo'] = $admin['tipo'];
-                $_SESSION['admin_coordinador_id'] = $admin['coordinador_id'];
+                $_SESSION['admin_telefono'] = $admin['telefono'];
                 $_SESSION['admin_session_id'] = $sessionId;
                 $_SESSION['admin_login_time'] = time();
                 
@@ -86,7 +85,7 @@ class AdminAuthService {
             unset($_SESSION['admin_email']);
             unset($_SESSION['admin_nombre']);
             unset($_SESSION['admin_tipo']);
-            unset($_SESSION['admin_coordinador_id']);
+            unset($_SESSION['admin_telefono']);
             unset($_SESSION['admin_session_id']);
             unset($_SESSION['admin_login_time']);
             
@@ -117,8 +116,7 @@ class AdminAuthService {
     public function esSuperAdmin() {
         return $this->estaAutenticadoAdmin() && 
                isset($_SESSION['admin_tipo']) && 
-               $_SESSION['admin_tipo'] === 'superadmin' &&
-               $_SESSION['admin_coordinador_id'] === null;
+               $_SESSION['admin_tipo'] === 'superadmin';
     }
     
     /**
@@ -152,7 +150,7 @@ class AdminAuthService {
             'email' => $_SESSION['admin_email'],
             'nombre' => $_SESSION['admin_nombre'],
             'tipo' => $_SESSION['admin_tipo'],
-            'coordinador_id' => $_SESSION['admin_coordinador_id'],
+            'telefono' => $_SESSION['admin_telefono'] ?? null,
             'login_time' => $_SESSION['admin_login_time']
         ];
     }
