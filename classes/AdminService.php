@@ -5,22 +5,53 @@
 class AdminService {
     
     /**
-     * Obtiene todos los coordinadores del sistema
+     * Obtiene coordinadores según permisos del usuario actual
      */
-    public function getCoordinadores() {
+    public function getCoordinadores($admin = null) {
         try {
             $db = Database::getInstance()->getConnection();
+            
+            // Construir query según tipo de usuario
+            if (!$admin) {
+                // Sin admin, devolver array vacío por seguridad
+                return [];
+            }
+            
+            $whereClause = "";
+            $params = [];
+            
+            if ($admin['tipo'] === 'superadmin') {
+                // Superadmin ve todos los coordinadores
+                $whereClause = "WHERE a.tipo = 'coordinador'";
+            } elseif ($admin['tipo'] === 'admin') {
+                // Admin ve solo coordinadores asignados
+                $whereClause = "WHERE a.tipo = 'coordinador' AND a.id IN (
+                    SELECT ac.coordinador_id 
+                    FROM admin_coordinadores ac 
+                    WHERE ac.admin_id = ?
+                )";
+                $params[] = $admin['id'];
+            } elseif ($admin['tipo'] === 'coordinador') {
+                // Coordinador se ve a sí mismo
+                $whereClause = "WHERE a.tipo = 'coordinador' AND a.id = ?";
+                $params[] = $admin['id'];
+            } else {
+                // Tipo desconocido, no ve nada
+                return [];
+            }
+            
             $stmt = $db->prepare("
-                SELECT c.id, c.nombre, c.email, c.telefono,
-                       c.fecha_creacion, c.fecha_actualizacion,
+                SELECT a.id, a.nombre, a.email, a.telefono,
+                       a.fecha_creacion, a.fecha_actualizacion,
                        COUNT(i.id) as total_instalaciones
-                FROM coordinadores c
-                LEFT JOIN instalaciones i ON c.id = i.coordinador_id AND i.activo = 1
-                GROUP BY c.id
-                ORDER BY c.nombre ASC
+                FROM admins a
+                LEFT JOIN instalaciones i ON a.id = i.coordinador_id AND i.activo = 1
+                {$whereClause}
+                GROUP BY a.id
+                ORDER BY a.nombre ASC
             ");
             
-            $stmt->execute();
+            $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
         } catch (Exception $e) {
@@ -183,25 +214,56 @@ class AdminService {
     }
     
     /**
-     * Obtiene todas las instalaciones del sistema
+     * Obtiene instalaciones según permisos del usuario actual
      */
-    public function getInstalaciones() {
+    public function getInstalaciones($admin = null) {
         try {
             $db = Database::getInstance()->getConnection();
+            
+            // Construir query según tipo de usuario
+            if (!$admin) {
+                // Sin admin, devolver array vacío por seguridad
+                return [];
+            }
+            
+            $whereClause = "";
+            $params = [];
+            
+            if ($admin['tipo'] === 'superadmin') {
+                // Superadmin ve todas las instalaciones
+                $whereClause = "WHERE 1=1";
+            } elseif ($admin['tipo'] === 'admin') {
+                // Admin ve instalaciones de coordinadores asignados
+                $whereClause = "WHERE i.coordinador_id IN (
+                    SELECT ac.coordinador_id 
+                    FROM admin_coordinadores ac 
+                    WHERE ac.admin_id = ?
+                )";
+                $params[] = $admin['id'];
+            } elseif ($admin['tipo'] === 'coordinador') {
+                // Coordinador ve solo sus instalaciones
+                $whereClause = "WHERE i.coordinador_id = ?";
+                $params[] = $admin['id'];
+            } else {
+                // Tipo desconocido, no ve nada
+                return [];
+            }
+            
             $stmt = $db->prepare("
                 SELECT i.id, i.nombre, i.direccion, i.activo,
                        i.fecha_creacion, i.fecha_actualizacion,
                        i.coordinador_id, i.espacios, i.aforo_maximo,
-                       c.nombre as coordinador_nombre, c.email as coordinador_email,
+                       a.nombre as coordinador_nombre, a.email as coordinador_email,
                        COUNT(s.id) as total_socorristas
                 FROM instalaciones i
-                LEFT JOIN coordinadores c ON i.coordinador_id = c.id
+                LEFT JOIN admins a ON i.coordinador_id = a.id
                 LEFT JOIN socorristas s ON i.id = s.instalacion_id AND s.activo = 1
+                {$whereClause}
                 GROUP BY i.id
                 ORDER BY i.nombre ASC
             ");
             
-            $stmt->execute();
+            $stmt->execute($params);
             $instalaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Decodificar JSON de espacios
@@ -237,7 +299,7 @@ class AdminService {
             }
             
             // Verificar que el coordinador existe
-            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+            $stmt = $db->prepare("SELECT id FROM admins WHERE id = ? AND tipo = 'coordinador'");
             $stmt->execute([$datos['coordinador_id']]);
             if (!$stmt->fetch()) {
                 throw new Exception("Coordinador no encontrado");
@@ -292,7 +354,7 @@ class AdminService {
             
             // Verificar coordinador si se especifica
             if (!empty($datos['coordinador_id'])) {
-                $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+                $stmt = $db->prepare("SELECT id FROM admins WHERE id = ? AND tipo = 'coordinador'");
                 $stmt->execute([$datos['coordinador_id']]);
                 if (!$stmt->fetch()) {
                     throw new Exception("Coordinador no encontrado");
@@ -368,24 +430,55 @@ class AdminService {
     }
     
     /**
-     * Obtiene todos los socorristas del sistema
+     * Obtiene socorristas según permisos del usuario actual
      */
-    public function getSocorristas() {
+    public function getSocorristas($admin = null) {
         try {
             $db = Database::getInstance()->getConnection();
+            
+            // Construir query según tipo de usuario
+            if (!$admin) {
+                // Sin admin, devolver array vacío por seguridad
+                return [];
+            }
+            
+            $whereClause = "";
+            $params = [];
+            
+            if ($admin['tipo'] === 'superadmin') {
+                // Superadmin ve todos los socorristas
+                $whereClause = "WHERE 1=1";
+            } elseif ($admin['tipo'] === 'admin') {
+                // Admin ve socorristas de instalaciones de coordinadores asignados
+                $whereClause = "WHERE i.coordinador_id IN (
+                    SELECT ac.coordinador_id 
+                    FROM admin_coordinadores ac 
+                    WHERE ac.admin_id = ?
+                )";
+                $params[] = $admin['id'];
+            } elseif ($admin['tipo'] === 'coordinador') {
+                // Coordinador ve solo socorristas de sus instalaciones
+                $whereClause = "WHERE i.coordinador_id = ?";
+                $params[] = $admin['id'];
+            } else {
+                // Tipo desconocido, no ve nada
+                return [];
+            }
+            
             $stmt = $db->prepare("
                 SELECT s.id, s.dni, s.nombre, s.email, s.telefono, s.activo,
                        s.fecha_creacion, s.fecha_actualizacion,
                        s.instalacion_id,
                        i.nombre as instalacion_nombre,
-                       c.nombre as coordinador_nombre
+                       a.nombre as coordinador_nombre
                 FROM socorristas s
                 LEFT JOIN instalaciones i ON s.instalacion_id = i.id
-                LEFT JOIN coordinadores c ON i.coordinador_id = c.id
+                LEFT JOIN admins a ON i.coordinador_id = a.id
+                {$whereClause}
                 ORDER BY s.nombre ASC
             ");
             
-            $stmt->execute();
+            $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
             
         } catch (Exception $e) {

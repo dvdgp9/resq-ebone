@@ -18,14 +18,17 @@ if (!$adminAuth->estaAutenticadoAdmin()) {
     exit;
 }
 
+// Inicializar conexión a la base de datos
+$db = Database::getInstance()->getConnection();
+
 $admin = $adminAuth->getAdminActual();
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     switch ($method) {
         case 'GET':
-            // Listar socorristas
-            $socorristas = $adminService->getSocorristas();
+            // Listar socorristas según permisos
+            $socorristas = $adminService->getSocorristas($admin);
             echo json_encode([
                 'success' => true,
                 'socorristas' => $socorristas
@@ -33,11 +36,25 @@ try {
             break;
             
         case 'POST':
-            // Crear socorrista
+            // Crear socorrista - Superadmins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
+                throw new Exception('Solo superadmins y coordinadores pueden crear socorristas');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input) {
                 throw new Exception('Datos JSON inválidos');
+            }
+            
+            // Si es coordinador, verificar que la instalación le pertenece
+            if ($admin['tipo'] === 'coordinador' && !empty($input['instalacion_id'])) {
+                $db = Database::getInstance()->getConnection();
+                $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND coordinador_id = ?");
+                $stmt->execute([$input['instalacion_id'], $admin['id']]);
+                if (!$stmt->fetch()) {
+                    throw new Exception('No tienes permisos para asignar socorristas a esta instalación');
+                }
             }
             
             $socorristaId = $adminService->crearSocorrista($input);
@@ -50,11 +67,37 @@ try {
             break;
             
         case 'PUT':
-            // Actualizar socorrista
+            // Actualizar socorrista - Superadmins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
+                throw new Exception('Solo superadmins y coordinadores pueden actualizar socorristas');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input || !isset($input['id'])) {
                 throw new Exception('ID de socorrista requerido');
+            }
+            
+            // Si es coordinador, verificar que el socorrista pertenece a sus instalaciones
+            if ($admin['tipo'] === 'coordinador') {
+                $stmt = $db->prepare("
+                    SELECT s.id FROM socorristas s 
+                    JOIN instalaciones i ON s.instalacion_id = i.id 
+                    WHERE s.id = ? AND i.coordinador_id = ?
+                ");
+                $stmt->execute([$input['id'], $admin['id']]);
+                if (!$stmt->fetch()) {
+                    throw new Exception('No tienes permisos para editar este socorrista');
+                }
+                
+                // Verificar instalación de destino si se cambia
+                if (!empty($input['instalacion_id'])) {
+                    $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND coordinador_id = ?");
+                    $stmt->execute([$input['instalacion_id'], $admin['id']]);
+                    if (!$stmt->fetch()) {
+                        throw new Exception('No tienes permisos para asignar socorristas a esta instalación');
+                    }
+                }
             }
             
             $adminService->actualizarSocorrista($input['id'], $input);
@@ -66,11 +109,28 @@ try {
             break;
             
         case 'DELETE':
-            // Eliminar socorrista
+            // Eliminar socorrista - Superadmins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
+                throw new Exception('Solo superadmins y coordinadores pueden desactivar socorristas');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input || !isset($input['id'])) {
                 throw new Exception('ID de socorrista requerido');
+            }
+            
+            // Si es coordinador, verificar que el socorrista pertenece a sus instalaciones
+            if ($admin['tipo'] === 'coordinador') {
+                $stmt = $db->prepare("
+                    SELECT s.id FROM socorristas s 
+                    JOIN instalaciones i ON s.instalacion_id = i.id 
+                    WHERE s.id = ? AND i.coordinador_id = ?
+                ");
+                $stmt->execute([$input['id'], $admin['id']]);
+                if (!$stmt->fetch()) {
+                    throw new Exception('No tienes permisos para desactivar este socorrista');
+                }
             }
             
             $adminService->desactivarSocorrista($input['id']);

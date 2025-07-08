@@ -24,8 +24,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 try {
     switch ($method) {
         case 'GET':
-            // Listar instalaciones
-            $instalaciones = $adminService->getInstalaciones();
+            // Listar instalaciones según permisos
+            $instalaciones = $adminService->getInstalaciones($admin);
             echo json_encode([
                 'success' => true,
                 'instalaciones' => $instalaciones

@@ -76,6 +76,9 @@
 - ✅ **AdminAuthService arreglado** - Query no hacía JOIN con tabla coordinadores antigua
 - ✅ **Variables de sesión actualizadas** - Se usa telefono en lugar de coordinador_id
 - ✅ **Método esSuperAdmin() simplificado** - Ya no depende del coordinador_id obsoleto
+- ✅ **URLs JavaScript corregidas** - Usaba /controllers/ en lugar de /admin/api/
+- ✅ **Conexión BD añadida** - Faltaba $db = Database::getInstance()->getConnection()
+- ✅ **Archivos debug eliminados** - Limpieza completa del sistema
 
 **PRÓXIMO PASO:** Implementar sistema de permisos (Fase 3)
 

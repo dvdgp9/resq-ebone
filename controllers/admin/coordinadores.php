@@ -24,8 +24,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 try {
     switch ($method) {
         case 'GET':
-            // Listar coordinadores
-            $coordinadores = $adminService->getCoordinadores();
+            // Listar coordinadores según permisos
+            $coordinadores = $adminService->getCoordinadores($admin);
             echo json_encode([
                 'success' => true,
                 'coordinadores' => $coordinadores
@@ -33,7 +33,11 @@ try {
             break;
             
         case 'POST':
-            // Crear coordinador
+            // Crear coordinador - Solo superadmins
+            if ($admin['tipo'] !== 'superadmin') {
+                throw new Exception('Solo superadmins pueden crear coordinadores');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input) {
@@ -50,7 +54,11 @@ try {
             break;
             
         case 'PUT':
-            // Actualizar coordinador
+            // Actualizar coordinador - Solo superadmins
+            if ($admin['tipo'] !== 'superadmin') {
+                throw new Exception('Solo superadmins pueden actualizar coordinadores');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input || !isset($input['id'])) {
@@ -66,7 +74,11 @@ try {
             break;
             
         case 'DELETE':
-            // Eliminar coordinador
+            // Eliminar coordinador - Solo superadmins
+            if ($admin['tipo'] !== 'superadmin') {
+                throw new Exception('Solo superadmins pueden eliminar coordinadores');
+            }
+            
             $input = json_decode(file_get_contents('php://input'), true);
             
             if (!$input || !isset($input['id'])) {
