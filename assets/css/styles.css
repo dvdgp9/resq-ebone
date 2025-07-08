@@ -3833,3 +3833,31 @@ img[src*="logo"] {
         max-width: none !important;
     }
 }
+
+/* === ADMINISTRADORES - TIPOS DE USUARIO === */
+.tipo-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tipo-superadmin {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.tipo-admin {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.tipo-coordinador {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+/* === TABLA ADMINISTRADORES === */
+.actions {
+    white-space: nowrap;
+}

@@ -311,6 +311,6 @@ La base de datos contiene **11 tablas principales** organizadas en los siguiente
 
 ---
 
-**Documento generado:** 2025-01-12  
+**Documento generado:** 2025-07
 **Autor:** Sistema ResQ - Análisis de BD  
 **Versión:** 1.0

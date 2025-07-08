@@ -85,6 +85,15 @@ $stats = $adminService->getEstadisticas();
         
         <!-- Navegación Principal -->
         <div class="admin-nav-grid">
+            <?php if ($admin['tipo'] === 'superadmin'): ?>
+            <a href="/admin/administradores" class="admin-nav-card">
+                <div class="nav-card-icon">🛡️</div>
+                <h3>Gestión Admin</h3>
+                <p>Crear y gestionar administradores del sistema</p>
+                <div class="nav-card-arrow">→</div>
+            </a>
+            <?php endif; ?>
+            
             <a href="/admin/coordinadores" class="admin-nav-card">
                 <div class="nav-card-icon">👥</div>
                 <h3>Gestionar Coordinadores</h3>
@@ -125,6 +134,11 @@ $stats = $adminService->getEstadisticas();
         <div class="quick-actions">
             <h2>⚡ Acciones Rápidas</h2>
             <div class="quick-actions-grid">
+                <?php if ($admin['tipo'] === 'superadmin'): ?>
+                <button class="btn btn-primary" onclick="window.location.href='/admin/administradores?action=create'">
+                    🛡️ Nuevo Admin
+                </button>
+                <?php endif; ?>
                 <button class="btn btn-primary" onclick="window.location.href='/admin/coordinadores?action=create'">
                     ➕ Nuevo Coordinador
                 </button>
