@@ -26,8 +26,8 @@ try {
                c.nombre as coordinador_nombre, c.email as coordinador_email, c.telefono as coordinador_telefono
         FROM socorristas s
         JOIN instalaciones i ON s.instalacion_id = i.id
-        JOIN coordinadores c ON i.coordinador_id = c.id
-        WHERE s.id = ?
+        JOIN admins c ON i.coordinador_id = c.id
+        WHERE s.id = ? AND c.tipo = 'coordinador'
     ");
     
     $stmt->execute([$socorrista['id']]);

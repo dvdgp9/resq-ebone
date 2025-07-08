@@ -39,7 +39,8 @@ class AdminPermissionsService {
         if ($this->isSuperAdmin()) {
             // Superadmin puede ver todos los coordinadores
             $stmt = $this->db->prepare("
-                SELECT * FROM coordinadores 
+                SELECT * FROM admins 
+                WHERE tipo = 'coordinador'
                 ORDER BY nombre
             ");
             $stmt->execute();
@@ -49,10 +50,10 @@ class AdminPermissionsService {
         if ($this->isAdmin()) {
             // Admin puede ver solo coordinadores asignados
             $stmt = $this->db->prepare("
-                SELECT c.* FROM coordinadores c
-                INNER JOIN admin_coordinadores ac ON c.id = ac.coordinador_id
-                WHERE ac.admin_id = ? AND ac.activo = 1
-                ORDER BY c.nombre
+                SELECT a.* FROM admins a
+                INNER JOIN admin_coordinadores ac ON a.id = ac.coordinador_id
+                WHERE ac.admin_id = ? AND ac.activo = 1 AND a.tipo = 'coordinador'
+                ORDER BY a.nombre
             ");
             $stmt->execute([$this->admin['id']]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -61,10 +62,10 @@ class AdminPermissionsService {
         if ($this->isCoordinador()) {
             // Coordinador solo puede verse a sí mismo
             $stmt = $this->db->prepare("
-                SELECT * FROM coordinadores 
-                WHERE id = ?
+                SELECT * FROM admins 
+                WHERE id = ? AND tipo = 'coordinador'
             ");
-            $stmt->execute([$this->admin['coordinador_id']]);
+            $stmt->execute([$this->admin['id']]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
@@ -86,10 +87,10 @@ class AdminPermissionsService {
         if ($this->isSuperAdmin()) {
             // Superadmin puede ver todas las instalaciones
             $stmt = $this->db->prepare("
-                SELECT i.*, c.nombre as coordinador_nombre 
+                SELECT i.*, a.nombre as coordinador_nombre 
                 FROM instalaciones i
-                INNER JOIN coordinadores c ON i.coordinador_id = c.id
-                WHERE i.activo = 1 
+                INNER JOIN admins a ON i.coordinador_id = a.id
+                WHERE i.activo = 1 AND a.tipo = 'coordinador'
                 ORDER BY i.nombre
             ");
             $stmt->execute();
@@ -104,10 +105,10 @@ class AdminPermissionsService {
         // Admin/Coordinador puede ver instalaciones de coordinadores permitidos
         $placeholders = str_repeat('?,', count($coordinadorIds) - 1) . '?';
         $stmt = $this->db->prepare("
-            SELECT i.*, c.nombre as coordinador_nombre 
+            SELECT i.*, a.nombre as coordinador_nombre 
             FROM instalaciones i
-            INNER JOIN coordinadores c ON i.coordinador_id = c.id
-            WHERE i.coordinador_id IN ($placeholders) AND i.activo = 1
+            INNER JOIN admins a ON i.coordinador_id = a.id
+            WHERE i.coordinador_id IN ($placeholders) AND i.activo = 1 AND a.tipo = 'coordinador'
             ORDER BY i.nombre
         ");
         $stmt->execute($coordinadorIds);
@@ -133,11 +134,11 @@ class AdminPermissionsService {
         
         $placeholders = str_repeat('?,', count($instalacionIds) - 1) . '?';
         $stmt = $this->db->prepare("
-            SELECT s.*, i.nombre as instalacion_nombre, c.nombre as coordinador_nombre
+            SELECT s.*, i.nombre as instalacion_nombre, a.nombre as coordinador_nombre
             FROM socorristas s
             INNER JOIN instalaciones i ON s.instalacion_id = i.id
-            INNER JOIN coordinadores c ON i.coordinador_id = c.id
-            WHERE s.instalacion_id IN ($placeholders) AND s.activo = 1
+            INNER JOIN admins a ON i.coordinador_id = a.id
+            WHERE s.instalacion_id IN ($placeholders) AND s.activo = 1 AND a.tipo = 'coordinador'
             ORDER BY s.nombre
         ");
         $stmt->execute($instalacionIds);
@@ -191,13 +192,13 @@ class AdminPermissionsService {
         $params = $instalacionId ? [$instalacionId] : $instalacionIds;
         
         $stmt = $this->db->prepare("
-            SELECT ib.*, i.nombre as instalacion_nombre, c.nombre as coordinador_nombre,
+            SELECT ib.*, i.nombre as instalacion_nombre, a.nombre as coordinador_nombre,
                    s.nombre as ultima_actualizacion_por
             FROM inventario_botiquin ib
             INNER JOIN instalaciones i ON ib.instalacion_id = i.id
-            INNER JOIN coordinadores c ON i.coordinador_id = c.id
+            INNER JOIN admins a ON i.coordinador_id = a.id
             LEFT JOIN socorristas s ON ib.socorrista_ultima_actualizacion = s.id
-            $whereClause
+            $whereClause AND a.tipo = 'coordinador'
             ORDER BY i.nombre, ib.categoria, ib.nombre_elemento
         ");
         
@@ -227,13 +228,13 @@ class AdminPermissionsService {
         $params = $instalacionId ? [$instalacionId] : $instalacionIds;
         
         $stmt = $this->db->prepare("
-            SELECT sm.*, i.nombre as instalacion_nombre, c.nombre as coordinador_nombre,
+            SELECT sm.*, i.nombre as instalacion_nombre, a.nombre as coordinador_nombre,
                    s.nombre as socorrista_nombre
             FROM solicitudes_material sm
             INNER JOIN instalaciones i ON sm.instalacion_id = i.id
-            INNER JOIN coordinadores c ON i.coordinador_id = c.id
+            INNER JOIN admins a ON i.coordinador_id = a.id
             INNER JOIN socorristas s ON sm.socorrista_id = s.id
-            $whereClause
+            $whereClause AND a.tipo = 'coordinador'
             ORDER BY sm.fecha_solicitud DESC
         ");
         

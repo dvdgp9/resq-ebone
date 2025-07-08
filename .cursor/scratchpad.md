@@ -103,13 +103,16 @@
 **Cambio:** `JOIN coordinadores c` → `JOIN admins c ON i.coordinador_id = c.id WHERE ... AND c.tipo = 'coordinador'`
 
 ### **Issue 3: Referencias a tabla coordinadores** ✅ **RESUELTO**
-**Causa:** 4 archivos adicionales con queries SQL usando tabla `coordinadores` obsoleta
+**Causa:** 7 archivos adicionales con queries SQL usando tabla `coordinadores` obsoleta
 **Solución:** Actualizado todos los JOINs a tabla `admins` + filtro `c.tipo = 'coordinador'`
 **Archivos actualizados:**
+- `controllers/mi_cuenta.php` - Query "Mi cuenta" socorrista (causaba error en perfil)
 - `controllers/incidencias.php` - Query para obtener email del coordinador
 - `controllers/control_flujo.php` - Query para obtener email del coordinador  
 - `controllers/coordinador_instalacion.php` - Query para obtener nombre del coordinador
 - `classes/SimpleEmailService.php` - Query para obtener coordinador por socorrista
+- `classes/EmailService.php` - Query para obtener coordinador por socorrista (PHPMailer)
+- `classes/AdminPermissionsService.php` - **8 queries SQL** actualizadas (sistema de permisos)
 **Cambio:** `FROM coordinadores c` → `FROM admins c WHERE ... AND c.tipo = 'coordinador'`
 
 ---
@@ -171,4 +174,4 @@
 - **Sistema de permisos**: Diseño simple pero efectivo es mejor que complejo
 - **Documentación de BD**: Analizar estructura antes de cambios críticos
 - **Backup y rollback**: Siempre tener plan de recuperación en migraciones
-- **⚠️ CRITICO - Migración de tablas**: Después de migrar de una tabla a otra, TODOS los JOINs en el codebase deben actualizarse. Revisar especialmente servicios de autenticación que pueden usar tablas obsoletas.
+- **⚠️ CRITICO - Migración de tablas**: Después de migrar de una tabla a otra, TODOS los JOINs en el codebase deben actualizarse. Buscar exhaustivamente con `grep_search` todas las referencias. En este proyecto se encontraron **7 archivos** con **13+ queries SQL** usando tabla obsoleta `coordinadores`.
