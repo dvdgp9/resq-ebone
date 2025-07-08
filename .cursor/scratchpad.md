@@ -28,117 +28,50 @@
 
 ## Project Status Board
 
-### 🚀 **ESTADO ACTUAL: PLANNER - SISTEMA DE PERMISOS UNIFICADO**
+### 🎯 **FASE 1: MIGRACIÓN DE DATOS** - ✅ **COMPLETADO**
+- [x] **1A**: Migrar coordinador actual a `admins` con `tipo='coordinador'` 
+- [x] **1B**: Actualizar FK en `instalaciones` para apuntar a nueva ID
+- [x] **1C**: Verificar que todo funciona igual que antes
 
-**📅 ÚLTIMA ACTUALIZACIÓN:** 2025-01-12 
-**🎯 OBJETIVO:** Unificar `coordinadores` + `admins` en una sola tabla con sistema de permisos
+### 🎯 **FASE 2: GESTIÓN DE ADMINISTRADORES** - ✅ **COMPLETADO**
+- [x] **2A**: Crear controlador `admin/administradores.php`
+- [x] **2B**: Crear vista `admin/administradores.php`
+- [x] **2C**: Agregar card "Gestión Admin" en dashboard
 
-## High-level Task Breakdown
+### 🎯 **FASE 3: SISTEMA DE PERMISOS** - ⏳ **PENDIENTE**
+- [ ] **3A**: Implementar permisos en instalaciones
+- [ ] **3B**: Implementar permisos en socorristas
+- [ ] **3C**: Implementar permisos en coordinadores
 
-### **🎯 FASE 1: MIGRACIÓN DE DATOS**
-**Objetivo:** Mover coordinador actual a tabla `admins`
-
-- [ ] **Tarea 1A**: Migrar coordinador actual a `admins` con `tipo='coordinador'`
-- [ ] **Tarea 1B**: Actualizar FK en `instalaciones` para apuntar a nueva ID
-- [ ] **Tarea 1C**: Verificar que todo funciona igual que antes
-
-**Criterio éxito:** Coordinador actual puede login y ve sus instalaciones
-
----
-
-### **🎯 FASE 2: GESTIÓN DE ADMINISTRADORES**
-**Objetivo:** Crear interfaz para que superadmin gestione admins
-
-- [ ] **Tarea 2A**: Crear `controllers/admin/administradores.php` (CRUD básico)
-- [ ] **Tarea 2B**: Crear `views/admin/administradores.php` (tabla + formularios)
-- [ ] **Tarea 2C**: Añadir card "Gestión Admin" al dashboard
-- [ ] **Tarea 2D**: Testing - crear/editar/eliminar administradores
-
-**Criterio éxito:** Superadmin puede gestionar admins desde panel web
-
----
-
-### **🎯 FASE 3: SISTEMA DE PERMISOS**
-**Objetivo:** Implementar permisos por tipo de usuario
-
-- [ ] **Tarea 3A**: Crear `AdminPermissionsService` (superadmin/admin/coordinador)
-- [ ] **Tarea 3B**: Aplicar permisos a controladores existentes
-- [ ] **Tarea 3C**: Actualizar vistas para mostrar solo datos permitidos
-- [ ] **Tarea 3D**: Testing - verificar cada tipo de usuario
-
-**Criterio éxito:** Cada tipo de usuario ve solo lo que debe ver
-
----
-
-### **🎯 FASE 4: LIMPIEZA Y TESTING**
-**Objetivo:** Eliminar código obsoleto y verificar sistema
-
-- [ ] **Tarea 4A**: Eliminar tabla `coordinadores` (ya no se usa)
-- [ ] **Tarea 4B**: Eliminar tabla `admin_coordinadores` (ya no se usa)
-- [ ] **Tarea 4C**: Limpiar código que referencia tablas eliminadas
-- [ ] **Tarea 4D**: Testing final completo
-
-**Criterio éxito:** Sistema funciona sin tablas obsoletas
-
----
-
-## 📊 **PROGRESO GLOBAL**
-
-### **Estado Actual:**
-- **Fase 1:** 0% - Pendiente migración de datos
-- **Fase 2:** 0% - Pendiente gestión de administradores
-- **Fase 3:** 0% - Pendiente sistema de permisos
-- **Fase 4:** 0% - Pendiente limpieza final
-
-### **Estructura Técnica Nueva:**
-```sql
--- Tabla unificada propuesta
-admins:
-├── id (PK)
-├── email (único)
-├── password_hash 
-├── nombre
-├── telefono (nuevo para coordinadores)
-├── tipo (ENUM: 'superadmin', 'admin', 'coordinador')
-├── activo
-├── fecha_creacion
-└── fecha_actualizacion
-
--- Relación admin-coordinador (para admins que gestionan coordinadores)
-admin_coordinadores:
-├── admin_id (FK → admins.id WHERE tipo='admin')
-└── coordinador_id (FK → admins.id WHERE tipo='coordinador')
-```
-
-### **Sistema de Permisos:**
-- **superadmin**: Ve todo
-- **admin**: Ve coordinadores asignados + sus instalaciones/socorristas  
-- **coordinador**: Ve solo sus instalaciones/socorristas
-
----
+### 🎯 **FASE 4: TESTING Y LIMPIEZA** - ⏳ **PENDIENTE**
+- [ ] **4A**: Testing completo del sistema
+- [ ] **4B**: Eliminar tabla `coordinadores` antigua
+- [ ] **4C**: Limpieza y optimización final
 
 ## Current Status / Progress Tracking
 
-### ✅ **TAREA COMPLETADA: GIT REVERT Y DOCUMENTACIÓN DE BASE DE DATOS**
+**🚀 ESTADO ACTUAL: EJECUTOR - FASE 2 COMPLETADA**
+
+### ✅ **COMPLETADO: SISTEMA DE GESTIÓN DE ADMINISTRADORES**
 
 **📅 Fecha:** 2025-01-12  
-**🎯 Tarea:** Revert a commit a86e2c8 y crear documentación completa de BD
+**🎯 Fase:** 2 de 4 - Gestión de Administradores
 
-**PROCESO EJECUTADO:**
-1. ✅ **Git revert exitoso** - Código revertido a commit `a86e2c8` (Bug fix Botiquín)
-2. ✅ **Creación de documentación completa** - Análisis de 11 tablas de la BD
-3. ✅ **Estrategia de branch segura** - Opción 1 ejecutada perfectamente
-4. ✅ **Conversión a rama principal** - `main` actualizado con nueva documentación
-5. ✅ **Limpieza del repositorio** - Ramas temporales eliminadas
+**FUNCIONALIDADES IMPLEMENTADAS:**
+- ✅ **Controlador API** - CRUD completo con validaciones y seguridad
+- ✅ **Vista web** - Interfaz moderna con tabla DataTables
+- ✅ **Dashboard integrado** - Cards y botones solo para superadmins
+- ✅ **Permisos de acceso** - Solo superadmins pueden gestionar admins
+- ✅ **Validaciones** - Email único, tipos válidos, campos obligatorios
 
-**ARCHIVOS CREADOS:**
-- `database/database_structure.md` - Documentación completa de estructura BD
-- `database/fix_admin_types.sql` - Script para correcciones admin
+**ARCHIVOS CREADOS/MODIFICADOS:**
+- `controllers/admin/administradores.php` - Controlador API
+- `views/admin/administradores.php` - Vista web
+- `views/admin/dashboard.php` - Cards y botones añadidos
+- `assets/css/styles.css` - Estilos para badges de tipos
+- `index.php` - Routing para /admin/administradores y /admin/api/administradores
 
-**ESTADO FINAL:**
-- **Commit actual:** `db7b59b` (Add database documentation and fix admin types)
-- **Base de código:** Estable en commit `a86e2c8` + documentación nueva
-- **Repositorio:** Sincronizado perfectamente (local ↔ remoto)
+**PRÓXIMO PASO:** Implementar sistema de permisos (Fase 3)
 
 ---
 
