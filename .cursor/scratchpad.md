@@ -38,10 +38,10 @@
 - [x] **2B**: Crear vista `admin/administradores.php`
 - [x] **2C**: Agregar card "Gestión Admin" en dashboard
 
-### 🎯 **FASE 3: SISTEMA DE PERMISOS** - ⏳ **PENDIENTE**
-- [ ] **3A**: Implementar permisos en instalaciones
-- [ ] **3B**: Implementar permisos en socorristas
-- [ ] **3C**: Implementar permisos en coordinadores
+### 🎯 **FASE 3: SISTEMA DE PERMISOS** - ✅ **COMPLETADO**
+- [x] **3A**: Implementar permisos en instalaciones
+- [x] **3B**: Implementar permisos en socorristas
+- [x] **3C**: Implementar permisos en coordinadores
 
 ### 🎯 **FASE 4: TESTING Y LIMPIEZA** - ⏳ **PENDIENTE**
 - [ ] **4A**: Testing completo del sistema
@@ -50,26 +50,31 @@
 
 ## Current Status / Progress Tracking
 
-**🚀 ESTADO ACTUAL: EJECUTOR - FASE 2 COMPLETADA**
+**🚀 ESTADO ACTUAL: EJECUTOR - FASE 3 COMPLETADA**
 
-### ✅ **COMPLETADO: SISTEMA DE GESTIÓN DE ADMINISTRADORES**
+### ✅ **COMPLETADO: SISTEMA DE PERMISOS UNIFICADO**
 
 **📅 Fecha:** 2025-01-12  
-**🎯 Fase:** 2 de 4 - Gestión de Administradores
+**🎯 Fase:** 3 de 4 - Sistema de Permisos
 
 **FUNCIONALIDADES IMPLEMENTADAS:**
-- ✅ **Controlador API** - CRUD completo con validaciones y seguridad
-- ✅ **Vista web** - Interfaz moderna con tabla DataTables
-- ✅ **Dashboard integrado** - Cards y botones solo para superadmins
-- ✅ **Permisos de acceso** - Solo superadmins pueden gestionar admins
-- ✅ **Validaciones** - Email único, tipos válidos, campos obligatorios
 
-**ARCHIVOS CREADOS/MODIFICADOS:**
-- `controllers/admin/administradores.php` - Controlador API
-- `views/admin/administradores.php` - Vista web
-- `views/admin/dashboard.php` - Cards y botones añadidos
-- `assets/css/styles.css` - Estilos para badges de tipos
-- `index.php` - Routing para /admin/administradores y /admin/api/administradores
+### **🔐 Sistema de Permisos por Tipo de Usuario:**
+- **🔑 SUPERADMIN**: Ve todo, gestiona todo (instalaciones, coordinadores, socorristas, administradores)
+- **👨‍💼 ADMIN**: Ve coordinadores asignados + sus instalaciones/socorristas (solo lectura)
+- **👥 COORDINADOR**: Ve solo sus instalaciones/socorristas (puede gestionar socorristas)
+
+### **📊 Permisos Implementados:**
+- **✅ Instalaciones**: Filtrado por tipo de usuario, JOIN con tabla admins
+- **✅ Coordinadores**: Solo superadmins pueden gestionar, otros solo ven según asignación
+- **✅ Socorristas**: Coordinadores pueden gestionar sus socorristas, admins solo lectura
+- **✅ Administradores**: Solo superadmins pueden gestionar (ya implementado en Fase 2)
+
+**ARCHIVOS MODIFICADOS:**
+- `classes/AdminService.php` - Métodos getInstalaciones(), getCoordinadores(), getSocorristas() con permisos
+- `controllers/admin/instalaciones.php` - Usa nuevo sistema de permisos
+- `controllers/admin/coordinadores.php` - Verificaciones de permisos para CRUD
+- `controllers/admin/socorristas.php` - Verificaciones de permisos para CRUD
 - `classes/AdminAuthService.php` - **ARREGLADO** - Query y sesiones actualizadas para nueva estructura
 
 **PROBLEMA RESUELTO:**
@@ -79,8 +84,9 @@
 - ✅ **URLs JavaScript corregidas** - Usaba /controllers/ en lugar de /admin/api/
 - ✅ **Conexión BD añadida** - Faltaba $db = Database::getInstance()->getConnection()
 - ✅ **Archivos debug eliminados** - Limpieza completa del sistema
+- ✅ **Sistema de permisos completo** - Todos los controladores y servicios actualizados
 
-**PRÓXIMO PASO:** Implementar sistema de permisos (Fase 3)
+**PRÓXIMO PASO:** Testing completo y limpieza final (Fase 4)
 
 ---
 
