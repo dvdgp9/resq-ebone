@@ -76,25 +76,30 @@ class AdminService {
             }
             
             // Validar email único
-            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE email = ?");
+            $stmt = $db->prepare("SELECT id FROM admins WHERE email = ?");
             $stmt->execute([$datos['email']]);
             if ($stmt->fetch()) {
                 throw new Exception("El email ya está en uso");
             }
             
+            // Generar contraseña temporal
+            $passwordTemporal = bin2hex(random_bytes(4)); // 8 caracteres aleatorios
+            $passwordHash = password_hash($passwordTemporal, PASSWORD_DEFAULT);
+            
             $stmt = $db->prepare("
-                INSERT INTO coordinadores (nombre, email, telefono)
-                VALUES (?, ?, ?)
+                INSERT INTO admins (nombre, email, telefono, password, tipo, activo)
+                VALUES (?, ?, ?, ?, 'coordinador', 1)
             ");
             
             $stmt->execute([
                 $datos['nombre'],
                 $datos['email'],
-                $datos['telefono'] ?? null
+                $datos['telefono'] ?? null,
+                $passwordHash
             ]);
             
             $coordinadorId = $db->lastInsertId();
-            logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}", 'INFO');
+            logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}, password temporal: {$passwordTemporal}", 'INFO');
             
             return $coordinadorId;
             
@@ -112,7 +117,7 @@ class AdminService {
             $db = Database::getInstance()->getConnection();
             
             // Verificar que el coordinador existe
-            $stmt = $db->prepare("SELECT id FROM coordinadores WHERE id = ?");
+            $stmt = $db->prepare("SELECT id FROM admins WHERE id = ? AND tipo = 'coordinador'");
             $stmt->execute([$id]);
             if (!$stmt->fetch()) {
                 throw new Exception("Coordinador no encontrado");
@@ -120,7 +125,7 @@ class AdminService {
             
             // Validar email único (excluyendo el coordinador actual)
             if (!empty($datos['email'])) {
-                $stmt = $db->prepare("SELECT id FROM coordinadores WHERE email = ? AND id != ?");
+                $stmt = $db->prepare("SELECT id FROM admins WHERE email = ? AND id != ?");
                 $stmt->execute([$datos['email'], $id]);
                 if ($stmt->fetch()) {
                     throw new Exception("El email ya está en uso");
@@ -128,9 +133,9 @@ class AdminService {
             }
             
             $stmt = $db->prepare("
-                UPDATE coordinadores 
+                UPDATE admins 
                 SET nombre = ?, email = ?, telefono = ?
-                WHERE id = ?
+                WHERE id = ? AND tipo = 'coordinador'
             ");
             
             $stmt->execute([
@@ -157,7 +162,7 @@ class AdminService {
             $db = Database::getInstance()->getConnection();
             
             // Verificar que el coordinador existe
-            $stmt = $db->prepare("SELECT nombre FROM coordinadores WHERE id = ?");
+            $stmt = $db->prepare("SELECT nombre FROM admins WHERE id = ? AND tipo = 'coordinador'");
             $stmt->execute([$id]);
             $coordinador = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -175,7 +180,7 @@ class AdminService {
             }
             
             // Borrado físico
-            $stmt = $db->prepare("DELETE FROM coordinadores WHERE id = ?");
+            $stmt = $db->prepare("DELETE FROM admins WHERE id = ? AND tipo = 'coordinador'");
             $stmt->execute([$id]);
             
             logMessage("Coordinador eliminado: ID {$id}, {$coordinador['nombre']}", 'INFO');
@@ -640,7 +645,7 @@ class AdminService {
             $stats = [];
             
             // Total coordinadores
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM coordinadores");
+            $stmt = $db->prepare("SELECT COUNT(*) as count FROM admins WHERE tipo = 'coordinador'");
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             $stats['coordinadores'] = $result ? $result['count'] : 0;
