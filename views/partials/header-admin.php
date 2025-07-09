@@ -4,7 +4,7 @@
  * Componente reutilizable para todas las páginas de administradores
  * 
  * Parámetros esperados:
- * - $titulo: Título de la página administrativa
+ * - $pageTitle: Título de la página administrativa
  * - $admin: Array con datos del administrador actual
  */
 
@@ -28,7 +28,7 @@ function getTipoAdminBadge($tipo) {
             <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
         </div>
         <div class="header-title">
-            <h1><?= htmlspecialchars($titulo) ?></h1>
+            <h1><?= htmlspecialchars($pageTitle) ?></h1>
         </div>
         <div class="header-actions">
             <span class="admin-badge"><?= getTipoAdminBadge($admin['tipo']) ?></span>
