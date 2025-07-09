@@ -30,19 +30,23 @@ $stats = $adminService->getEstadisticas();
             <div class="logo">
                 <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
             </div>
-            <div class="user-info">
-                <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                <span class="admin-badge"><?= $admin['tipo'] === 'superadmin' ? 'Super Admin' : 'Coordinador' ?></span>
-                <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
+            <div class="header-title">
+                <h1>🎛️ Panel de Administración</h1>
+            </div>
+            <div class="header-actions">
+                <span class="admin-badge"><?= $admin['tipo'] === 'superadmin' ? 'Super Admin' : ($admin['tipo'] === 'admin' ? 'Admin' : 'Coordinador') ?></span>
+                <a href="/admin/logout" class="btn-logout">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </header>
     
     <div class="container admin-container">
-        <div class="admin-welcome">
-            <h1>🎛️ Panel de Administración</h1>
-            <p>Bienvenido, <?= htmlspecialchars($admin['nombre']) ?>. Gestiona coordinadores, instalaciones y socorristas desde aquí.</p>
-        </div>
         
         <!-- Cards de Estadísticas -->
         <div class="stats-grid">
