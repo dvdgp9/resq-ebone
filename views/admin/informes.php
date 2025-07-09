@@ -155,10 +155,9 @@ $socorristas = $adminService->getSocorristas();
             <div class="loading-spinner">
                 <div class="loading-spinner-content">
                     <div class="loading-spinner-icon"></div>
-                    <div class="loading-spinner-text">Preparando exportación...</div>
+                    <div class="loading-spinner-text" id="export-message">Preparando exportación...</div>
                 </div>
             </div>
-            <span id="export-message">Preparando exportación...</span>
         </div>
     </div>
     

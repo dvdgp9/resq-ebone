@@ -2020,9 +2020,6 @@ img[src*="logo"] {
     padding: 2rem;
     border-radius: var(--border-radius);
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
     z-index: 1000;
     min-width: 300px;
 }
@@ -2038,24 +2035,9 @@ img[src*="logo"] {
     z-index: -1;
 }
 
-.loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 3px solid var(--border-color);
-    border-top: 3px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
+/* Eliminada definición duplicada de loading-spinner - usando la versión mejorada de arriba */
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-#export-message {
-    font-weight: 600;
-    color: var(--text-color);
-}
+/* Estilos de #export-message ahora manejados por .loading-spinner-text */
 
 /* Responsive para informes */
 @media (max-width: 768px) {
