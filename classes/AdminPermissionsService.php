@@ -60,13 +60,8 @@ class AdminPermissionsService {
         }
         
         if ($this->isCoordinador()) {
-            // Coordinador solo puede verse a sí mismo
-            $stmt = $this->db->prepare("
-                SELECT * FROM admins 
-                WHERE id = ? AND tipo = 'coordinador'
-            ");
-            $stmt->execute([$this->admin['id']]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Coordinadores NO pueden ver coordinadores - solo instalaciones y socorristas
+            return [];
         }
         
         return [];

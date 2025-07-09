@@ -65,7 +65,10 @@ $admin = $adminAuth->getAdminActual();
             </div>
             
             <div id="loading" class="loading-spinner">
-                🔄 Cargando socorristas...
+                <div class="loading-spinner-content">
+                    <div class="loading-spinner-icon"></div>
+                    <div class="loading-spinner-text">Cargando socorristas...</div>
+                </div>
             </div>
             
             <div id="socorristas-table" class="admin-table" style="display: none;">

@@ -65,7 +65,10 @@ $admin = $adminAuth->getAdminActual();
             </div>
             
             <div id="loading" class="loading-spinner">
-                🔄 Cargando instalaciones...
+                <div class="loading-spinner-content">
+                    <div class="loading-spinner-icon"></div>
+                    <div class="loading-spinner-text">Cargando instalaciones...</div>
+                </div>
             </div>
             
             <div id="instalaciones-table" class="admin-table" style="display: none;">
@@ -177,7 +180,10 @@ $admin = $adminAuth->getAdminActual();
             
             <div class="modal-body">
                 <div id="socorristas-loading" class="loading-spinner" style="display: none;">
-                    🔄 Cargando socorristas...
+                    <div class="loading-spinner-content">
+                        <div class="loading-spinner-icon"></div>
+                        <div class="loading-spinner-text">Cargando socorristas...</div>
+                    </div>
                 </div>
                 
                 <div id="socorristas-content" style="display: none;">

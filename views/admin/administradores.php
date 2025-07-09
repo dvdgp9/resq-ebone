@@ -71,7 +71,10 @@ if ($admin['tipo'] !== 'superadmin') {
             </div>
             
             <div id="loading" class="loading-spinner">
-                🔄 Cargando administradores...
+                <div class="loading-spinner-content">
+                    <div class="loading-spinner-icon"></div>
+                    <div class="loading-spinner-text">Cargando administradores...</div>
+                </div>
             </div>
             
             <div id="administradores-table" class="admin-table" style="display: none;">

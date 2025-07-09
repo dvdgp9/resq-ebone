@@ -94,12 +94,14 @@ $stats = $adminService->getEstadisticas();
             </a>
             <?php endif; ?>
             
+            <?php if ($admin['tipo'] !== 'coordinador'): ?>
             <a href="/admin/coordinadores" class="admin-nav-card">
                 <div class="nav-card-icon">👥</div>
                 <h3>Gestionar Coordinadores</h3>
                 <p>Crear, editar y gestionar coordinadores del sistema</p>
                 <div class="nav-card-arrow">→</div>
             </a>
+            <?php endif; ?>
             
             <a href="/admin/instalaciones" class="admin-nav-card">
                 <div class="nav-card-icon">🏢</div>
@@ -139,9 +141,11 @@ $stats = $adminService->getEstadisticas();
                     🛡️ Nuevo Admin
                 </button>
                 <?php endif; ?>
+                <?php if ($admin['tipo'] !== 'coordinador'): ?>
                 <button class="btn btn-primary" onclick="window.location.href='/admin/coordinadores?action=create'">
                     ➕ Nuevo Coordinador
                 </button>
+                <?php endif; ?>
                 <button class="btn btn-primary" onclick="window.location.href='/admin/instalaciones?action=create'">
                     🏢 Nueva Instalación
                 </button>

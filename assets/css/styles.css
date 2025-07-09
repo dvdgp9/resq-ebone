@@ -1474,12 +1474,48 @@ img[src*="logo"] {
     color: white;
 }
 
-/* Loading Spinner */
+/* === LOADING SPINNER MEJORADO === */
 .loading-spinner {
     text-align: center;
-    padding: 3rem;
+    padding: 3rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.loading-spinner-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.loading-spinner-icon {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #D33E22;
+    border-radius: 50%;
+    animation: spin-loader 1s linear infinite;
+}
+
+.loading-spinner-text {
     color: #666;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    animation: pulse-loader 1.5s ease-in-out infinite;
+}
+
+@keyframes spin-loader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse-loader {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
 }
 
 /* No Data State */

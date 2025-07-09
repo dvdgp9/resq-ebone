@@ -152,7 +152,12 @@ $socorristas = $adminService->getSocorristas();
         
         <!-- Estado de exportación -->
         <div id="export-status" class="export-status" style="display: none;">
-            <div class="loading-spinner"></div>
+            <div class="loading-spinner">
+                <div class="loading-spinner-content">
+                    <div class="loading-spinner-icon"></div>
+                    <div class="loading-spinner-text">Preparando exportación...</div>
+                </div>
+            </div>
             <span id="export-message">Preparando exportación...</span>
         </div>
     </div>

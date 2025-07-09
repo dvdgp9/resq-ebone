@@ -11,6 +11,12 @@ if (!$adminAuth->estaAutenticadoAdmin()) {
 }
 
 $admin = $adminAuth->getAdminActual();
+
+// Los coordinadores no tienen acceso a gestión de coordinadores
+if ($admin['tipo'] === 'coordinador') {
+    header('Location: /admin/dashboard');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -65,7 +71,10 @@ $admin = $adminAuth->getAdminActual();
             </div>
             
             <div id="loading" class="loading-spinner">
-                🔄 Cargando coordinadores...
+                <div class="loading-spinner-content">
+                    <div class="loading-spinner-icon"></div>
+                    <div class="loading-spinner-text">Cargando coordinadores...</div>
+                </div>
             </div>
             
             <div id="coordinadores-table" class="admin-table" style="display: none;">
@@ -152,7 +161,10 @@ $admin = $adminAuth->getAdminActual();
             
             <div class="modal-body">
                 <div id="instalaciones-loading" class="loading-spinner" style="display: none;">
-                    🔄 Cargando instalaciones...
+                    <div class="loading-spinner-content">
+                        <div class="loading-spinner-icon"></div>
+                        <div class="loading-spinner-text">Cargando instalaciones...</div>
+                    </div>
                 </div>
                 
                 <div id="instalaciones-content" style="display: none;">

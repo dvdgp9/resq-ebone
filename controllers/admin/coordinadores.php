@@ -24,7 +24,11 @@ $method = $_SERVER['REQUEST_METHOD'];
 try {
     switch ($method) {
         case 'GET':
-            // Listar coordinadores según permisos
+            // Listar coordinadores - Solo superadmins y admins
+            if ($admin['tipo'] === 'coordinador') {
+                throw new Exception('Los coordinadores no tienen acceso a gestión de coordinadores');
+            }
+            
             $coordinadores = $adminService->getCoordinadores($admin);
             echo json_encode([
                 'success' => true,

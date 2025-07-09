@@ -90,6 +90,25 @@
 
 ---
 
+## 🎨 **UI/UX IMPROVEMENTS COMPLETADAS**
+
+### **Issue 1: Tabla no se recarga después de crear admin** ✅ **CONFIRMADO QUE FUNCIONA**
+**Investigación:** La tabla SÍ se recarga automáticamente via `loadAdministradores()` después de crear
+**Archivo:** `views/admin/administradores.php` línea 377
+
+### **Issue 2: Loaders feos en todas las tablas** ✅ **RESUELTO**
+**Mejora:** Loader moderno con spinner animado y diseño elegante
+**Cambios realizados:**
+- `assets/css/styles.css` - Nuevos estilos para `.loading-spinner` con animación
+- `views/admin/administradores.php` - Loader actualizado
+- `views/admin/coordinadores.php` - Loader principal + modal instalaciones
+- `views/admin/socorristas.php` - Loader actualizado  
+- `views/admin/instalaciones.php` - Loader principal + modal socorristas
+- `views/admin/informes.php` - Loader exportación actualizado
+**Resultado:** Spinners con animación suave y diseño profesional
+
+---
+
 ### 🚨 **ISSUES IDENTIFICADOS Y RESUELTOS:**
 
 ### **Issue 1: Botiquín - Coordinador no ve instalaciones** ✅ **RESUELTO**
