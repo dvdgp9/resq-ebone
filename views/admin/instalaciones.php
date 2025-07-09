@@ -21,18 +21,10 @@ $admin = $adminAuth->getAdminActual();
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
-    <header class="header admin-header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
-            </div>
-            <div class="user-info">
-                <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                <span class="admin-badge"><?= $admin['tipo'] === 'superadmin' ? 'Super Admin' : 'Coordinador' ?></span>
-                <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
-            </div>
-        </div>
-    </header>
+    <?php 
+    $pageTitle = "Instalaciones";
+    include __DIR__ . '/../partials/header-admin.php'; 
+    ?>
     
     <div class="container admin-container">
         <!-- Breadcrumb y Título -->
@@ -45,7 +37,7 @@ $admin = $adminAuth->getAdminActual();
         <div class="admin-page-header">
             <h1>🏢 Gestionar Instalaciones</h1>
             <p>Administra las instalaciones del sistema y sus socorristas asignados</p>
-            <button class="btn btn-primary" onclick="openCreateModal()">
+            <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                 ➕ Nueva Instalación
             </button>
         </div>
@@ -58,7 +50,7 @@ $admin = $adminAuth->getAdminActual();
             <div class="admin-table-header">
                 <h2>📋 Lista de Instalaciones</h2>
                 <div class="table-actions">
-                    <button class="btn btn-secondary btn-small" onclick="loadInstalaciones()">
+                    <button class="btn-tag btn-tag-secondary" onclick="loadInstalaciones()">
                         🔄 Actualizar
                     </button>
                 </div>
@@ -94,7 +86,7 @@ $admin = $adminAuth->getAdminActual();
                 <div class="no-data-icon">📭</div>
                 <h3>No hay instalaciones registradas</h3>
                 <p>Comienza creando la primera instalación del sistema</p>
-                <button class="btn btn-primary" onclick="openCreateModal()">
+                <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                     ➕ Crear Primera Instalación
                 </button>
             </div>
@@ -150,7 +142,7 @@ $admin = $adminAuth->getAdminActual();
                         <div class="espacios-actions">
                             <input type="text" id="nuevo-espacio" placeholder="Nombre del espacio (ej: Vaso grande)" 
                                    class="form-input" maxlength="50">
-                            <button type="button" class="btn btn-secondary btn-small" onclick="addEspacio()">
+                            <button type="button" class="btn-tag btn-tag-secondary" onclick="addEspacio()">
                                 ➕ Añadir Espacio
                             </button>
                         </div>
@@ -159,10 +151,10 @@ $admin = $adminAuth->getAdminActual();
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                    <button type="button" class="btn-tag btn-tag-secondary" onclick="closeModal()">
                         ❌ Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn-tag btn-tag-primary">
                         <span id="save-text">💾 Guardar</span>
                     </button>
                 </div>
@@ -216,7 +208,7 @@ $admin = $adminAuth->getAdminActual();
             </div>
             
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeSocorristasModal()">
+                <button type="button" class="btn-tag btn-tag-secondary" onclick="closeSocorristasModal()">
                     ❌ Cerrar
                 </button>
             </div>
@@ -236,10 +228,10 @@ $admin = $adminAuth->getAdminActual();
             </div>
             
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">
+                <button type="button" class="btn-tag btn-tag-secondary" onclick="closeConfirmModal()">
                     ❌ Cancelar
                 </button>
-                <button type="button" class="btn btn-primary" id="confirm-action">
+                <button type="button" class="btn-tag btn-tag-primary" id="confirm-action">
                     ✅ Confirmar
                 </button>
             </div>
@@ -350,17 +342,17 @@ $admin = $adminAuth->getAdminActual();
                     </td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-small btn-secondary" onclick="editInstalacion(${inst.id})" title="Editar">
+                            <button class="btn-tag btn-tag-secondary" onclick="editInstalacion(${inst.id})" title="Editar">
                                 ✏️
                             </button>
                             ${inst.total_socorristas > 0 ? `
-                                <button class="btn btn-small btn-danger btn-disabled" disabled 
+                                <button class="btn-tag btn-tag-danger btn-disabled" disabled 
                                         onmouseenter="showTooltip(event, 'No se puede eliminar una instalación con socorristas asignados')"
                                         onmouseleave="hideTooltip()">
                                     🗑️
                                 </button>
                             ` : `
-                                <button class="btn btn-small btn-danger" onclick="confirmDelete(${inst.id}, '${escapeHtml(inst.nombre)}')" title="Eliminar">
+                                <button class="btn-tag btn-tag-danger" onclick="confirmDelete(${inst.id}, '${escapeHtml(inst.nombre)}')" title="Eliminar">
                                     🗑️
                                 </button>
                             `}

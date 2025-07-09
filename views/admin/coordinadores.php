@@ -27,18 +27,10 @@ if ($admin['tipo'] === 'coordinador') {
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
-    <header class="header admin-header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
-            </div>
-            <div class="user-info">
-                <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                <span class="admin-badge"><?= $admin['tipo'] === 'superadmin' ? 'Super Admin' : 'Coordinador' ?></span>
-                <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
-            </div>
-        </div>
-    </header>
+    <?php 
+    $pageTitle = "Coordinadores";
+    include __DIR__ . '/../partials/header-admin.php'; 
+    ?>
     
     <div class="container admin-container">
         <!-- Breadcrumb y Título -->
@@ -51,7 +43,7 @@ if ($admin['tipo'] === 'coordinador') {
         <div class="admin-page-header">
             <h1>👥 Gestionar Coordinadores</h1>
             <p>Administra los coordinadores del sistema y sus instalaciones asignadas</p>
-            <button class="btn btn-primary" onclick="openCreateModal()">
+            <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                 ➕ Nuevo Coordinador
             </button>
         </div>
@@ -64,7 +56,7 @@ if ($admin['tipo'] === 'coordinador') {
             <div class="admin-table-header">
                 <h2>📋 Lista de Coordinadores</h2>
                 <div class="table-actions">
-                    <button class="btn btn-secondary btn-small" onclick="loadCoordinadores()">
+                    <button class="btn-tag btn-tag-secondary" onclick="loadCoordinadores()">
                         🔄 Actualizar
                     </button>
                 </div>
@@ -100,7 +92,7 @@ if ($admin['tipo'] === 'coordinador') {
                 <div class="no-data-icon">📭</div>
                 <h3>No hay coordinadores registrados</h3>
                 <p>Comienza creando el primer coordinador del sistema</p>
-                <button class="btn btn-primary" onclick="openCreateModal()">
+                <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                     ➕ Crear Primer Coordinador
                 </button>
             </div>
@@ -140,10 +132,10 @@ if ($admin['tipo'] === 'coordinador') {
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                    <button type="button" class="btn-tag btn-tag-secondary" onclick="closeModal()">
                         ❌ Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn-tag btn-tag-primary">
                         <span id="save-text">💾 Guardar</span>
                     </button>
                 </div>
@@ -197,7 +189,7 @@ if ($admin['tipo'] === 'coordinador') {
             </div>
             
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeInstallationsModal()">
+                <button type="button" class="btn-tag btn-tag-secondary" onclick="closeInstallationsModal()">
                     ❌ Cerrar
                 </button>
             </div>
@@ -217,10 +209,10 @@ if ($admin['tipo'] === 'coordinador') {
             </div>
             
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">
+                <button type="button" class="btn-tag btn-tag-secondary" onclick="closeConfirmModal()">
                     ❌ Cancelar
                 </button>
-                <button type="button" class="btn btn-primary" id="confirm-action">
+                <button type="button" class="btn-tag btn-tag-primary" id="confirm-action">
                     ✅ Confirmar
                 </button>
             </div>
@@ -297,17 +289,17 @@ if ($admin['tipo'] === 'coordinador') {
                     <td>${formatDate(coord.fecha_creacion)}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-small btn-secondary" onclick="editCoordinador(${coord.id})" title="Editar">
+                            <button class="btn-tag btn-tag-secondary" onclick="editCoordinador(${coord.id})" title="Editar">
                                 ✏️
                             </button>
                             ${coord.total_instalaciones > 0 ? `
-                                <button class="btn btn-small btn-danger btn-disabled" disabled 
+                                <button class="btn-tag btn-tag-danger btn-disabled" disabled 
                                         onmouseenter="showTooltip(event, 'No se puede eliminar un coordinador con instalaciones asignadas')"
                                         onmouseleave="hideTooltip()">
                                     🗑️
                                 </button>
                             ` : `
-                                <button class="btn btn-small btn-danger" onclick="confirmDelete(${coord.id}, '${escapeHtml(coord.nombre)}')" title="Eliminar">
+                                <button class="btn-tag btn-tag-danger" onclick="confirmDelete(${coord.id}, '${escapeHtml(coord.nombre)}')" title="Eliminar">
                                     🗑️
                                 </button>
                             `}

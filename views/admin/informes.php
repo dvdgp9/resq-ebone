@@ -26,18 +26,10 @@ $socorristas = $adminService->getSocorristas();
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
-    <header class="header admin-header">
-        <div class="header-content">
-            <div class="logo">
-                <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
-            </div>
-            <div class="user-info">
-                <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                <span class="admin-badge"><?= $admin['tipo'] === 'superadmin' ? 'Super Admin' : 'Coordinador' ?></span>
-                <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
-            </div>
-        </div>
-    </header>
+    <?php 
+    $pageTitle = "Informes";
+    include __DIR__ . '/../partials/header-admin.php'; 
+    ?>
     
     <div class="container admin-container">
         <!-- Breadcrumb -->
@@ -97,7 +89,7 @@ $socorristas = $adminService->getSocorristas();
             
             <!-- Botón para limpiar filtros -->
             <div class="filter-actions">
-                <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()">
+                <button type="button" class="btn-tag btn-tag-secondary" onclick="limpiarFiltros()">
                     🧹 Limpiar Filtros
                 </button>
             </div>
@@ -121,7 +113,7 @@ $socorristas = $adminService->getSocorristas();
                         </div>
                     </div>
                     <div class="export-card-actions">
-                        <button class="btn btn-primary" onclick="exportarDatosV3('control_flujo')">
+                        <button class="btn-tag btn-tag-primary" onclick="exportarDatosV3('control_flujo')">
                             📊 Exportar Control de Flujo
                         </button>
                     </div>
@@ -140,7 +132,7 @@ $socorristas = $adminService->getSocorristas();
                         </div>
                     </div>
                     <div class="export-card-actions">
-                        <button class="btn btn-primary" onclick="exportarDatosV3('incidencias')">
+                        <button class="btn-tag btn-tag-primary" onclick="exportarDatosV3('incidencias')">
                             ⚠️ Exportar Incidencias
                         </button>
                     </div>

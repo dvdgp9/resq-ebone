@@ -23,20 +23,10 @@ $permissions = $adminAuth->getPermissionsService();
 <body>
     <div class="container">
         <main class="admin-botiquin-container">
-            <!-- Header Admin -->
-            <header class="admin-header">
-                <div class="admin-header-content">
-                    <div class="admin-nav">
-                        <a href="/admin/dashboard" class="btn btn-secondary btn-small">← Dashboard</a>
-                        <h1>🏥 Gestión de Botiquín</h1>
-                    </div>
-                    <div class="admin-user-info">
-                        <span>👤 <?= htmlspecialchars($admin['nombre']) ?></span>
-                        <span class="admin-badge"><?= $adminAuth->getDescripcionRol() ?></span>
-                        <a href="/admin/logout" class="btn btn-secondary btn-small">Cerrar Sesión</a>
-                    </div>
-                </div>
-            </header>
+            <?php 
+            $pageTitle = "Gestión de Botiquín";
+            include __DIR__ . '/../partials/header-admin.php'; 
+            ?>
 
             <!-- Mensajes -->
             <div id="message-container"></div>
@@ -157,10 +147,10 @@ $permissions = $adminAuth->getPermissionsService();
                 </div>
                 
                 <div class="form-actions">
-                    <button type="button" class="admin-btn-enhanced btn-secondary" onclick="cerrarModal('modal-elemento')">
+                    <button type="button" class="btn-tag btn-tag-secondary" onclick="cerrarModal('modal-elemento')">
                         ✖️ Cancelar
                     </button>
-                    <button type="submit" class="admin-btn-enhanced btn-primary">
+                    <button type="submit" class="btn-tag btn-tag-primary">
                         💾 Guardar
                     </button>
                 </div>
@@ -357,7 +347,7 @@ $permissions = $adminAuth->getPermissionsService();
                         const headerHTML = `
                             <div class="instalacion-header">
                                 <h3>🏢 ${instalacion.nombre}</h3>
-                                <button class="admin-btn-enhanced btn-primary btn-small" onclick="openCreateElementModal(${instalacion.id}, '${instalacion.nombre}')">
+                                <button class="btn-tag btn-tag-primary" onclick="openCreateElementModal(${instalacion.id}, '${instalacion.nombre}')">
                                     ➕ Añadir Elemento
                                 </button>
                             </div>
@@ -393,11 +383,11 @@ $permissions = $adminAuth->getPermissionsService();
                                                 ${elemento.ultima_actualizacion_por ? '<br><small>por ' + elemento.ultima_actualizacion_por + '</small>' : ''}
                                             </td>
                                             <td>
-                                                <button class="admin-btn-enhanced btn-secondary btn-small" 
+                                                <button class="btn-tag btn-tag-secondary" 
                                                         onclick="editarElemento(${elemento.id})">
                                                     ✏️ Editar
                                                 </button>
-                                                <button class="admin-btn-enhanced btn-danger btn-small" 
+                                                <button class="btn-tag btn-tag-danger" 
                                                         onclick="eliminarElemento(${elemento.id})">
                                                     🗑️ Eliminar
                                                 </button>
