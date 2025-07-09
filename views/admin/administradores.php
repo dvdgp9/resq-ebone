@@ -23,7 +23,7 @@ if ($admin['tipo'] !== 'superadmin') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionar Administradores - Admin ResQ</title>
+    <title>Gestionar Administradores/as - Admin ResQ</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-page">
@@ -33,7 +33,7 @@ if ($admin['tipo'] !== 'superadmin') {
                 <img src="/assets/images/logo.png" alt="ResQ Logo" class="header-logo">
             </div>
             <div class="header-title">
-                <h1>👤 Gestionar Administradores</h1>
+                <h1>👤 Gestionar Administradores/as</h1>
             </div>
             <div class="header-actions">
                 <span class="admin-badge">Super Admin</span>
@@ -53,13 +53,13 @@ if ($admin['tipo'] !== 'superadmin') {
         <div class="admin-breadcrumb">
             <a href="/admin/dashboard">🏠 Dashboard</a>
             <span>></span>
-            <span>👤 Administradores</span>
+            <span>👤 Administradores/as</span>
         </div>
         
         <div class="admin-page-header">
-            <p>Administra todos los usuarios del sistema: superadmins, admins y coordinadores</p>
+            <p>Administra todos los usuarios del sistema: superadmins, admins y coordinadores/as</p>
             <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
-                ➕ Nuevo Administrador
+                ➕ Nuevo/a Administrador/a
             </button>
         </div>
         
@@ -69,7 +69,7 @@ if ($admin['tipo'] !== 'superadmin') {
         <!-- Tabla de Administradores -->
         <div class="admin-table-container">
             <div class="admin-table-header">
-                <h2>📋 Lista de Administradores</h2>
+                <h2>📋 Lista de Administradores/as</h2>
                 <div class="table-actions">
                     <button class="btn-tag btn-tag-secondary" onclick="loadAdministradores()">
                         🔄 Actualizar
@@ -106,10 +106,10 @@ if ($admin['tipo'] !== 'superadmin') {
             
             <div id="no-data" class="no-data" style="display: none;">
                 <div class="no-data-icon">👤</div>
-                <h3>No hay administradores registrados</h3>
-                <p>Comienza creando el primer administrador del sistema</p>
+                <h3>No hay administradores/as registrados/as</h3>
+                <p>Comienza creando el primer/a administrador/a del sistema</p>
                 <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
-                    ➕ Crear Primer Administrador
+                    ➕ Crear Primer/a Administrador/a
                 </button>
             </div>
         </div>
@@ -119,7 +119,7 @@ if ($admin['tipo'] !== 'superadmin') {
     <div id="administrador-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modal-title">➕ Nuevo Administrador</h2>
+                <h2 id="modal-title">➕ Nuevo/a Administrador/a</h2>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             
@@ -175,10 +175,10 @@ if ($admin['tipo'] !== 'superadmin') {
                 </div>
                 
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                    <button type="button" class="btn-tag btn-tag-secondary" onclick="closeModal()">
                         ❌ Cancelar
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn-tag btn-tag-primary">
                         <span id="save-text">💾 Guardar</span>
                     </button>
                 </div>
@@ -198,14 +198,14 @@ if ($admin['tipo'] !== 'superadmin') {
                 <p id="confirm-message">¿Estás seguro de que deseas realizar esta acción?</p>
             </div>
             
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeConfirmModal()">
-                    ❌ Cancelar
-                </button>
-                <button type="button" class="btn btn-danger" id="confirm-button" onclick="confirmAction()">
-                    ✅ Confirmar
-                </button>
-            </div>
+                            <div class="modal-actions">
+                    <button type="button" class="btn-tag btn-tag-secondary" onclick="closeConfirmModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="button" class="btn-tag btn-tag-danger" id="confirm-button" onclick="confirmAction()">
+                        ✅ Confirmar
+                    </button>
+                </div>
         </div>
     </div>
 
@@ -233,11 +233,11 @@ if ($admin['tipo'] !== 'superadmin') {
                     administradores = data.administradores;
                     displayAdministradores();
                 } else {
-                    showMessage('error', data.error || 'Error al cargar administradores');
+                    showMessage('error', data.error || 'Error al cargar administradores/as');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showMessage('error', 'Error de conexión al cargar administradores');
+                showMessage('error', 'Error de conexión al cargar administradores/as');
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }
@@ -307,7 +307,7 @@ if ($admin['tipo'] !== 'superadmin') {
         // Abrir modal para crear administrador
         function openCreateModal() {
             editingAdministrador = null;
-            document.getElementById('modal-title').textContent = '➕ Nuevo Administrador';
+            document.getElementById('modal-title').textContent = '➕ Nuevo/a Administrador/a';
             document.getElementById('administrador-form').reset();
             document.getElementById('administrador-id').value = '';
             document.getElementById('save-text').textContent = '💾 Guardar';
@@ -323,7 +323,7 @@ if ($admin['tipo'] !== 'superadmin') {
             if (!admin) return;
 
             editingAdministrador = admin;
-            document.getElementById('modal-title').textContent = '✏️ Editar Administrador';
+            document.getElementById('modal-title').textContent = '✏️ Editar Administrador/a';
             document.getElementById('administrador-id').value = admin.id;
             document.getElementById('nombre').value = admin.nombre;
             document.getElementById('email').value = admin.email;
@@ -350,7 +350,7 @@ if ($admin['tipo'] !== 'superadmin') {
             };
 
             document.getElementById('confirm-message').textContent = 
-                `¿Estás seguro de que deseas desactivar al administrador "${admin.nombre}"?`;
+                `¿Estás seguro de que deseas desactivar al/a la administrador/a "${admin.nombre}"?`;
             document.getElementById('confirm-modal').style.display = 'block';
         }
 
@@ -363,7 +363,7 @@ if ($admin['tipo'] !== 'superadmin') {
             
             // Validaciones
             if (!data.password && !editingAdministrador) {
-                showModalMessage('error', 'La contraseña es obligatoria para nuevos administradores');
+                showModalMessage('error', 'La contraseña es obligatoria para nuevos/as administradores/as');
                 return;
             }
             
@@ -392,11 +392,11 @@ if ($admin['tipo'] !== 'superadmin') {
                     closeModal();
                     loadAdministradores();
                 } else {
-                    showModalMessage('error', result.error || 'Error al guardar administrador');
+                    showModalMessage('error', result.error || 'Error al guardar administrador/a');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showModalMessage('error', 'Error de conexión al guardar administrador');
+                showModalMessage('error', 'Error de conexión al guardar administrador/a');
             }
         });
 

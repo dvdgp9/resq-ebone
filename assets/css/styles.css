@@ -1755,6 +1755,12 @@ img[src*="logo"] {
     background: #fafafa;
 }
 
+/* Botones tag en modales */
+.modal-actions .btn-tag {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+}
+
 /* Admin Responsive */
 @media (max-width: 768px) {
     .admin-container {
