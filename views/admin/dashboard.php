@@ -135,35 +135,7 @@ $stats = $adminService->getEstadisticas();
                 <div class="nav-card-arrow">→</div>
             </a>
         </div>
-        
-        <!-- Accesos Rápidos -->
-        <div class="quick-actions">
-            <h2>⚡ Acciones Rápidas</h2>
-            <div class="quick-actions-grid">
-                <?php if ($admin['tipo'] === 'superadmin'): ?>
-                <button class="btn btn-primary" onclick="window.location.href='/admin/administradores?action=create'">
-                    🛡️ Nuevo Admin
-                </button>
-                <?php endif; ?>
-                <?php if ($admin['tipo'] !== 'coordinador'): ?>
-                <button class="btn btn-primary" onclick="window.location.href='/admin/coordinadores?action=create'">
-                    ➕ Nuevo Coordinador
-                </button>
-                <?php endif; ?>
-                <button class="btn btn-primary" onclick="window.location.href='/admin/instalaciones?action=create'">
-                    🏢 Nueva Instalación
-                </button>
-                <button class="btn btn-primary" onclick="window.location.href='/admin/socorristas?action=create'">
-                    🚑 Nuevo Socorrista
-                </button>
-                <button class="btn btn-primary" onclick="window.location.href='/admin/botiquin'">
-                    🏥 Gestión Botiquín
-                </button>
-                <button class="btn btn-secondary" onclick="window.location.href='/'">
-                    🚨 Ir a Panel Socorristas
-                </button>
-            </div>
-        </div>
+
     </div>
     
 

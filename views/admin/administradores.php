@@ -58,7 +58,7 @@ if ($admin['tipo'] !== 'superadmin') {
         
         <div class="admin-page-header">
             <p>Administra todos los usuarios del sistema: superadmins, admins y coordinadores</p>
-            <button class="btn btn-primary" onclick="openCreateModal()">
+            <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                 ➕ Nuevo Administrador
             </button>
         </div>
@@ -71,7 +71,7 @@ if ($admin['tipo'] !== 'superadmin') {
             <div class="admin-table-header">
                 <h2>📋 Lista de Administradores</h2>
                 <div class="table-actions">
-                    <button class="btn btn-secondary btn-small" onclick="loadAdministradores()">
+                    <button class="btn-tag btn-tag-secondary" onclick="loadAdministradores()">
                         🔄 Actualizar
                     </button>
                 </div>
@@ -108,7 +108,7 @@ if ($admin['tipo'] !== 'superadmin') {
                 <div class="no-data-icon">👤</div>
                 <h3>No hay administradores registrados</h3>
                 <p>Comienza creando el primer administrador del sistema</p>
-                <button class="btn btn-primary" onclick="openCreateModal()">
+                <button class="btn-tag btn-tag-primary" onclick="openCreateModal()">
                     ➕ Crear Primer Administrador
                 </button>
             </div>
@@ -286,12 +286,12 @@ if ($admin['tipo'] !== 'superadmin') {
                     <td>${estadoBadge}</td>
                     <td>${fecha}</td>
                     <td class="actions">
-                        <button class="btn btn-small btn-primary" onclick="editAdministrador(${admin.id})" title="Editar">
-                            ✏️
+                        <button class="btn-tag btn-tag-secondary" onclick="editAdministrador(${admin.id})" title="Editar">
+                            ✏️ Editar
                         </button>
                         ${admin.id != <?= $admin['id'] ?> ? `
-                        <button class="btn btn-small btn-danger" onclick="deleteAdministrador(${admin.id})" title="Desactivar">
-                            🗑️
+                        <button class="btn-tag btn-tag-danger" onclick="deleteAdministrador(${admin.id})" title="Desactivar">
+                            🗑️ Eliminar
                         </button>
                         ` : '<span class="text-muted">-</span>'}
                     </td>
