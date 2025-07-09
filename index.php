@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// Headers anti-cache para evitar problemas de caché en desarrollo
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 // Configuración básica
 define('APP_NAME', 'ResQ');
 define('APP_VERSION', '1.0.0');

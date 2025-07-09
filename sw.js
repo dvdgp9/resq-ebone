@@ -1,9 +1,9 @@
-const CACHE_NAME = 'resq-v3.0'; // Implementación sistema de permisos
+const CACHE_NAME = 'resq-v3.1-network-first'; // Cambio a network-first
 const urlsToCache = [
-  '/assets/css/styles.css',
   '/assets/images/logo.png',
   '/assets/images/logo-negativo-soco.png',
   '/manifest.json'
+  // Eliminamos CSS para forzar siempre la versión más reciente
 ];
 
 // Instalación del Service Worker
@@ -20,91 +20,54 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Interceptar peticiones de red - Estrategia mejorada
+// Interceptar peticiones de red - NETWORK FIRST para todo
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
   // Para APIs: NUNCA interceptar, siempre ir directo a la red
   if (url.pathname.startsWith('/api/')) {
-    // No interceptar APIs, dejar que vayan directo al servidor
     return;
   }
   
-  // Para formularios: intentar red primero
-  if (url.pathname.startsWith('/formulario/')) {
-    event.respondWith(
-      fetch(event.request).then((response) => {
-        // Si la respuesta es exitosa, devolverla directamente
-        if (response && response.status === 200) {
-          return response;
-        }
-        // Para redirects (301, 302), también devolverlos
-        if (response && (response.status === 301 || response.status === 302)) {
-          return response;
-        }
-        throw new Error('Network response was not ok');
-      }).catch((error) => {
-        console.log('Fetch failed for:', event.request.url, error);
-        // Para formularios, mostrar error básico
-        return new Response(
-          '<html><body><h1>Sin conexión</h1><p>Inténtalo de nuevo cuando tengas conexión.</p></body></html>',
-          { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
-        );
-      })
-    );
-    return;
-  }
-  
-  // Para CSS y JS: Network First con fallback a cache
-  if (url.pathname.includes('.css') || url.pathname.includes('.js')) {
-    event.respondWith(
-      fetch(event.request).then((response) => {
-        if (response && response.status === 200) {
-          // Actualizar cache con nueva versión
+  // NETWORK FIRST para TODO - Siempre intentar red primero
+  event.respondWith(
+    fetch(event.request).then((response) => {
+      // Si la respuesta es exitosa, devolverla directamente
+      if (response && response.status === 200) {
+        // Solo cachear imágenes y manifest, no PHP/CSS/JS
+        if (url.pathname.includes('.png') || url.pathname.includes('.jpg') || 
+            url.pathname.includes('.jpeg') || url.pathname.includes('.svg') ||
+            url.pathname.includes('manifest.json')) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
-          return response;
         }
-        throw new Error('Network response was not ok');
-      }).catch(() => {
-        // Si falla la red, usar cache como fallback
+        return response;
+      }
+      
+      // Para redirects (301, 302), también devolverlos directamente
+      if (response && (response.status === 301 || response.status === 302)) {
+        return response;
+      }
+      
+      throw new Error('Network response was not ok');
+    }).catch((error) => {
+      console.log('Fetch failed for:', event.request.url, error);
+      
+      // Solo usar cache como fallback para recursos estáticos
+      if (url.pathname.includes('.png') || url.pathname.includes('.jpg') || 
+          url.pathname.includes('.jpeg') || url.pathname.includes('.svg') ||
+          url.pathname.includes('manifest.json')) {
         return caches.match(event.request);
-      })
-    );
-    return;
-  }
-  
-  // Para el resto: Cache First
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Devolver respuesta en caché si existe
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request).then((response) => {
-          // Verificar si recibimos una respuesta válida
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // IMPORTANTE: Clonar la respuesta ya que es un stream
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
-        }).catch((error) => {
-          console.log('Fetch failed for:', event.request.url, error);
-          throw error;
-        });
-      })
+      }
+      
+      // Para PHP, CSS, JS y otros: mostrar error de conexión
+      return new Response(
+        '<html><body><h1>Sin conexión</h1><p>Inténtalo de nuevo cuando tengas conexión.</p></body></html>',
+        { status: 503, headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+      );
+    })
   );
 });
 
