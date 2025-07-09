@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v3.1-network-first'; // Cambio a network-first
+const CACHE_NAME = 'resq-v3.2-login-fix'; // Arreglo para login
 const urlsToCache = [
   '/assets/images/logo.png',
   '/assets/images/logo-negativo-soco.png',
@@ -24,8 +24,14 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Para APIs: NUNCA interceptar, siempre ir directo a la red
-  if (url.pathname.startsWith('/api/')) {
+  // NUNCA interceptar estas rutas - dejar que vayan directo al servidor
+  if (url.pathname.startsWith('/api/') || 
+      url.pathname === '/login' || 
+      url.pathname === '/logout' || 
+      url.pathname === '/admin/login' || 
+      url.pathname === '/admin/logout' ||
+      url.pathname.startsWith('/admin/api/') ||
+      event.request.method === 'POST') {
     return;
   }
   
