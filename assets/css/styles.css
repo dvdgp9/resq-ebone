@@ -1659,6 +1659,8 @@ img[src*="logo"] {
     max-height: 90vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s ease-out;
+    position: relative;
+    margin: auto;
 }
 
 .modal-small {
@@ -3073,6 +3075,10 @@ img[src*="logo"] {
     padding: 20px;
 }
 
+.modal-overlay.show {
+    display: flex;
+}
+
 .modal-content {
     background: #FFFFFF;
     border-radius: 12px;
@@ -3081,6 +3087,7 @@ img[src*="logo"] {
     max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    position: relative;
 }
 
 .modal-header {

@@ -314,7 +314,7 @@ if ($admin['tipo'] !== 'superadmin') {
             document.getElementById('password-help').textContent = 'Mínimo 8 caracteres.';
             document.getElementById('password').required = true;
             document.getElementById('modal-message-container').innerHTML = '';
-            document.getElementById('administrador-modal').style.display = 'block';
+            document.getElementById('administrador-modal').classList.add('show');
         }
 
         // Editar administrador
@@ -335,7 +335,7 @@ if ($admin['tipo'] !== 'superadmin') {
             document.getElementById('password-help').textContent = 'Deja vacío para mantener la contraseña actual.';
             document.getElementById('save-text').textContent = '💾 Actualizar';
             document.getElementById('modal-message-container').innerHTML = '';
-            document.getElementById('administrador-modal').style.display = 'block';
+            document.getElementById('administrador-modal').classList.add('show');
         }
 
         // Eliminar (desactivar) administrador
@@ -351,7 +351,7 @@ if ($admin['tipo'] !== 'superadmin') {
 
             document.getElementById('confirm-message').textContent = 
                 `¿Estás seguro de que deseas desactivar al/a la administrador/a "${admin.nombre}"?`;
-            document.getElementById('confirm-modal').style.display = 'block';
+            document.getElementById('confirm-modal').classList.add('show');
         }
 
         // Manejar envío del formulario
@@ -433,13 +433,13 @@ if ($admin['tipo'] !== 'superadmin') {
 
         // Cerrar modal
         function closeModal() {
-            document.getElementById('administrador-modal').style.display = 'none';
+            document.getElementById('administrador-modal').classList.remove('show');
             editingAdministrador = null;
         }
 
         // Cerrar modal de confirmación
         function closeConfirmModal() {
-            document.getElementById('confirm-modal').style.display = 'none';
+            document.getElementById('confirm-modal').classList.remove('show');
             pendingAction = null;
         }
 
