@@ -1506,8 +1506,9 @@ img[src*="logo"] {
 }
 
 /* Estilos para modal de instalaciones */
-.instalaciones-summary {
+.instalaciones-summary, .socorristas-summary {
     display: flex;
+    justify-content: center;
     gap: 2rem;
     margin-bottom: 2rem;
     padding: 1rem;
@@ -1517,14 +1518,13 @@ img[src*="logo"] {
 
 .summary-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
 }
 
 .summary-label {
     font-size: 0.9rem;
     color: #666;
-    margin-bottom: 0.5rem;
 }
 
 .summary-value {
