@@ -48,6 +48,11 @@ try {
                 throw new Exception('Datos JSON inválidos');
             }
             
+            // Si es un admin (no superadmin), agregar su ID para crear la relación automáticamente
+            if ($admin['tipo'] === 'admin') {
+                $input['created_by_admin_id'] = $admin['id'];
+            }
+            
             $coordinadorId = $adminService->crearCoordinador($input);
             
             echo json_encode([

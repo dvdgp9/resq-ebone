@@ -103,6 +103,18 @@ class AdminService {
             ]);
             
             $coordinadorId = $db->lastInsertId();
+            
+            // Si el coordinador fue creado por un admin (no superadmin), 
+            // crear automáticamente la relación en admin_coordinadores
+            if (isset($datos['created_by_admin_id'])) {
+                $stmt = $db->prepare("
+                    INSERT INTO admin_coordinadores (admin_id, coordinador_id, activo)
+                    VALUES (?, ?, 1)
+                ");
+                $stmt->execute([$datos['created_by_admin_id'], $coordinadorId]);
+                logMessage("Relación admin-coordinador creada: Admin {$datos['created_by_admin_id']} -> Coordinador {$coordinadorId}", 'INFO');
+            }
+            
             logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}", 'INFO');
             
             return $coordinadorId;
@@ -158,18 +170,18 @@ class AdminService {
                     $id
                 ]);
             } else {
-                $stmt = $db->prepare("
-                    UPDATE admins 
-                    SET nombre = ?, email = ?, telefono = ?
-                    WHERE id = ? AND tipo = 'coordinador'
-                ");
-                
-                $stmt->execute([
-                    $datos['nombre'],
-                    $datos['email'],
-                    $datos['telefono'] ?? null,
-                    $id
-                ]);
+            $stmt = $db->prepare("
+                UPDATE admins 
+                SET nombre = ?, email = ?, telefono = ?
+                WHERE id = ? AND tipo = 'coordinador'
+            ");
+            
+            $stmt->execute([
+                $datos['nombre'],
+                $datos['email'],
+                $datos['telefono'] ?? null,
+                $id
+            ]);
             }
             
             logMessage("Coordinador actualizado: ID {$id}, {$datos['nombre']}", 'INFO');
