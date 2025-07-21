@@ -12,9 +12,9 @@ if (!$adminAuth->estaAutenticadoAdmin()) {
     exit;
 }
 
-// Obtener datos del admin actual y estadísticas
+// Obtener datos del admin actual y estadísticas filtradas
 $admin = $adminAuth->getAdminActual();
-$stats = $adminService->getEstadisticas();
+$stats = $adminService->getEstadisticas($admin);
 ?>
 <!DOCTYPE html>
 <html lang="es">

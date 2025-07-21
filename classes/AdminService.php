@@ -636,54 +636,47 @@ class AdminService {
     }
     
     /**
-     * Obtiene estadísticas generales del sistema
+     * Obtiene estadísticas filtradas según permisos del admin
      */
-    public function getEstadisticas() {
+    public function getEstadisticas($admin = null) {
         try {
-            $db = Database::getInstance()->getConnection();
+            // Si no se pasa admin, devolver estadísticas vacías por seguridad
+            if (!$admin) {
+                return [
+                    'coordinadores' => 0,
+                    'instalaciones' => 0,
+                    'socorristas' => 0
+                ];
+            }
+            
+            // Usar AdminPermissionsService para obtener datos filtrados
+            require_once __DIR__ . '/AdminPermissionsService.php';
+            $permissions = new AdminPermissionsService($admin);
             
             $stats = [];
             
-            // Total coordinadores
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM admins WHERE tipo = 'coordinador'");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stats['coordinadores'] = $result ? $result['count'] : 0;
+            // Coordinadores que puede ver
+            $coordinadores = $permissions->getCoordinadoresPermitidos();
+            $stats['coordinadores'] = count($coordinadores);
             
-            // Total instalaciones activas
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM instalaciones WHERE activo = 1");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stats['instalaciones'] = $result ? $result['count'] : 0;
+            // Instalaciones que puede ver
+            $instalaciones = $permissions->getInstalacionesPermitidas();
+            $stats['instalaciones'] = count($instalaciones);
             
-            // Total socorristas activos
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM socorristas WHERE activo = 1");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stats['socorristas'] = $result ? $result['count'] : 0;
+            // Socorristas que puede ver
+            $socorristas = $permissions->getSocorristasPermitidos();
+            $stats['socorristas'] = count($socorristas);
             
-            // Formularios enviados este mes
-            $stmt = $db->prepare("
-                SELECT COUNT(*) as count 
-                FROM formularios 
-                WHERE MONTH(fecha_creacion) = MONTH(CURRENT_DATE()) 
-                AND YEAR(fecha_creacion) = YEAR(CURRENT_DATE())
-            ");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $stats['formularios_mes'] = $result ? $result['count'] : 0;
-            
-            logMessage("Estadísticas obtenidas correctamente: " . json_encode($stats), 'INFO');
+            logMessage("Estadísticas filtradas obtenidas para admin {$admin['id']}: " . json_encode($stats), 'INFO');
             return $stats;
             
         } catch (Exception $e) {
-            logMessage("Error obteniendo estadísticas: " . $e->getMessage(), 'ERROR');
+            logMessage("Error obteniendo estadísticas filtradas: " . $e->getMessage(), 'ERROR');
             // Devolver estadísticas por defecto en caso de error
             return [
                 'coordinadores' => 0,
                 'instalaciones' => 0,
-                'socorristas' => 0,
-                'formularios_mes' => 0
+                'socorristas' => 0
             ];
         }
     }
