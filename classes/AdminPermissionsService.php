@@ -37,11 +37,16 @@ class AdminPermissionsService {
      */
     public function getCoordinadoresPermitidos() {
         if ($this->isSuperAdmin()) {
-            // Superadmin puede ver todos los coordinadores
+            // Superadmin puede ver todos los coordinadores (consistente con AdminService)
             $stmt = $this->db->prepare("
-                SELECT * FROM admins 
-                WHERE tipo = 'coordinador'
-                ORDER BY nombre
+                SELECT a.id, a.nombre, a.email, a.telefono,
+                       a.fecha_creacion, a.fecha_actualizacion,
+                       COUNT(i.id) as total_instalaciones
+                FROM admins a
+                LEFT JOIN instalaciones i ON a.id = i.coordinador_id AND i.activo = 1
+                WHERE a.tipo = 'coordinador'
+                GROUP BY a.id
+                ORDER BY a.nombre ASC
             ");
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -135,6 +140,25 @@ class AdminPermissionsService {
      * Obtener todos los socorristas que puede ver este admin
      */
     public function getSocorristasPermitidos() {
+        if ($this->isSuperAdmin()) {
+            // Superadmin puede ver todos los socorristas (consistente con AdminService)
+            $stmt = $this->db->prepare("
+                SELECT s.id, s.dni, s.nombre, s.email, s.telefono, s.activo,
+                       s.fecha_creacion, s.fecha_actualizacion,
+                       s.instalacion_id,
+                       i.nombre as instalacion_nombre,
+                       a.nombre as coordinador_nombre
+                FROM socorristas s
+                LEFT JOIN instalaciones i ON s.instalacion_id = i.id
+                LEFT JOIN admins a ON i.coordinador_id = a.id AND a.tipo = 'coordinador'
+                WHERE s.activo = 1
+                ORDER BY s.nombre ASC
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        
+        // Para admin/coordinador usar el filtrado por instalaciones permitidas
         $instalacionIds = $this->getInstalacionesPermitidasIds();
         if (empty($instalacionIds)) {
             return [];
