@@ -15,7 +15,7 @@ class AdminPermissionsService {
      * Verificar si el admin es superadmin
      */
     public function isSuperAdmin() {
-        return $this->admin['tipo'] === 'superadmin' && $this->admin['coordinador_id'] === null;
+        return $this->admin['tipo'] === 'superadmin';
     }
     
     /**
@@ -258,8 +258,7 @@ class AdminPermissionsService {
             'admin_info' => [
                 'id' => $this->admin['id'],
                 'nombre' => $this->admin['nombre'],
-                'tipo' => $this->admin['tipo'],
-                'coordinador_id' => $this->admin['coordinador_id']
+                'tipo' => $this->admin['tipo']
             ],
             'roles' => [
                 'is_superadmin' => $this->isSuperAdmin(),
