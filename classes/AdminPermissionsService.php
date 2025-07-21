@@ -80,12 +80,12 @@ class AdminPermissionsService {
      */
     public function getInstalacionesPermitidas() {
         if ($this->isSuperAdmin()) {
-            // Superadmin puede ver todas las instalaciones
+            // Superadmin puede ver todas las instalaciones (consistente con AdminService)
             $stmt = $this->db->prepare("
                 SELECT i.*, a.nombre as coordinador_nombre 
                 FROM instalaciones i
-                INNER JOIN admins a ON i.coordinador_id = a.id
-                WHERE i.activo = 1 AND a.tipo = 'coordinador'
+                LEFT JOIN admins a ON i.coordinador_id = a.id AND a.tipo = 'coordinador'
+                WHERE i.activo = 1
                 ORDER BY i.nombre
             ");
             $stmt->execute();
