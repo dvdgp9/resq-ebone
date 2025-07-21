@@ -37,9 +37,9 @@ try {
             break;
             
         case 'POST':
-            // Crear coordinador - Solo superadmins
-            if ($admin['tipo'] !== 'superadmin') {
-                throw new Exception('Solo superadmins pueden crear coordinadores');
+            // Crear coordinador - Superadmins y admins
+            if (!in_array($admin['tipo'], ['superadmin', 'admin'])) {
+                throw new Exception('Solo superadmins y admins pueden crear coordinadores');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
@@ -58,9 +58,9 @@ try {
             break;
             
         case 'PUT':
-            // Actualizar coordinador - Solo superadmins
-            if ($admin['tipo'] !== 'superadmin') {
-                throw new Exception('Solo superadmins pueden actualizar coordinadores');
+            // Actualizar coordinador - Superadmins y admins
+            if (!in_array($admin['tipo'], ['superadmin', 'admin'])) {
+                throw new Exception('Solo superadmins y admins pueden actualizar coordinadores');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
@@ -78,9 +78,9 @@ try {
             break;
             
         case 'DELETE':
-            // Eliminar coordinador - Solo superadmins
-            if ($admin['tipo'] !== 'superadmin') {
-                throw new Exception('Solo superadmins pueden eliminar coordinadores');
+            // Eliminar coordinador - Superadmins y admins
+            if (!in_array($admin['tipo'], ['superadmin', 'admin'])) {
+                throw new Exception('Solo superadmins y admins pueden eliminar coordinadores');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
