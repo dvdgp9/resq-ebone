@@ -439,7 +439,7 @@ class AdminService {
     }
     
     /**
-     * Elimina una instalación (borrado físico si no tiene socorristas activos)
+     * Elimina una instalación (borrado físico con CASCADE)
      */
     public function eliminarInstalacion($id) {
         try {
@@ -453,15 +453,7 @@ class AdminService {
                 throw new Exception("Instalación no encontrada");
             }
 
-            // Verificar que no tiene socorristas activos
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM socorristas WHERE instalacion_id = ? AND activo = 1");
-            $stmt->execute([$id]);
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result['count'] > 0) {
-                throw new Exception("No se puede eliminar una instalación con socorristas activos asignados");
-            }
-
-            // Borrado físico
+            // Borrado físico - CASCADE eliminará automáticamente socorristas relacionados
             $stmt = $db->prepare("DELETE FROM instalaciones WHERE id = ?");
             $stmt->execute([$id]);
 

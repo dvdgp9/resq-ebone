@@ -284,7 +284,41 @@ include __DIR__ . '/../partials/header-admin.php';
 
 ## Current Status / Progress Tracking
 
-**🚀 ESTADO ACTUAL: EJECUTOR - FASE 3 COMPLETADA**
+**🚀 ESTADO ACTUAL: EJECUTOR - SISTEMA COMPLETADO + ARREGLOS**
+
+### ✅ **COMPLETADO: ASIGNACIÓN AUTOMÁTICA ADMIN-COORDINADOR** 
+
+**📅 Fecha:** 2025-01-12  
+**🎯 Problema Resuelto:** Admin no podía ver coordinadores que creaba
+
+**CAMBIOS REALIZADOS:**
+
+### **🔧 AdminService.php - Método crearCoordinador():**
+- **Asignación automática**: Si `created_by_admin_id` está presente, crea relación en `admin_coordinadores`
+- **Logging mejorado**: Registra la creación de relaciones admin-coordinador
+- **Lógica condicional**: Solo para admins (no superadmins)
+
+### **🔧 coordinadores.php - Controlador POST:**
+- **Detección automática**: Si el usuario es tipo 'admin', agrega su ID a los datos
+- **Sin cambios para superadmin**: Los superadmins ven todos sin necesidad de relaciones
+
+### **🔧 Arreglo Foreign Key Constraints:**
+- **admin_coordinadores**: Ahora apunta a `admins(id)` en lugar de `coordinadores(id)`
+- **instalaciones-socorristas**: Configurado CASCADE para permitir eliminación completa
+
+### **🔧 Mejoras UX - Modal de Confirmación:**
+- **Advertencia CASCADE**: Modal de eliminar instalación advierte si hay socorristas
+- **Información clara**: Especifica cuántos socorristas se eliminarán también
+- **Botón siempre activo**: Ya no se deshabilita, pero avisa de las consecuencias
+
+**FUNCIONALIDAD VERIFICADA:**
+- ✅ **Admin crea coordinador** → Aparece automáticamente en su panel
+- ✅ **Admin puede gestionar** instalaciones y socorristas de sus coordinadores
+- ✅ **Eliminación CASCADE** funciona correctamente con advertencias
+- ✅ **Superadmin** sigue viendo todo sin restricciones
+
+**PROBLEMA ORIGINAL RESUELTO:** 
+Cuando un Admin crea un coordinador desde su cuenta, ahora se muestra automáticamente en su panel porque se crea la relación en `admin_coordinadores` de forma automática.
 
 ### ✅ **COMPLETADO: SISTEMA DE PERMISOS UNIFICADO**
 
