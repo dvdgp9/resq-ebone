@@ -1194,54 +1194,85 @@ img[src*="logo"] {
     margin-bottom: 0.5rem;
 }
 
-/* Statistics Cards */
+/* Statistics Cards - Modern Enterprise Design */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
 }
 
 .stat-card {
     background: white;
-    padding: 1rem;
+    padding: 1.75rem 1.5rem;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    text-align: left;
+    gap: 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1976d2, #42a5f5);
 }
 
 .stat-icon {
-    font-size: 1.5rem;
-    opacity: 1;
+    font-size: 2.2rem;
+    opacity: 0.9;
     flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(66, 165, 245, 0.1));
+    border-radius: 12px;
+    border: 1px solid rgba(25, 118, 210, 0.1);
+}
+
+.stat-content {
+    flex: 1;
+    min-width: 0;
 }
 
 .stat-content h3 {
-    font-size: 0.8rem;
-    margin: 0 0 0.25rem 0;
-    color: #666;
+    font-size: 0.875rem;
+    margin: 0 0 0.5rem 0;
+    color: #64748b;
     font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    line-height: 1.2;
 }
 
 .stat-number {
-    font-size: 1.5rem;
+    font-size: 1.875rem;
     font-weight: 700;
     color: #1976d2;
     margin: 0 0 0.25rem 0;
+    line-height: 1.1;
 }
 
 .stat-label {
     font-size: 0.75rem;
-    color: #999;
+    color: #94a3b8;
     margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 /* Navigation Cards */
@@ -1787,8 +1818,21 @@ img[src*="logo"] {
     
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 0.75rem;
-        max-width: none;
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        padding: 1.25rem 1rem;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+    }
+    
+    .stat-number {
+        font-size: 1.5rem;
     }
     
     .admin-nav-grid {
