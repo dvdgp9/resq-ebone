@@ -27,6 +27,13 @@ $permissions = $adminAuth->getPermissionsService();
             $pageTitle = "Gestión de Botiquín";
             include __DIR__ . '/../partials/header-admin.php'; 
             ?>
+            
+            <!-- Breadcrumb -->
+            <div class="admin-breadcrumb">
+                <a href="/admin/dashboard">🏠 Dashboard</a>
+                <span>></span>
+                <span>💊 Gestión de Botiquín</span>
+            </div>
 
             <!-- Mensajes -->
             <div id="message-container"></div>
