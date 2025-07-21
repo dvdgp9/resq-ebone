@@ -36,9 +36,9 @@ try {
             break;
             
         case 'POST':
-            // Crear socorrista - Superadmins y coordinadores
-            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
-                throw new Exception('Solo superadmins y coordinadores pueden crear socorristas');
+            // Crear socorrista - Superadmins, admins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'admin', 'coordinador'])) {
+                throw new Exception('Solo superadmins, admins y coordinadores pueden crear socorristas');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
@@ -57,6 +57,15 @@ try {
                 }
             }
             
+            // Si es admin, usar AdminPermissionsService para verificar permisos
+            if ($admin['tipo'] === 'admin' && !empty($input['instalacion_id'])) {
+                require_once __DIR__ . '/../../classes/AdminPermissionsService.php';
+                $permissions = new AdminPermissionsService($admin);
+                if (!$permissions->puedeAccederInstalacion($input['instalacion_id'])) {
+                    throw new Exception('No tienes permisos para asignar socorristas a esta instalación');
+                }
+            }
+            
             $socorristaId = $adminService->crearSocorrista($input);
             
             echo json_encode([
@@ -67,9 +76,9 @@ try {
             break;
             
         case 'PUT':
-            // Actualizar socorrista - Superadmins y coordinadores
-            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
-                throw new Exception('Solo superadmins y coordinadores pueden actualizar socorristas');
+            // Actualizar socorrista - Superadmins, admins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'admin', 'coordinador'])) {
+                throw new Exception('Solo superadmins, admins y coordinadores pueden actualizar socorristas');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
@@ -100,6 +109,22 @@ try {
                 }
             }
             
+            // Si es admin, usar AdminPermissionsService para verificar permisos
+            if ($admin['tipo'] === 'admin') {
+                require_once __DIR__ . '/../../classes/AdminPermissionsService.php';
+                $permissions = new AdminPermissionsService($admin);
+                
+                // Verificar que puede acceder al socorrista actual
+                if (!$permissions->puedeAccederSocorrista($input['id'])) {
+                    throw new Exception('No tienes permisos para editar este socorrista');
+                }
+                
+                // Verificar instalación de destino si se cambia
+                if (!empty($input['instalacion_id']) && !$permissions->puedeAccederInstalacion($input['instalacion_id'])) {
+                    throw new Exception('No tienes permisos para asignar socorristas a esta instalación');
+                }
+            }
+            
             $adminService->actualizarSocorrista($input['id'], $input);
             
             echo json_encode([
@@ -109,9 +134,9 @@ try {
             break;
             
         case 'DELETE':
-            // Eliminar socorrista - Superadmins y coordinadores
-            if (!in_array($admin['tipo'], ['superadmin', 'coordinador'])) {
-                throw new Exception('Solo superadmins y coordinadores pueden desactivar socorristas');
+            // Eliminar socorrista - Superadmins, admins y coordinadores
+            if (!in_array($admin['tipo'], ['superadmin', 'admin', 'coordinador'])) {
+                throw new Exception('Solo superadmins, admins y coordinadores pueden desactivar socorristas');
             }
             
             $input = json_decode(file_get_contents('php://input'), true);
@@ -129,6 +154,15 @@ try {
                 ");
                 $stmt->execute([$input['id'], $admin['id']]);
                 if (!$stmt->fetch()) {
+                    throw new Exception('No tienes permisos para desactivar este socorrista');
+                }
+            }
+            
+            // Si es admin, usar AdminPermissionsService para verificar permisos
+            if ($admin['tipo'] === 'admin') {
+                require_once __DIR__ . '/../../classes/AdminPermissionsService.php';
+                $permissions = new AdminPermissionsService($admin);
+                if (!$permissions->puedeAccederSocorrista($input['id'])) {
                     throw new Exception('No tienes permisos para desactivar este socorrista');
                 }
             }

@@ -131,6 +131,15 @@ if ($admin['tipo'] === 'coordinador') {
                            placeholder="666 123 456">
                 </div>
                 
+                <div class="form-group">
+                    <label for="password">Contraseña *</label>
+                    <input type="password" id="password" name="password" class="form-input" required
+                           placeholder="Contraseña segura">
+                    <small class="form-help" id="password-help">
+                        Mínimo 8 caracteres. Deja vacío para mantener la actual (solo edición).
+                    </small>
+                </div>
+                
                 <div class="modal-actions">
                     <button type="button" class="btn-tag btn-tag-secondary" onclick="closeModal()">
                         ❌ Cancelar
@@ -317,6 +326,8 @@ if ($admin['tipo'] === 'coordinador') {
             document.getElementById('save-text').textContent = '💾 Crear Coordinador';
             document.getElementById('coordinador-form').reset();
             document.getElementById('coordinador-id').value = '';
+            document.getElementById('password').required = true;
+            document.getElementById('password-help').textContent = 'Mínimo 8 caracteres.';
             document.getElementById('modal-message-container').innerHTML = '';
             editingId = null;
             document.getElementById('coordinador-modal').style.display = 'flex';
@@ -334,6 +345,9 @@ if ($admin['tipo'] === 'coordinador') {
             document.getElementById('nombre').value = coord.nombre;
             document.getElementById('email').value = coord.email;
             document.getElementById('telefono').value = coord.telefono || '';
+            document.getElementById('password').value = '';
+            document.getElementById('password').required = false;
+            document.getElementById('password-help').textContent = 'Deja vacío para mantener la contraseña actual.';
             document.getElementById('modal-message-container').innerHTML = '';
             
             editingId = id;
@@ -349,8 +363,20 @@ if ($admin['tipo'] === 'coordinador') {
             const data = {
                 nombre: formData.get('nombre'),
                 email: formData.get('email'),
-                telefono: formData.get('telefono') || null
+                telefono: formData.get('telefono') || null,
+                password: formData.get('password')
             };
+            
+            // Validar contraseña
+            if (!editingId && (!data.password || data.password.length < 8)) {
+                showModalMessage('La contraseña es obligatoria y debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+            
+            if (data.password && data.password.length > 0 && data.password.length < 8) {
+                showModalMessage('La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
             
             if (editingId) {
                 data.id = editingId;

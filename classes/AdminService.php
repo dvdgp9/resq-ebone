@@ -68,11 +68,16 @@ class AdminService {
             $db = Database::getInstance()->getConnection();
             
             // Validar datos requeridos
-            $required = ['nombre', 'email'];
+            $required = ['nombre', 'email', 'password'];
             foreach ($required as $field) {
                 if (empty($datos[$field])) {
                     throw new Exception("Campo requerido: $field");
                 }
+            }
+            
+            // Validar longitud de contraseña
+            if (strlen($datos['password']) < 8) {
+                throw new Exception("La contraseña debe tener al menos 8 caracteres");
             }
             
             // Validar email único
@@ -82,12 +87,11 @@ class AdminService {
                 throw new Exception("El email ya está en uso");
             }
             
-            // Generar contraseña temporal
-            $passwordTemporal = bin2hex(random_bytes(4)); // 8 caracteres aleatorios
-            $passwordHash = password_hash($passwordTemporal, PASSWORD_DEFAULT);
+            // Usar contraseña proporcionada
+            $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
             
             $stmt = $db->prepare("
-                INSERT INTO admins (nombre, email, telefono, password, tipo, activo)
+                INSERT INTO admins (nombre, email, telefono, password_hash, tipo, activo)
                 VALUES (?, ?, ?, ?, 'coordinador', 1)
             ");
             
@@ -99,7 +103,7 @@ class AdminService {
             ]);
             
             $coordinadorId = $db->lastInsertId();
-            logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}, password temporal: {$passwordTemporal}", 'INFO');
+            logMessage("Coordinador creado: ID {$coordinadorId}, {$datos['nombre']}", 'INFO');
             
             return $coordinadorId;
             
@@ -132,18 +136,41 @@ class AdminService {
                 }
             }
             
-            $stmt = $db->prepare("
-                UPDATE admins 
-                SET nombre = ?, email = ?, telefono = ?
-                WHERE id = ? AND tipo = 'coordinador'
-            ");
+            // Validar contraseña si se proporciona
+            if (!empty($datos['password']) && strlen($datos['password']) < 8) {
+                throw new Exception("La contraseña debe tener al menos 8 caracteres");
+            }
             
-            $stmt->execute([
-                $datos['nombre'],
-                $datos['email'],
-                $datos['telefono'] ?? null,
-                $id
-            ]);
+            // Preparar query según si se actualiza contraseña o no
+            if (!empty($datos['password'])) {
+                $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
+                $stmt = $db->prepare("
+                    UPDATE admins 
+                    SET nombre = ?, email = ?, telefono = ?, password_hash = ?
+                    WHERE id = ? AND tipo = 'coordinador'
+                ");
+                
+                $stmt->execute([
+                    $datos['nombre'],
+                    $datos['email'],
+                    $datos['telefono'] ?? null,
+                    $passwordHash,
+                    $id
+                ]);
+            } else {
+                $stmt = $db->prepare("
+                    UPDATE admins 
+                    SET nombre = ?, email = ?, telefono = ?
+                    WHERE id = ? AND tipo = 'coordinador'
+                ");
+                
+                $stmt->execute([
+                    $datos['nombre'],
+                    $datos['email'],
+                    $datos['telefono'] ?? null,
+                    $id
+                ]);
+            }
             
             logMessage("Coordinador actualizado: ID {$id}, {$datos['nombre']}", 'INFO');
             return true;
