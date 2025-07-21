@@ -345,17 +345,10 @@ $admin = $adminAuth->getAdminActual();
                             <button class="btn-tag btn-tag-secondary" onclick="editInstalacion(${inst.id})" title="Editar">
                                 ✏️
                             </button>
-                            ${inst.total_socorristas > 0 ? `
-                                <button class="btn-tag btn-tag-danger btn-disabled" disabled 
-                                        onmouseenter="showTooltip(event, 'No se puede eliminar una instalación con socorristas asignados')"
-                                        onmouseleave="hideTooltip()">
-                                    🗑️
-                                </button>
-                            ` : `
-                                <button class="btn-tag btn-tag-danger" onclick="confirmDelete(${inst.id}, '${escapeHtml(inst.nombre)}')" title="Eliminar">
-                                    🗑️
-                                </button>
-                            `}
+                            <button class="btn-tag btn-tag-danger" onclick="confirmDelete(${inst.id}, '${escapeHtml(inst.nombre)}')" 
+                                    title="${inst.total_socorristas > 0 ? `Eliminar instalación y ${inst.total_socorristas} socorrista${inst.total_socorristas !== 1 ? 's' : ''}` : 'Eliminar instalación'}">
+                                🗑️
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -470,8 +463,19 @@ $admin = $adminAuth->getAdminActual();
         
         // Confirmar eliminación
         function confirmDelete(id, nombre) {
-            document.getElementById('confirm-message').textContent = 
-                `¿Estás seguro de eliminar la instalación "${nombre}"? Esta acción no se puede deshacer.`;
+            // Buscar la instalación para saber cuántos socorristas tiene
+            const instalacion = instalaciones.find(inst => inst.id == id);
+            const numSocorristas = instalacion ? instalacion.total_socorristas : 0;
+            
+            let mensaje = `¿Estás seguro de eliminar la instalación "${nombre}"?`;
+            
+            if (numSocorristas > 0) {
+                mensaje += `\n\n⚠️ ADVERTENCIA: Esta instalación tiene ${numSocorristas} socorrista${numSocorristas !== 1 ? 's' : ''} asignado${numSocorristas !== 1 ? 's' : ''}. Al eliminar la instalación, también se eliminarán TODOS los socorristas asignados.`;
+            }
+            
+            mensaje += '\n\nEsta acción no se puede deshacer.';
+            
+            document.getElementById('confirm-message').textContent = mensaje;
             
             document.getElementById('confirm-action').onclick = () => deleteInstalacion(id);
             document.getElementById('confirm-modal').style.display = 'flex';
