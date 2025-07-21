@@ -76,15 +76,6 @@ $stats = $adminService->getEstadisticas();
                     <div class="stat-label">Activos</div>
                 </div>
             </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon">📋</div>
-                <div class="stat-content">
-                    <h3>Formularios</h3>
-                    <div class="stat-number"><?= $stats['formularios_mes'] ?? 0 ?></div>
-                    <div class="stat-label">Este mes</div>
-                </div>
-            </div>
         </div>
         
         <!-- Navegación Principal -->
