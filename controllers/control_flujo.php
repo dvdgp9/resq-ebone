@@ -90,47 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $form_id = $db->lastInsertId();
         
-        // Enviar notificación por email
-        try {
-            // Obtener email del coordinador
-            $stmt = $db->prepare("
-                SELECT c.email, c.nombre, i.nombre as instalacion_nombre
-                FROM admins c 
-                JOIN instalaciones i ON c.id = i.coordinador_id 
-                WHERE i.id = ? AND c.tipo = 'coordinador'
-            ");
-            $stmt->execute([$socorrista['instalacion_id']]);
-            $coordinador = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($coordinador) {
-                // Cargar servicio de email
-                if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-                    require_once __DIR__ . '/../classes/EmailService.php';
-                    $emailService = new EmailService();
-                } else {
-                    require_once __DIR__ . '/../classes/SimpleEmailService.php';
-                    $emailService = new SimpleEmailService();
-                }
-                
-                // Preparar datos para notificación
-                $formularioData = [
-                    'id' => $form_id,
-                    'socorrista_id' => $socorrista['id'],
-                    'tipo_formulario' => 'control_flujo',
-                    'fecha_creacion' => date('Y-m-d H:i:s'),
-                    'socorrista_nombre' => $socorrista['nombre']
-                ];
-                
-                $emailService->enviarNotificacionFormulario($formularioData);
-                
-                // Marcar notificación como enviada
-                $stmt = $db->prepare("UPDATE formularios SET notificacion_enviada = TRUE WHERE id = ?");
-                $stmt->execute([$form_id]);
-            }
-        } catch (Exception $e) {
-            // Log error pero no fallar el guardado
-            error_log("Error enviando email: " . $e->getMessage());
-        }
+        // NOTA: No se envía notificación por email para formularios de control de flujo
+        // Solo se envían emails para incidencias y solicitudes de botiquín
         
         // Preparar mensaje de éxito con resumen
         $total_espacios = count($input['espacios']);
