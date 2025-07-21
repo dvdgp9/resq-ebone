@@ -92,12 +92,25 @@ class AdminPermissionsService {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
+        if ($this->isCoordinador()) {
+            // Coordinador puede ver solo sus propias instalaciones
+            $stmt = $this->db->prepare("
+                SELECT i.*, a.nombre as coordinador_nombre 
+                FROM instalaciones i
+                INNER JOIN admins a ON i.coordinador_id = a.id
+                WHERE i.coordinador_id = ? AND i.activo = 1 AND a.tipo = 'coordinador'
+                ORDER BY i.nombre
+            ");
+            $stmt->execute([$this->admin['id']]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        
         $coordinadorIds = $this->getCoordinadoresPermitidosIds();
         if (empty($coordinadorIds)) {
             return [];
         }
         
-        // Admin/Coordinador puede ver instalaciones de coordinadores permitidos
+        // Admin puede ver instalaciones de coordinadores permitidos
         $placeholders = str_repeat('?,', count($coordinadorIds) - 1) . '?';
         $stmt = $this->db->prepare("
             SELECT i.*, a.nombre as coordinador_nombre 

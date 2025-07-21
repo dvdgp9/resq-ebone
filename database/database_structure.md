@@ -26,7 +26,7 @@ La base de datos contiene **11 tablas principales** organizadas en los siguiente
 | `email` | VARCHAR | Email del administrador | admin@ebone.es |
 | `password_hash` | VARCHAR | Hash de la contraseña | $2y$10$4P2ahiMB7tzXYazzTN/WeTgdcZfmRhDxZd/ROpYcG... |
 | `nombre` | VARCHAR | Nombre del administrador | Administrador ResQ |
-| `tipo` | VARCHAR | Tipo de admin (superadmin/admin) | superadmin |
+| `tipo` | VARCHAR | Tipo de admin (superadmin/admin/coordinador) | superadmin | admin | coordinador
 | `coordinador_id` | INT (FK) | ID del coordinador asignado (NULL = superadmin) | NULL |
 | `activo` | TINYINT | Estado activo (1=activo, 0=inactivo) | 1 |
 | `fecha_creacion` | TIMESTAMP | Fecha de creación | 2025-06-12 10:31:30 |
@@ -68,7 +68,7 @@ La base de datos contiene **11 tablas principales** organizadas en los siguiente
 
 ---
 
-## 4. Tabla: `coordinadores`
+## 4. Tabla: `coordinadores` (YA ESTÁ VACÍA, AHORA ESTÁ TODO EN ADMINS)
 
 **Propósito:** Almacena los coordinadores de instalaciones
 
@@ -81,7 +81,7 @@ La base de datos contiene **11 tablas principales** organizadas en los siguiente
 | `fecha_creacion` | TIMESTAMP | Fecha de creación | 2025-06-10 15:49:57 |
 | `fecha_actualizacion` | TIMESTAMP | Fecha de última actualización | 2025-06-11 12:15:46 |
 
-**Registro actual:** 1 coordinador
+**Registro actual:** 0 coordinadores
 
 ---
 
