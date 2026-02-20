@@ -4,6 +4,11 @@ require_once __DIR__ . '/../../classes/AdminAuthService.php';
 
 $adminAuth = new AdminAuthService();
 
+// Intentar restaurar sesión desde cookie si no está autenticado
+if (!$adminAuth->estaAutenticadoAdmin()) {
+    $adminAuth->restaurarSesionDesdeCookie();
+}
+
 // Verificar autenticación admin
 if (!$adminAuth->estaAutenticadoAdmin()) {
     header('Location: /admin');

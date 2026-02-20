@@ -60,18 +60,28 @@ if (isset($_GET['logout'])) {
                         autocomplete="current-password"
                     >
                     <button type="button" class="password-toggle" onclick="togglePassword()" title="Mostrar/ocultar contraseña">
-                        👁️
+                        <svg class="icon-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <svg class="icon-eye-off" style="display:none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
                     </button>
                 </div>
             </div>
             
+            <div class="form-group remember-me-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="remember_me" value="1" id="remember_me">
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Recordar sesión (60 días)</span>
+                </label>
+            </div>
+            
             <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
-                🛡️ Acceder al Panel
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+                Acceder al Panel
             </button>
         </form>
         
         <div class="login-footer">
-            <p>🚨 <a href="/" class="link">Volver al login de socorristas</a></p>
+            <p><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" x2="9.17" y1="4.93" y2="9.17"/><line x1="14.83" x2="19.07" y1="14.83" y2="19.07"/><line x1="14.83" x2="19.07" y1="9.17" y2="4.93"/><line x1="14.83" x2="18.36" y1="9.17" y2="5.64"/><line x1="4.93" x2="9.17" y1="19.07" y2="14.83"/></svg> <a href="/" class="link">Volver al login de socorristas</a></p>
             <p><small>Panel de administración ResQ v1.0</small></p>
         </div>
     </div>
@@ -121,11 +131,13 @@ if (isset($_GET['logout'])) {
             
             if (passwordField.type === 'password') {
                 passwordField.type = 'text';
-                toggleButton.textContent = '🙈';
+                toggleButton.querySelector('.icon-eye').style.display = 'none';
+                toggleButton.querySelector('.icon-eye-off').style.display = 'inline';
                 toggleButton.title = 'Ocultar contraseña';
             } else {
                 passwordField.type = 'password';
-                toggleButton.textContent = '👁️';
+                toggleButton.querySelector('.icon-eye').style.display = 'inline';
+                toggleButton.querySelector('.icon-eye-off').style.display = 'none';
                 toggleButton.title = 'Mostrar contraseña';
             }
         }
@@ -134,7 +146,7 @@ if (isset($_GET['logout'])) {
         document.querySelector('form').addEventListener('submit', function(e) {
             const btn = this.querySelector('button[type="submit"]');
             btn.disabled = true;
-            btn.innerHTML = '🔄 Verificando...';
+            btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px; animation: spin 1s linear infinite;"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg> Verificando...';
             
             setTimeout(() => {
                 btn.disabled = false;

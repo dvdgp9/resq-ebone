@@ -671,6 +671,51 @@ img[src*="logo"] {
     font-size: 0.9rem;
 }
 
+/* Remember me checkbox en login */
+.remember-me-group {
+    margin: 1.5rem 0;
+}
+
+.remember-me-group .checkbox-label {
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.remember-me-group .checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.remember-me-group input[type="checkbox"]:checked + .checkbox-custom {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.remember-me-group input[type="checkbox"]:checked + .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.remember-me-group .checkbox-text {
+    color: #555;
+    font-size: 0.9rem;
+}
+
 .login-help {
     margin-top: 1.5rem;
     padding-top: 1.5rem;

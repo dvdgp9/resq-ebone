@@ -13,12 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Login
     $email = trim($_POST['email'] ?? '');
     $password = trim($_POST['password'] ?? '');
+    $rememberMe = isset($_POST['remember_me']) && $_POST['remember_me'] === '1';
     
     if (empty($email) || empty($password)) {
         $error = 'Por favor, introduce email y contraseña';
     } else {
-        // Intentar login
-        $admin = $adminAuth->login($email, $password);
+        // Intentar login con opción de recordar
+        $admin = $adminAuth->login($email, $password, $rememberMe);
         
         if ($admin) {
             // Login exitoso - redirigir al dashboard admin

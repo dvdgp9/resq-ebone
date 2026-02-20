@@ -10,20 +10,21 @@ $success = '';
 
 // Procesar formulario de login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dni = trim($_POST['dni'] ?? '');
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
     
-    if (empty($dni)) {
-        $error = 'Por favor, introduce tu DNI';
+    if (empty($username) || empty($password)) {
+        $error = 'Por favor, introduce usuario y contraseña';
     } else {
         // Intentar login
-        $socorrista = $authService->login($dni);
+        $socorrista = $authService->login($username, $password);
         
         if ($socorrista) {
             // Login exitoso - redirigir al dashboard
             header('Location: /dashboard');
             exit;
         } else {
-            $error = 'DNI no encontrado o inactivo. Contacta con tu coordinador.';
+            $error = 'Usuario o contraseña incorrectos. Contacta con tu coordinador.';
         }
     }
 }

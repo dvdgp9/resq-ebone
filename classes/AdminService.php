@@ -502,7 +502,7 @@ class AdminService {
             }
             
             $stmt = $db->prepare("
-                SELECT s.id, s.dni, s.nombre, s.email, s.telefono, s.activo,
+                SELECT s.id, s.dni, s.username, s.nombre, s.email, s.telefono, s.activo,
                        s.fecha_creacion, s.fecha_actualizacion,
                        s.instalacion_id,
                        i.nombre as instalacion_nombre,
@@ -531,11 +531,16 @@ class AdminService {
             $db = Database::getInstance()->getConnection();
             
             // Validar datos requeridos
-            $required = ['dni', 'nombre', 'instalacion_id'];
+            $required = ['dni', 'nombre', 'username', 'password', 'instalacion_id'];
             foreach ($required as $field) {
                 if (empty($datos[$field])) {
                     throw new Exception("Campo requerido: $field");
                 }
+            }
+            
+            // Validar longitud mínima de contraseña
+            if (strlen($datos['password']) < 6) {
+                throw new Exception("La contraseña debe tener al menos 6 caracteres");
             }
             
             // Validar DNI único
@@ -545,6 +550,13 @@ class AdminService {
                 throw new Exception("El DNI ya está en uso");
             }
             
+            // Validar username único
+            $stmt = $db->prepare("SELECT id FROM socorristas WHERE username = ?");
+            $stmt->execute([$datos['username']]);
+            if ($stmt->fetch()) {
+                throw new Exception("El nombre de usuario ya está en uso");
+            }
+            
             // Verificar que la instalación existe
             $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND activo = 1");
             $stmt->execute([$datos['instalacion_id']]);
@@ -552,13 +564,18 @@ class AdminService {
                 throw new Exception("Instalación no encontrada o inactiva");
             }
             
+            // Hash de la contraseña
+            $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
+            
             $stmt = $db->prepare("
-                INSERT INTO socorristas (dni, nombre, email, telefono, instalacion_id, activo)
-                VALUES (?, ?, ?, ?, ?, 1)
+                INSERT INTO socorristas (dni, username, password_hash, nombre, email, telefono, instalacion_id, activo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 1)
             ");
             
             $stmt->execute([
                 $datos['dni'],
+                $datos['username'],
+                $passwordHash,
                 $datos['nombre'],
                 $datos['email'] ?? null,
                 $datos['telefono'] ?? null,
@@ -599,6 +616,15 @@ class AdminService {
                 }
             }
             
+            // Validar username único (excluyendo el socorrista actual)
+            if (!empty($datos['username'])) {
+                $stmt = $db->prepare("SELECT id FROM socorristas WHERE username = ? AND id != ?");
+                $stmt->execute([$datos['username'], $id]);
+                if ($stmt->fetch()) {
+                    throw new Exception("El nombre de usuario ya está en uso");
+                }
+            }
+            
             // Verificar instalación si se especifica
             if (!empty($datos['instalacion_id'])) {
                 $stmt = $db->prepare("SELECT id FROM instalaciones WHERE id = ? AND activo = 1");
@@ -608,20 +634,46 @@ class AdminService {
                 }
             }
             
-            $stmt = $db->prepare("
-                UPDATE socorristas 
-                SET dni = ?, nombre = ?, email = ?, telefono = ?, instalacion_id = ?
-                WHERE id = ?
-            ");
-            
-            $stmt->execute([
-                $datos['dni'],
-                $datos['nombre'],
-                $datos['email'] ?? null,
-                $datos['telefono'] ?? null,
-                $datos['instalacion_id'],
-                $id
-            ]);
+            // Construir query dinámicamente según si se incluye contraseña
+            if (!empty($datos['password'])) {
+                if (strlen($datos['password']) < 6) {
+                    throw new Exception("La contraseña debe tener al menos 6 caracteres");
+                }
+                $passwordHash = password_hash($datos['password'], PASSWORD_DEFAULT);
+                
+                $stmt = $db->prepare("
+                    UPDATE socorristas 
+                    SET dni = ?, username = ?, password_hash = ?, nombre = ?, email = ?, telefono = ?, instalacion_id = ?
+                    WHERE id = ?
+                ");
+                
+                $stmt->execute([
+                    $datos['dni'],
+                    $datos['username'],
+                    $passwordHash,
+                    $datos['nombre'],
+                    $datos['email'] ?? null,
+                    $datos['telefono'] ?? null,
+                    $datos['instalacion_id'],
+                    $id
+                ]);
+            } else {
+                $stmt = $db->prepare("
+                    UPDATE socorristas 
+                    SET dni = ?, username = ?, nombre = ?, email = ?, telefono = ?, instalacion_id = ?
+                    WHERE id = ?
+                ");
+                
+                $stmt->execute([
+                    $datos['dni'],
+                    $datos['username'],
+                    $datos['nombre'],
+                    $datos['email'] ?? null,
+                    $datos['telefono'] ?? null,
+                    $datos['instalacion_id'],
+                    $id
+                ]);
+            }
             
             logMessage("Socorrista actualizado: ID {$id}, {$datos['nombre']}", 'INFO');
             return true;

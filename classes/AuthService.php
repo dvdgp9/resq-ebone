@@ -1,39 +1,46 @@
 <?php
 // Servicio de Autenticación para ResQ
-// Sistema simple basado en DNI únicamente
+// Sistema basado en usuario y contraseña
 
 class AuthService {
     
     /**
-     * Autentica un socorrista usando solo su DNI
-     * @param string $dni DNI del socorrista
-     * @return array|false Datos del socorrista o false si no existe
+     * Autentica un socorrista usando usuario y contraseña
+     * @param string $username Usuario del socorrista
+     * @param string $password Contraseña del socorrista
+     * @return array|false Datos del socorrista o false si falla
      */
-    public function login($dni) {
+    public function login($username, $password) {
         try {
-            // Validar formato del DNI
-            if (!validateDNI($dni)) {
-                logMessage("Intento de login con DNI inválido: {$dni}", 'WARNING');
+            // Validar datos
+            if (empty($username) || empty($password)) {
+                logMessage("Intento de login con credenciales vacías", 'WARNING');
                 return false;
             }
             
             // Buscar socorrista en la base de datos
             $db = getDB();
             $stmt = $db->prepare("
-                SELECT s.id, s.dni, s.nombre, s.email, 
+                SELECT s.id, s.dni, s.username, s.password_hash, s.nombre, s.email, 
                        i.nombre as instalacion, i.id as instalacion_id,
                        c.nombre as coordinador, c.email as coordinador_email
                 FROM socorristas s
                 JOIN instalaciones i ON s.instalacion_id = i.id
                 JOIN admins c ON i.coordinador_id = c.id
-                WHERE s.dni = ? AND s.activo = 1 AND i.activo = 1 AND c.tipo = 'coordinador'
+                WHERE s.username = ? AND s.activo = 1 AND i.activo = 1 AND c.tipo = 'coordinador'
             ");
             
-            $stmt->execute([$dni]);
+            $stmt->execute([$username]);
             $socorrista = $stmt->fetch();
             
             if (!$socorrista) {
-                logMessage("Intento de login fallido para DNI: {$dni}", 'WARNING');
+                logMessage("Intento de login fallido para usuario: {$username}", 'WARNING');
+                return false;
+            }
+            
+            // Verificar contraseña
+            if (!password_verify($password, $socorrista['password_hash'])) {
+                logMessage("Contraseña incorrecta para usuario: {$username}", 'WARNING');
                 return false;
             }
             
@@ -44,13 +51,14 @@ class AuthService {
                 // Guardar datos en sesión PHP
                 $_SESSION['socorrista_id'] = $socorrista['id'];
                 $_SESSION['socorrista_dni'] = $socorrista['dni'];
+                $_SESSION['socorrista_username'] = $socorrista['username'];
                 $_SESSION['socorrista_nombre'] = $socorrista['nombre'];
                 $_SESSION['instalacion_id'] = $socorrista['instalacion_id'];
                 $_SESSION['instalacion_nombre'] = $socorrista['instalacion'];
                 $_SESSION['session_id'] = $sessionId;
                 $_SESSION['login_time'] = time();
                 
-                logMessage("Login exitoso para {$socorrista['nombre']} (DNI: {$dni})", 'INFO');
+                logMessage("Login exitoso para {$socorrista['nombre']} (Usuario: {$username})", 'INFO');
                 return $socorrista;
             }
             
@@ -110,6 +118,7 @@ class AuthService {
         return [
             'id' => $_SESSION['socorrista_id'],
             'dni' => $_SESSION['socorrista_dni'],
+            'username' => $_SESSION['socorrista_username'] ?? null,
             'nombre' => $_SESSION['socorrista_nombre'],
             'instalacion_id' => $_SESSION['instalacion_id'],
             'instalacion_nombre' => $_SESSION['instalacion_nombre'],
