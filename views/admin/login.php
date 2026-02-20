@@ -67,9 +67,9 @@ if (isset($_GET['logout'])) {
             </div>
             
             <div class="form-group remember-me-group">
-                <label class="checkbox-label">
+                <label class="checkbox-label" for="remember_me">
                     <input type="checkbox" name="remember_me" value="1" id="remember_me">
-                    <span class="checkbox-custom"></span>
+                    <span class="checkmark"></span>
                     <span class="checkbox-text">Recordar sesión (60 días)</span>
                 </label>
             </div>
