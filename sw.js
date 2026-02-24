@@ -1,4 +1,4 @@
-const CACHE_NAME = 'resq-v3.2-login-fix'; // Arreglo para login
+const CACHE_NAME = 'resq-v3.3-admin-fix'; // Excluir todas las rutas admin
 const urlsToCache = [
   '/assets/images/logo.png',
   '/assets/images/logo-negativo-soco.png',
@@ -25,12 +25,11 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
   // NUNCA interceptar estas rutas - dejar que vayan directo al servidor
+  // Incluye TODAS las rutas /admin/* para evitar problemas de sesión
   if (url.pathname.startsWith('/api/') || 
       url.pathname === '/login' || 
       url.pathname === '/logout' || 
-      url.pathname === '/admin/login' || 
-      url.pathname === '/admin/logout' ||
-      url.pathname.startsWith('/admin/api/') ||
+      url.pathname.startsWith('/admin') ||
       event.request.method === 'POST') {
     return;
   }

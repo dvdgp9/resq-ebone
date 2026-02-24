@@ -259,6 +259,7 @@ class AdminAuthService {
     
     /**
      * Verifica si una sesión admin está activa y no ha expirado
+     * También renueva la expiración automáticamente (sliding session)
      */
     private function verificarSesionAdmin($sessionId) {
         try {
@@ -269,7 +270,18 @@ class AdminAuthService {
             ");
             
             $stmt->execute([$sessionId]);
-            return $stmt->fetch() !== false;
+            $sesionValida = $stmt->fetch() !== false;
+            
+            // Si la sesión es válida, renovar su expiración (sliding session)
+            if ($sesionValida) {
+                $nuevaExpiracion = date('Y-m-d H:i:s', time() + 14400); // +4 horas
+                $stmtRenovar = $db->prepare("
+                    UPDATE admin_sesiones SET fecha_expiracion = ? WHERE id = ?
+                ");
+                $stmtRenovar->execute([$nuevaExpiracion, $sessionId]);
+            }
+            
+            return $sesionValida;
             
         } catch (Exception $e) {
             logMessage("Error verificando sesión admin: " . $e->getMessage(), 'ERROR');
